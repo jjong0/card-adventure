@@ -6,8 +6,8 @@ import type { BattleState, Side } from '../../core/types';
 import type { Cue, Shown } from './playback';
 
 const LAYOUT = {
-  enemy: { platform: 'left-[760px] top-[200px] w-[360px] h-[72px]', sprite: 'left-[940px] top-[236px]', scale: 2.2, dir: 1 },
-  player: { platform: 'left-[150px] top-[410px] w-[440px] h-[86px]', sprite: 'left-[370px] top-[456px]', scale: 2.8, dir: -1 },
+  enemy: { platform: 'left-[760px] top-[200px] w-[360px] h-[72px]', sprite: 'left-[940px] top-[240px]', scale: 2.4, maxHeight: 220, dir: 1 },
+  player: { platform: 'left-[150px] top-[410px] w-[440px] h-[86px]', sprite: 'left-[370px] top-[456px]', scale: 2.8, maxHeight: 280, dir: -1 },
 } as const;
 
 function BattleSprite({ side, state, shown }: { side: Side; state: BattleState; shown: Shown }) {
@@ -43,7 +43,7 @@ function BattleSprite({ side, state, shown }: { side: Side; state: BattleState; 
   return (
     <div className={`absolute ${LAYOUT[side].sprite} -translate-x-1/2 -translate-y-full`}>
       <motion.div animate={controls} initial={{ opacity: 0 }} className="flex items-end justify-center">
-        <Sprite speciesId={mon.card.speciesId} name={mon.name} back={side === 'player'} scale={LAYOUT[side].scale} />
+        <Sprite speciesId={mon.card.speciesId} name={mon.name} back={side === 'player'} scale={LAYOUT[side].scale} maxHeight={LAYOUT[side].maxHeight} />
       </motion.div>
     </div>
   );

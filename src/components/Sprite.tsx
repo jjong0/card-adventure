@@ -10,10 +10,12 @@ interface Props {
   scale?: number;
   /** 정지 이미지만 (목록·작은 아이콘용) */
   still?: boolean;
+  /** 확대 후 최대 높이(px). 캔버스가 큰 애니메이션이 화면 밖으로 나가지 않게 */
+  maxHeight?: number;
   className?: string;
 }
 
-export function Sprite({ speciesId, name, back = false, scale = 1, still = false, className = '' }: Props) {
+export function Sprite({ speciesId, name, back = false, scale = 1, still = false, maxHeight, className = '' }: Props) {
   const all = spriteCandidates(speciesId, back);
   const urls = still ? all.slice(-1) : all;
   const [failed, setFailed] = useState({ key: '', count: 0 });
@@ -33,7 +35,8 @@ export function Sprite({ speciesId, name, back = false, scale = 1, still = false
       draggable={false}
       onError={() => setFailed({ key, count: tried + 1 })}
       className={className}
-      style={{ imageRendering: 'pixelated', zoom: scale }}
+      // zoom은 max-height까지 같이 확대하므로 원본 단위로 나눠서 넣는다
+      style={{ imageRendering: 'pixelated', zoom: scale, maxHeight: maxHeight ? maxHeight / scale : undefined, width: 'auto' }}
     />
   );
 }
