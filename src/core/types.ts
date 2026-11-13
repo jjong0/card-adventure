@@ -84,6 +84,16 @@ export interface Move {
   descriptionLang: 'ko' | 'ko-unofficial' | 'en' | null;
 }
 
+/**
+ * evolutions.json: 진화 전 speciesId → 진화 목록 (scripts/build-evolutions.mjs, spec §4.6)
+ * substitute = 교환·친밀도·기타 조건을 대체 레벨로 바꾼 진화
+ */
+export type Evolution =
+  | { to: string; method: 'level'; level: number }
+  | { to: string; method: 'item'; item: string; itemName: string }
+  | { to: string; method: 'substitute'; level: number; reason: 'trade' | 'friendship' | 'other' | 'override' };
+export type Evolutions = Record<string, Evolution[]>;
+
 /** learnsets.json: speciesId → 레벨업 기술 (level 0 = 진화 시 습득) */
 export type Learnsets = Record<string, { moveId: string; level: number; fallback?: boolean }[]>;
 
