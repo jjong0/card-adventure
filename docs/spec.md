@@ -37,7 +37,7 @@
 | 익스트림 관장 | 원작 **재대결 파티**를 해당 챕터 레벨로 낮춰서 사용 |
 | 경험치 | 하트골드(4세대) 공식, **전투에 나간 포켓몬만** 획득 |
 | 특성·성격·노력치 | MVP 제외 |
-| 데이터 | 1~9세대 1025종, 원작 6스탯, 기술 691개, 하트골드 원본 트레이너 |
+| 데이터 | 1~9세대 1025종, 원작 6스탯, 기술 919개(전체), 하트골드 원본 트레이너 |
 | 저장 | localStorage 슬롯 3개 + 세이브 파일 내보내기/불러오기 (클라우드는 이후) |
 | 스택 | Vite + React + TypeScript, Zustand, Framer Motion, Tailwind, Vitest |
 | MVP | 1~2챕터(비상, 호일) 완성 후 같은 틀로 확장 |
@@ -104,12 +104,16 @@
 ### 3.3 야생 포켓몬
 - PokeAPI의 하트골드(`version`=heartgold) 출현 데이터(`encounters`, `location_areas`)로 챕터별 출현표를 자동 생성한다.
 - 챕터별 지역은 `src/data/chapters.json`에 PokeAPI 지역 식별자로 정의한다. MVP 두 챕터는 다음과 같다.
-  - 1장: `johto-route-29`, `johto-route-30`, `johto-route-31`, `sprout-tower`(존재하는 area 식별자로 확인)
-  - 2장: `johto-route-32`, `union-cave`, `johto-route-33`, `slowpoke-well`
+  - 1장: `johto-route-29`, `johto-route-30`, `johto-route-31`, `sprout-tower/2f`, `sprout-tower/3f`
+  - 2장: `johto-route-32`, `union-cave/1f`, `union-cave/b1f`, `johto-route-33`, `slowpoke-well/1f`
+  - 챕터 레벨대에 맞지 않는 층(야돈의우물 지하 1층 Lv19~23, 어둠의동굴 지하 2층 Lv20~23)은 넣지 않는다.
+  - 풀숲·동굴 출현만 쓴다. 낚시·파도타기와 라디오·대량발생 출현은 제외한다.
+  - 설정은 `src/data/overrides/chapters.json`, 생성은 `scripts/build-chapters.mjs`.
 - 레벨: 출현 데이터의 min~max 레벨에 난이도 보정(§5.3)을 더한다.
 
 ### 3.4 트레이너와 라이벌
-- `scripts/build-trainers.mjs`를 확장해서 하트골드 원본 트레이너 738명 전원을 추출한다. 현재는 관장, 사천왕, 챔피언, 레드, 라이벌 70명만 있다. **직업(class)**도 저장해서 노드 이미지(§9)에 쓴다.
+- `scripts/build-trainers.mjs`가 하트골드 원본 트레이너를 추출한다: 보스·라이벌 70명 + 일반 트레이너 654명. 배틀프런티어 자리표시 데이터, 행인, 고유 인물은 제외. **직업(class)**도 저장해서 노드 이미지(§9)에 쓴다.
+- 일반 트레이너는 개인 이름의 한국어가 없어 직업 이름으로 표시한다(`overrides/trainer-classes-ko.json`, 공식 명칭 대조 필요). 기술이 비어 있으면 원작처럼 레벨업 기본 기술을 쓴다.
 - 원본에는 위치 정보가 없으므로, 파티 최고 레벨이 `(이전 관장 에이스 Lv, 이번 관장 에이스 Lv]` 범위인 트레이너를 그 챕터 풀로 쓴다.
 - **라이벌**: 원본에 스타터별로 3종류 × 등장 시점별 파티가 있다. 레벨대로 챕터를 정해 엘리트 노드에 고정 배치한다.
   - 라이벌 스타터는 내 스타터에게 유리한 타입이다. 내가 풀이면 불꽃(브케인 계열), 불꽃이면 물(리아코 계열), 물이면 풀(치코리타 계열). 스타터 27종은 모두 풀, 불꽃, 물 중 하나다.
@@ -310,11 +314,13 @@ public/assets/  사용자 수집 이미지 (git 제외)
 | 파일 | 내용 | 생성 |
 |---|---|---|
 | species.json | 1025종: 이름, 타입, 6스탯, 몸무게, 기초 경험치, 성장 곡선, 등급, 진화 전 단계, 스프라이트 | build-data.mjs |
-| moves.json | 기술 691개: 타입, 분류, 위력, 명중, PP, 우선도, 효과 메타, 한국어 설명 | build-data.mjs |
+| moves.json | 기술 919개(전체): 타입, 분류, 위력, 명중, PP, 우선도, 효과 메타, 한국어 설명 | build-data.mjs |
 | learnsets.json | 종별 레벨업 기술 (최신 본가 기준, 레벨 0 = 진화 시) | build-data.mjs |
 | typeChart.json | 18×18 상성 (veekun 표와 324칸 일치 검증) | build-data.mjs |
 | expTable.json | 성장 곡선 6종 × 레벨별 누적 경험치 | build-data.mjs |
-| trainers.json | 하트골드 원본: 스토리 22, 재대결 24, 라이벌 24 | build-trainers.mjs |
+| trainers.json | 하트골드 원본: 스토리 22, 재대결 24, 라이벌 24, 일반 654 (직업 포함) | build-trainers.mjs |
+| chapters.json | 챕터별 야생 출현표, 팩 레벨, 트레이너 풀, 라이벌 (현재 1~2장) | build-chapters.mjs |
+| tmCompat.json | 하트골드 기술머신 100개 + 종별로 배울 수 있는 기술머신 | build-tm-compat.mjs |
 | evolutions.json | 진화 전 종 → 진화 목록 (레벨 / 도구 / 대체 레벨). 지역폼 전용 진화 10종 제외 | build-evolutions.mjs |
 | overrides/move-desc-ko.json | 한국어 설명이 없는 기술 65개 비공식 번역 | 수동 |
 | overrides/evolution-levels.json | 진화 대상 id → 대체 레벨 (제외된 진화도 여기 넣으면 추가됨) | 수동 |
