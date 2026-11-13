@@ -20,7 +20,7 @@ node scripts/build-chapters.mjs   # overrides/chapters.json + 하트골드 야�
 node scripts/build-tm-compat.mjs  # 하트골드 기술머신 + 종별 호환 → tmCompat.json (build-data 다음에 실행)
 node scripts/verify-type-chart.mjs # 상성표 324칸 검증
 ```
-spec §11의 1~3단계(프로젝트 구성, 엔진 보강, 데이터 확장)는 끝났다. 다음은 4단계(전투 화면)다.
+spec §11의 1~4단계(프로젝트 구성, 엔진 보강, 데이터 확장, 전투 화면)는 끝났다. 다음은 5단계(카드 화면)다.
 
 ## 구조 규칙
 - `src/core/`는 **순수 TypeScript**. React, 브라우저 API, Zustand를 import하지 않는다. 모든 규칙은 여기서 구현하고 Vitest로 테스트한다.
