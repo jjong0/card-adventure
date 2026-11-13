@@ -109,5 +109,61 @@
     "TWINS": "/assets/trainers/twins.png",
     "YOUNGSTER": "/assets/trainers/youngster.png",
     "YOUNG_COUPLE": "/assets/trainers/young-couple.png"
+  },
+  "fx": {
+    "_note": "기술 이펙트 스프라이트 시트(가로로 이어 붙인 정사각형 프레임 PNG). 키는 구체적인 것부터 찾는다: move:기술slug → 계열.타입 → 계열 → 분류.타입 → 분류. at: target(대상 위) | user(쓰는 쪽 위) | travel(날아감) | line(쓰는 쪽→대상으로 늘임). fps 기본 15, size(표시 px) 기본 192, frames는 비우면 가로÷세로. 파일이 없으면 그리지 않는다. 목록: docs/assets.md",
+    "physical": {
+      "src": "/assets/fx/physical.png",
+      "at": "target"
+    },
+    "special": {
+      "src": "/assets/fx/special.png",
+      "at": "travel"
+    },
+    "status": {
+      "src": "/assets/fx/status.png",
+      "at": "target"
+    },
+    "bite": {
+      "src": "/assets/fx/bite.png",
+      "at": "target"
+    },
+    "punch": {
+      "src": "/assets/fx/punch.png",
+      "at": "target"
+    },
+    "slash": {
+      "src": "/assets/fx/slash.png",
+      "at": "target"
+    },
+    "beam": {
+      "src": "/assets/fx/beam.png",
+      "at": "line",
+      "size": 96
+    },
+    "stream": {
+      "src": "/assets/fx/stream.png",
+      "at": "line",
+      "size": 128
+    },
+    "fall": {
+      "src": "/assets/fx/fall.png",
+      "at": "target",
+      "size": 256
+    },
+    "quake": {
+      "src": "/assets/fx/quake.png",
+      "at": "target",
+      "size": 256
+    },
+    "sound": {
+      "src": "/assets/fx/sound.png",
+      "at": "travel"
+    },
+    "explode": {
+      "src": "/assets/fx/explode.png",
+      "at": "user",
+      "size": 320
+    }
   }
 }

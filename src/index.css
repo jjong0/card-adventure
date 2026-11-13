@@ -52,3 +52,13 @@ body {
   color: var(--color-text);
   font-family: var(--font-sans);
 }
+
+/* 기술 이펙트 스프라이트 시트: background-position 0% → 100% (SpriteFx.tsx) */
+@keyframes fx-strip {
+  from {
+    background-position-x: 0%;
+  }
+  to {
+    background-position-x: 100%;
+  }
+}
