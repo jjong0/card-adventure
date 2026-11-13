@@ -1,0 +1,4 @@
+{
+  "_note": "기술 slug → 연출 계열 수동 지정. 자동 규칙(scripts/build-move-fx.mjs)보다 우선. 계열: bite punch slash beam stream fall quake sound explode, 또는 none(기본 연출)",
+  "spike-cannon": "none"
+}
