@@ -231,11 +231,25 @@ const EFFECT = {
   WEIGHT_RATIO: 292,      // 헤비봄버, 히트스탬프
   CRUSH_GRIP: 238,        // 묵사발
   FINAL_GAMBIT: 321,
+  SONIC_BOOM: 131,        // 소닉붐: 20 고정
+  DRAGON_RAGE: 42,        // 용의분노: 40 고정
+  PSYWAVE: 89,            // 사이코웨이브
+  MAGNITUDE: 127,         // 매그니튜드
   TOXIC: 34,              // 맹독 (meta.ailment는 poison으로 들어옴)
 } as const;
 
+/**
+ * 매그니튜드 4~10의 위력과 확률(%) — 원작 2세대 이후 동일
+ * 출처: https://bulbapedia.bulbagarden.net/wiki/Magnitude_(move)
+ */
+const MAGNITUDE_TABLE = [
+  { n: 4, power: 10, chance: 5 }, { n: 5, power: 30, chance: 10 }, { n: 6, power: 50, chance: 20 },
+  { n: 7, power: 70, chance: 30 }, { n: 8, power: 90, chance: 20 }, { n: 9, power: 110, chance: 10 },
+  { n: 10, power: 150, chance: 5 },
+];
+
 type VariableResult =
-  | { kind: 'power'; power: number }
+  | { kind: 'power'; power: number; message?: string }
   | { kind: 'fixed'; damage: number }   // 상성 무효만 적용, 나머지 보정 없음
   | { kind: 'heal'; amount: number }
   | { kind: 'fail'; reason: string };
@@ -244,6 +258,19 @@ function variablePower(move: Move, user: BattleMon, target: BattleMon, rng: Rng)
   switch (move.effectId) {
     case EFFECT.LEVEL_DAMAGE:
       return { kind: 'fixed', damage: user.card.level };
+    case EFFECT.SONIC_BOOM:
+      return { kind: 'fixed', damage: 20 };
+    case EFFECT.DRAGON_RAGE:
+      return { kind: 'fixed', damage: 40 };
+    case EFFECT.PSYWAVE:
+      // 5세대~: floor(레벨 × (난수 0~100 + 50) / 100), 최소 1 → 레벨의 0.5~1.5배
+      // 출처: https://bulbapedia.bulbagarden.net/wiki/Psywave_(move)
+      return { kind: 'fixed', damage: Math.max(1, Math.floor((user.card.level * (Math.floor(rng() * 101) + 50)) / 100)) };
+    case EFFECT.MAGNITUDE: {
+      let x = rng() * 100;
+      const pick = MAGNITUDE_TABLE.find((m) => (x -= m.chance) < 0) ?? MAGNITUDE_TABLE[MAGNITUDE_TABLE.length - 1];
+      return { kind: 'power', power: pick.power, message: `매그니튜드 ${pick.n}!` };
+    }
     case EFFECT.HALF_HP:
       return { kind: 'fixed', damage: Math.max(1, Math.floor(target.currentHp / 2)) };
     case EFFECT.ENDEAVOR:
@@ -289,7 +316,8 @@ function variablePower(move: Move, user: BattleMon, target: BattleMon, rng: Rng)
       return { kind: 'heal', amount: Math.floor(target.stats.hp / 4) };
     }
     default:
-      // 참기, 집단구타, 토해내기, 자연의은혜, 내던지기: 아이템/누적 시스템 필요
+      // 참기, 집단구타, 토해내기, 자연의은혜, 내던지기, 마지막수단, 혼내기: 아이템/누적 시스템 필요
+      // 은혜갚기, 화풀이: 친밀도 시스템 없음 / Z기술: 이 게임에서 쓰지 않음
       return { kind: 'fail', reason: '(아직 구현되지 않은 기술이다)' };
   }
 }
@@ -548,6 +576,7 @@ function useMove(state: BattleState, side: Side, moveId: string, dex: Dex, rng: 
       if (move.effectId === EFFECT.FINAL_GAMBIT) hurt(rec, user, user.currentHp);
       return;
     }
+    if (r.message) rec.say(r.message);
     power = r.power;
   }
 

@@ -121,6 +121,46 @@ describe('기술 효과', () => {
   });
 });
 
+describe('고정·랜덤 데미지 기술', () => {
+  const hit = (attacker: Card, slug: string, seed = 1) =>
+    battle(createBattle([attacker], [card('143', 100, ['growl'])], dex, seed), { kind: 'move', moveId: moveId(slug) }, dex);
+  const dealt = (s: BattleState) => s.enemy.party[0].stats.hp - s.enemy.party[0].currentHp;
+
+  it('소닉붐 20, 용의분노 40 (레벨·능력치 무관)', () => {
+    expect(dealt(findTurn(() => createBattle([card('81', 5, ['sonic-boom'])], [card('143', 100, ['growl'])], dex, 1), { kind: 'move', moveId: moveId('sonic-boom') }, (s) => dealt(s) > 0))).toBe(20);
+    expect(dealt(hit(card('147', 80, ['dragon-rage']), 'dragon-rage'))).toBe(40);
+  });
+
+  it('소닉붐은 고스트에 무효', () => {
+    const s = battle(createBattle([card('81', 50, ['sonic-boom'])], [card('92', 50, ['lick'])], dex, 1), { kind: 'move', moveId: moveId('sonic-boom') }, dex);
+    expect(s.enemy.party[0].currentHp).toBe(s.enemy.party[0].stats.hp);
+  });
+
+  it('사이코웨이브: 레벨의 0.5~1.5배, 시드에 따라 달라짐', () => {
+    const results = new Set<number>();
+    for (let seed = 1; seed <= 200; seed++) {
+      const d = dealt(hit(card('63', 40, ['psywave']), 'psywave', seed));
+      if (d === 0) continue; // 빗나감
+      expect(d).toBeGreaterThanOrEqual(20);
+      expect(d).toBeLessThanOrEqual(60);
+      results.add(d);
+    }
+    expect(results.size).toBeGreaterThan(10);
+  });
+
+  it('매그니튜드: 4~10이 나오고 7이 가장 흔함 (확률 30%)', () => {
+    const count: Record<string, number> = {};
+    for (let seed = 1; seed <= 1000; seed++) {
+      const s = hit(card('74', 30, ['magnitude']), 'magnitude', seed);
+      const m = s.log.join('\n').match(/매그니튜드 (\d+)!/);
+      if (m) count[m[1]] = (count[m[1]] ?? 0) + 1;
+    }
+    expect(Object.keys(count).sort((a, b) => +a - +b)).toEqual(['4', '5', '6', '7', '8', '9', '10']);
+    const top = Object.entries(count).sort((a, b) => b[1] - a[1])[0][0];
+    expect(top).toBe('7');
+  });
+});
+
 describe('로그 조사', () => {
   it('받침에 따라 은/는, 이/가, 을/를, 으로/로', () => {
     expect(fixJosa('갸라도스은(는) 쓰러졌다!')).toBe('갸라도스는 쓰러졌다!');
