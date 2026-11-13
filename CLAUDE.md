@@ -16,9 +16,11 @@ npm test             # vitest
 node scripts/build-data.mjs       # PokeAPI → species/moves/learnsets/typeChart/expTable
 node scripts/build-trainers.mjs   # 하트골드 원본 → trainers.json (build-data 다음에 실행)
 node scripts/build-evolutions.mjs # PokeAPI → evolutions.json (build-data 다음에 실행)
+node scripts/build-chapters.mjs   # overrides/chapters.json + 하트골드 야생 출현 → chapters.json (build-trainers 다음에 실행)
+node scripts/build-tm-compat.mjs  # 하트골드 기술머신 + 종별 호환 → tmCompat.json (build-data 다음에 실행)
 node scripts/verify-type-chart.mjs # 상성표 324칸 검증
 ```
-spec §11의 1단계(프로젝트 구성)와 2단계(BattleEvent, progress.ts, evolutions.json)는 끝났다. 다음은 3단계(데이터 확장)다.
+spec §11의 1~3단계(프로젝트 구성, 엔진 보강, 데이터 확장)는 끝났다. 다음은 4단계(전투 화면)다.
 
 ## 구조 규칙
 - `src/core/`는 **순수 TypeScript**. React, 브라우저 API, Zustand를 import하지 않는다. 모든 규칙은 여기서 구현하고 Vitest로 테스트한다.
