@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.DS_Store
+*.local
+# 사용자 수집 이미지는 커밋하지 않음 (docs/spec.md §9.2)
+public/assets/**
+!public/assets/**/
+!public/assets/**/.gitkeep

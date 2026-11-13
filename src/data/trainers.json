@@ -1,0 +1,5546 @@
+[
+ {
+  "index": 20,
+  "key": "falkner",
+  "name": "비상",
+  "nameEn": "Falkner",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 1,
+  "aiFlags": 3,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "16",
+    "level": 9,
+    "iv": 6,
+    "item": null,
+    "moves": [
+     "33",
+     "28"
+    ]
+   },
+   {
+    "speciesId": "17",
+    "level": 13,
+    "iv": 6,
+    "item": null,
+    "moves": [
+     "33",
+     "355",
+     "16"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 712,
+  "key": "falkner",
+  "name": "비상",
+  "nameEn": "Falkner",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "398",
+    "level": 50,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "213",
+     "413",
+     "370",
+     "369"
+    ]
+   },
+   {
+    "speciesId": "164",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "355",
+     "403",
+     "247",
+     "297"
+    ]
+   },
+   {
+    "speciesId": "277",
+    "level": 52,
+    "iv": 24,
+    "item": {
+     "slug": "flame-orb",
+     "name": "화염구슬"
+    },
+    "moves": [
+     "263",
+     "182",
+     "104",
+     "283"
+    ]
+   },
+   {
+    "speciesId": "430",
+    "level": 54,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "400",
+     "389",
+     "86",
+     "399"
+    ]
+   },
+   {
+    "speciesId": "279",
+    "level": 48,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "57",
+     "366",
+     "58",
+     "237"
+    ]
+   },
+   {
+    "speciesId": "18",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "216",
+     "104",
+     "207",
+     "355"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 21,
+  "key": "bugsy",
+  "name": "호일",
+  "nameEn": "Bugsy",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 2,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "super-potion",
+    "name": "좋은상처약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "123",
+    "level": 17,
+    "iv": 9,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "98",
+     "43",
+     "369",
+     "116"
+    ]
+   },
+   {
+    "speciesId": "14",
+    "level": 15,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "40"
+    ]
+   },
+   {
+    "speciesId": "11",
+    "level": 15,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "33"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 713,
+  "key": "bugsy",
+  "name": "호일",
+  "nameEn": "Bugsy",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "212",
+    "level": 56,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "418",
+     "404",
+     "14",
+     "276"
+    ]
+   },
+   {
+    "speciesId": "292",
+    "level": 48,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "92",
+     "404",
+     "425",
+     "207"
+    ]
+   },
+   {
+    "speciesId": "469",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "197",
+     "405",
+     "403",
+     "246"
+    ]
+   },
+   {
+    "speciesId": "127",
+    "level": 55,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "89",
+     "12",
+     "404",
+     "317"
+    ]
+   },
+   {
+    "speciesId": "214",
+    "level": 54,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "370",
+     "224",
+     "444",
+     "68"
+    ]
+   },
+   {
+    "speciesId": "416",
+    "level": 52,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "182",
+     "109",
+     "454",
+     "455"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 30,
+  "key": "whitney",
+  "name": "꼭두",
+  "nameEn": "Whitney",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 3,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "super-potion",
+    "name": "좋은상처약"
+   },
+   {
+    "slug": "super-potion",
+    "name": "좋은상처약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "35",
+    "level": 17,
+    "iv": 12,
+    "item": null,
+    "moves": [
+     "3",
+     "102",
+     "227",
+     "118"
+    ]
+   },
+   {
+    "speciesId": "241",
+    "level": 19,
+    "iv": 12,
+    "item": {
+     "slug": "lum-berry",
+     "name": "리샘열매"
+    },
+    "moves": [
+     "205",
+     "213",
+     "23",
+     "208"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 714,
+  "key": "whitney",
+  "name": "꼭두",
+  "nameEn": "Whitney",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 15,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "203",
+    "level": 52,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "94",
+     "247",
+     "347",
+     "226"
+    ]
+   },
+   {
+    "speciesId": "463",
+    "level": 50,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "378",
+     "53",
+     "58",
+     "85"
+    ]
+   },
+   {
+    "speciesId": "400",
+    "level": 54,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "104",
+     "451",
+     "57",
+     "58"
+    ]
+   },
+   {
+    "speciesId": "301",
+    "level": 54,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "252",
+     "274",
+     "347",
+     "226"
+    ]
+   },
+   {
+    "speciesId": "36",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "59",
+     "87",
+     "126",
+     "347"
+    ]
+   },
+   {
+    "speciesId": "241",
+    "level": 58,
+    "iv": 24,
+    "item": {
+     "slug": "lum-berry",
+     "name": "리샘열매"
+    },
+    "moves": [
+     "34",
+     "213",
+     "214",
+     "156"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 31,
+  "key": "morty",
+  "name": "유빈",
+  "nameEn": "Morty",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 4,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "hyper-potion",
+    "name": "고급상처약"
+   },
+   {
+    "slug": "hyper-potion",
+    "name": "고급상처약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "92",
+    "level": 21,
+    "iv": 12,
+    "item": null,
+    "moves": [
+     "122",
+     "180",
+     "212",
+     "174"
+    ]
+   },
+   {
+    "speciesId": "93",
+    "level": 21,
+    "iv": 12,
+    "item": null,
+    "moves": [
+     "95",
+     "138",
+     "174",
+     "171"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 25,
+    "iv": 12,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "95",
+     "247",
+     "212",
+     "389"
+    ]
+   },
+   {
+    "speciesId": "93",
+    "level": 23,
+    "iv": 12,
+    "item": null,
+    "moves": [
+     "174",
+     "212",
+     "389",
+     "101"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 715,
+  "key": "morty",
+  "name": "유빈",
+  "nameEn": "Morty",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "426",
+    "level": 52,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "194",
+     "164",
+     "85",
+     "247"
+    ]
+   },
+   {
+    "speciesId": "477",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "220",
+     "261",
+     "164",
+     "371"
+    ]
+   },
+   {
+    "speciesId": "302",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "389",
+     "280",
+     "8",
+     "252"
+    ]
+   },
+   {
+    "speciesId": "429",
+    "level": 54,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "195",
+     "212",
+     "109",
+     "310"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 57,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "95",
+     "109",
+     "247",
+     "411"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 57,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "164",
+     "247",
+     "85",
+     "194"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 34,
+  "key": "chuck",
+  "name": "사도",
+  "nameEn": "Chuck",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 5,
+  "aiFlags": 5,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "hyper-potion",
+    "name": "고급상처약"
+   },
+   {
+    "slug": "hyper-potion",
+    "name": "고급상처약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "57",
+    "level": 29,
+    "iv": 18,
+    "item": null,
+    "moves": [
+     "43",
+     "104",
+     "264",
+     "157"
+    ]
+   },
+   {
+    "speciesId": "62",
+    "level": 31,
+    "iv": 18,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "95",
+     "57",
+     "264",
+     "34"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 718,
+  "key": "chuck",
+  "name": "사도",
+  "nameEn": "Chuck",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 5,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "308",
+    "level": 54,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "136",
+     "427",
+     "213",
+     "9"
+    ]
+   },
+   {
+    "speciesId": "107",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "183",
+     "207",
+     "264",
+     "104"
+    ]
+   },
+   {
+    "speciesId": "106",
+    "level": 55,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "136",
+     "252",
+     "299",
+     "339"
+    ]
+   },
+   {
+    "speciesId": "286",
+    "level": 54,
+    "iv": 24,
+    "item": {
+     "slug": "toxic-orb",
+     "name": "맹독구슬"
+    },
+    "moves": [
+     "164",
+     "264",
+     "409",
+     "444"
+    ]
+   },
+   {
+    "speciesId": "57",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "370",
+     "371",
+     "9",
+     "207"
+    ]
+   },
+   {
+    "speciesId": "62",
+    "level": 60,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "104",
+     "127",
+     "264",
+     "164"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 33,
+  "key": "jasmine",
+  "name": "규리",
+  "nameEn": "Jasmine",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 6,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "hyper-potion",
+    "name": "고급상처약"
+   },
+   {
+    "slug": "hyper-potion",
+    "name": "고급상처약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "81",
+    "level": 30,
+    "iv": 18,
+    "item": null,
+    "moves": [
+     "85",
+     "48",
+     "49",
+     "86"
+    ]
+   },
+   {
+    "speciesId": "81",
+    "level": 30,
+    "iv": 18,
+    "item": null,
+    "moves": [
+     "85",
+     "48",
+     "49",
+     "86"
+    ]
+   },
+   {
+    "speciesId": "208",
+    "level": 35,
+    "iv": 18,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "103",
+     "201",
+     "88",
+     "231"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 717,
+  "key": "jasmine",
+  "name": "규리",
+  "nameEn": "Jasmine",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "376",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "309",
+     "418",
+     "356",
+     "153"
+    ]
+   },
+   {
+    "speciesId": "462",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "192",
+     "199",
+     "243",
+     "319"
+    ]
+   },
+   {
+    "speciesId": "227",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "403",
+     "191",
+     "400",
+     "211"
+    ]
+   },
+   {
+    "speciesId": "437",
+    "level": 50,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "360",
+     "95",
+     "138",
+     "356"
+    ]
+   },
+   {
+    "speciesId": "395",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "56",
+     "59",
+     "453",
+     "46"
+    ]
+   },
+   {
+    "speciesId": "208",
+    "level": 62,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "444",
+     "446",
+     "46",
+     "231"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 32,
+  "key": "pryce",
+  "name": "류옹",
+  "nameEn": "Pryce",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 7,
+  "aiFlags": 519,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "hyper-potion",
+    "name": "고급상처약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "86",
+    "level": 30,
+    "iv": 18,
+    "item": null,
+    "moves": [
+     "173",
+     "258",
+     "196",
+     "156"
+    ]
+   },
+   {
+    "speciesId": "87",
+    "level": 32,
+    "iv": 18,
+    "item": null,
+    "moves": [
+     "214",
+     "420",
+     "62",
+     "156"
+    ]
+   },
+   {
+    "speciesId": "221",
+    "level": 34,
+    "iv": 18,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "258",
+     "423",
+     "426",
+     "59"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 716,
+  "key": "pryce",
+  "name": "류옹",
+  "nameEn": "Pryce",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 519,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "460",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "420",
+     "452",
+     "89",
+     "59"
+    ]
+   },
+   {
+    "speciesId": "87",
+    "level": 58,
+    "iv": 24,
+    "item": {
+     "slug": "lum-berry",
+     "name": "리샘열매"
+    },
+    "moves": [
+     "291",
+     "329",
+     "214",
+     "156"
+    ]
+   },
+   {
+    "speciesId": "362",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "371",
+     "259",
+     "213",
+     "59"
+    ]
+   },
+   {
+    "speciesId": "478",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "420",
+     "109",
+     "213",
+     "59"
+    ]
+   },
+   {
+    "speciesId": "365",
+    "level": 54,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "258",
+     "34",
+     "207",
+     "59"
+    ]
+   },
+   {
+    "speciesId": "473",
+    "level": 60,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "89",
+     "419",
+     "444",
+     "104"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 35,
+  "key": "clair",
+  "name": "이향",
+  "nameEn": "Clair",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 8,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "hyper-potion",
+    "name": "고급상처약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "130",
+    "level": 38,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "239",
+     "82",
+     "44",
+     "406"
+    ]
+   },
+   {
+    "speciesId": "148",
+    "level": 38,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "86",
+     "126",
+     "21",
+     "406"
+    ]
+   },
+   {
+    "speciesId": "148",
+    "level": 38,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "86",
+     "401",
+     "21",
+     "406"
+    ]
+   },
+   {
+    "speciesId": "230",
+    "level": 41,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "108",
+     "56",
+     "63",
+     "406"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 719,
+  "key": "clair",
+  "name": "이향",
+  "nameEn": "Clair",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "130",
+    "level": 56,
+    "iv": 24,
+    "item": {
+     "slug": "wacan-berry",
+     "name": "초나열매"
+    },
+    "moves": [
+     "349",
+     "89",
+     "127",
+     "406"
+    ]
+   },
+   {
+    "speciesId": "148",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "86",
+     "407",
+     "85",
+     "53"
+    ]
+   },
+   {
+    "speciesId": "142",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "89",
+     "422",
+     "157",
+     "46"
+    ]
+   },
+   {
+    "speciesId": "230",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "281",
+     "56",
+     "58",
+     "225"
+    ]
+   },
+   {
+    "speciesId": "6",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "421",
+     "403",
+     "337",
+     "424"
+    ]
+   },
+   {
+    "speciesId": "149",
+    "level": 60,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "87",
+     "219",
+     "225",
+     "63"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 734,
+  "key": "clair",
+  "name": "이향",
+  "nameEn": "Clair",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "148",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "86",
+     "407",
+     "85",
+     "53"
+    ]
+   },
+   {
+    "speciesId": "230",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "281",
+     "56",
+     "58",
+     "225"
+    ]
+   },
+   {
+    "speciesId": "149",
+    "level": 60,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "87",
+     "182",
+     "225",
+     "63"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 245,
+  "key": "will",
+  "name": "일목",
+  "nameEn": "Will",
+  "role": "elite4",
+  "battle": "story",
+  "chapter": 9,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "178",
+    "level": 40,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "369",
+     "382",
+     "109",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "124",
+    "level": 41,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "3",
+     "142",
+     "8",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "103",
+    "level": 41,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "115",
+     "95",
+     "121",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "80",
+    "level": 41,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "174",
+     "133",
+     "352",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "178",
+    "level": 42,
+    "iv": 30,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "332",
+     "466",
+     "109",
+     "94"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 702,
+  "key": "will",
+  "name": "일목",
+  "nameEn": "Will",
+  "role": "elite4",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "437",
+    "level": 58,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "115",
+     "371",
+     "356",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "124",
+    "level": 60,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "313",
+     "142",
+     "59",
+     "138"
+    ]
+   },
+   {
+    "speciesId": "326",
+    "level": 59,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "109",
+     "324",
+     "408",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "80",
+    "level": 60,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "174",
+     "133",
+     "34",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "282",
+    "level": 61,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "411",
+     "451",
+     "347",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "178",
+    "level": 62,
+    "iv": 30,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "98",
+     "247",
+     "109",
+     "94"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 247,
+  "key": "koga",
+  "name": "독수",
+  "nameEn": "Koga",
+  "role": "elite4",
+  "battle": "story",
+  "chapter": 10,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "168",
+    "level": 40,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "398",
+     "169",
+     "226",
+     "202"
+    ]
+   },
+   {
+    "speciesId": "49",
+    "level": 41,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "48",
+     "16",
+     "94",
+     "92"
+    ]
+   },
+   {
+    "speciesId": "205",
+    "level": 43,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "182",
+     "129",
+     "153",
+     "390"
+    ]
+   },
+   {
+    "speciesId": "89",
+    "level": 42,
+    "iv": 30,
+    "item": {
+     "slug": "black-sludge",
+     "name": "검은오물"
+    },
+    "moves": [
+     "107",
+     "103",
+     "441",
+     "92"
+    ]
+   },
+   {
+    "speciesId": "169",
+    "level": 44,
+    "iv": 30,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "104",
+     "98",
+     "17",
+     "305"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 703,
+  "key": "koga",
+  "name": "독수",
+  "nameEn": "Koga",
+  "role": "elite4",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "435",
+    "level": 61,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "389",
+     "91",
+     "92",
+     "153"
+    ]
+   },
+   {
+    "speciesId": "49",
+    "level": 63,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "104",
+     "226",
+     "94",
+     "318"
+    ]
+   },
+   {
+    "speciesId": "454",
+    "level": 60,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "238",
+     "404",
+     "207",
+     "441"
+    ]
+   },
+   {
+    "speciesId": "89",
+    "level": 62,
+    "iv": 30,
+    "item": {
+     "slug": "black-sludge",
+     "name": "검은오물"
+    },
+    "moves": [
+     "107",
+     "103",
+     "207",
+     "92"
+    ]
+   },
+   {
+    "speciesId": "169",
+    "level": 64,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "92",
+     "212",
+     "19",
+     "440"
+    ]
+   },
+   {
+    "speciesId": "317",
+    "level": 62,
+    "iv": 30,
+    "item": {
+     "slug": "leftovers",
+     "name": "먹다남은음식"
+    },
+    "moves": [
+     "281",
+     "133",
+     "220",
+     "188"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 418,
+  "key": "bruno",
+  "name": "시바",
+  "nameEn": "Bruno",
+  "role": "elite4",
+  "battle": "story",
+  "chapter": 11,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "237",
+    "level": 42,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "68",
+     "98",
+     "91",
+     "167"
+    ]
+   },
+   {
+    "speciesId": "106",
+    "level": 42,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "207",
+     "116",
+     "136",
+     "299"
+    ]
+   },
+   {
+    "speciesId": "107",
+    "level": 42,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "9",
+     "8",
+     "7",
+     "418"
+    ]
+   },
+   {
+    "speciesId": "95",
+    "level": 43,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "225",
+     "89",
+     "201",
+     "157"
+    ]
+   },
+   {
+    "speciesId": "68",
+    "level": 46,
+    "iv": 30,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "157",
+     "193",
+     "279",
+     "238"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 704,
+  "key": "bruno",
+  "name": "시바",
+  "nameEn": "Bruno",
+  "role": "elite4",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "237",
+    "level": 62,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "68",
+     "98",
+     "370",
+     "89"
+    ]
+   },
+   {
+    "speciesId": "106",
+    "level": 61,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "207",
+     "370",
+     "179",
+     "299"
+    ]
+   },
+   {
+    "speciesId": "107",
+    "level": 61,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "164",
+     "409",
+     "370",
+     "418"
+    ]
+   },
+   {
+    "speciesId": "297",
+    "level": 62,
+    "iv": 30,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "67",
+     "371",
+     "418",
+     "339"
+    ]
+   },
+   {
+    "speciesId": "68",
+    "level": 64,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "418",
+     "193",
+     "444",
+     "223"
+    ]
+   },
+   {
+    "speciesId": "448",
+    "level": 64,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "245",
+     "370",
+     "68",
+     "231"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 246,
+  "key": "karen",
+  "name": "카렌",
+  "nameEn": "Karen",
+  "role": "elite4",
+  "battle": "story",
+  "chapter": 12,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "197",
+    "level": 42,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "104",
+     "109",
+     "185",
+     "371"
+    ]
+   },
+   {
+    "speciesId": "45",
+    "level": 42,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "78",
+     "51",
+     "236",
+     "80"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 45,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "122",
+     "180",
+     "411",
+     "194"
+    ]
+   },
+   {
+    "speciesId": "198",
+    "level": 44,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "365",
+     "18",
+     "389",
+     "185"
+    ]
+   },
+   {
+    "speciesId": "229",
+    "level": 47,
+    "iv": 30,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "417",
+     "399",
+     "53",
+     "242"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 705,
+  "key": "karen",
+  "name": "카렌",
+  "nameEn": "Karen",
+  "role": "elite4",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "461",
+    "level": 62,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "420",
+     "400",
+     "8",
+     "67"
+    ]
+   },
+   {
+    "speciesId": "442",
+    "level": 62,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "174",
+     "109",
+     "220",
+     "389"
+    ]
+   },
+   {
+    "speciesId": "359",
+    "level": 62,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "400",
+     "427",
+     "197",
+     "195"
+    ]
+   },
+   {
+    "speciesId": "430",
+    "level": 64,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "65",
+     "18",
+     "389",
+     "86"
+    ]
+   },
+   {
+    "speciesId": "229",
+    "level": 63,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "417",
+     "399",
+     "53",
+     "188"
+    ]
+   },
+   {
+    "speciesId": "197",
+    "level": 64,
+    "iv": 30,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "174",
+     "371",
+     "109",
+     "389"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 244,
+  "key": "lance",
+  "name": "목호",
+  "nameEn": "Lance",
+  "role": "champion",
+  "battle": "story",
+  "chapter": 13,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "130",
+    "level": 46,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "175",
+     "406",
+     "127",
+     "423"
+    ]
+   },
+   {
+    "speciesId": "149",
+    "level": 49,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "86",
+     "407",
+     "87",
+     "63"
+    ]
+   },
+   {
+    "speciesId": "149",
+    "level": 49,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "86",
+     "407",
+     "59",
+     "63"
+    ]
+   },
+   {
+    "speciesId": "142",
+    "level": 48,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "332",
+     "242",
+     "157",
+     "422"
+    ]
+   },
+   {
+    "speciesId": "6",
+    "level": 48,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "421",
+     "403",
+     "337",
+     "424"
+    ]
+   },
+   {
+    "speciesId": "149",
+    "level": 50,
+    "iv": 30,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "126",
+     "219",
+     "200",
+     "63"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 675,
+  "key": "lance",
+  "name": "목호",
+  "nameEn": "Lance",
+  "role": "champion",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "149",
+    "level": 40,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "19",
+     "239",
+     "87",
+     "63"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 701,
+  "key": "lance",
+  "name": "목호",
+  "nameEn": "Lance",
+  "role": "champion",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "373",
+    "level": 72,
+    "iv": 30,
+    "item": {
+     "slug": "lum-berry",
+     "name": "리샘열매"
+    },
+    "moves": [
+     "53",
+     "421",
+     "337",
+     "156"
+    ]
+   },
+   {
+    "speciesId": "130",
+    "level": 68,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "86",
+     "423",
+     "127",
+     "349"
+    ]
+   },
+   {
+    "speciesId": "445",
+    "level": 72,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "14",
+     "200",
+     "89",
+     "46"
+    ]
+   },
+   {
+    "speciesId": "334",
+    "level": 73,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "195",
+     "225",
+     "104",
+     "63"
+    ]
+   },
+   {
+    "speciesId": "6",
+    "level": 68,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "53",
+     "403",
+     "337",
+     "63"
+    ]
+   },
+   {
+    "speciesId": "149",
+    "level": 75,
+    "iv": 30,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "126",
+     "219",
+     "434",
+     "63"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 733,
+  "key": "lance",
+  "name": "목호",
+  "nameEn": "Lance",
+  "role": "champion",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "130",
+    "level": 68,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "86",
+     "423",
+     "127",
+     "349"
+    ]
+   },
+   {
+    "speciesId": "6",
+    "level": 68,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "53",
+     "403",
+     "337",
+     "63"
+    ]
+   },
+   {
+    "speciesId": "149",
+    "level": 75,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "7",
+     "219",
+     "434",
+     "63"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 257,
+  "key": "janine",
+  "name": "도희",
+  "nameEn": "Janine",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 14,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "169",
+    "level": 47,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "103",
+     "48",
+     "109",
+     "17"
+    ]
+   },
+   {
+    "speciesId": "110",
+    "level": 44,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "458",
+     "188",
+     "92",
+     "153"
+    ]
+   },
+   {
+    "speciesId": "168",
+    "level": 47,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "184",
+     "398",
+     "42",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "168",
+    "level": 47,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "42",
+     "398",
+     "207",
+     "101"
+    ]
+   },
+   {
+    "speciesId": "49",
+    "level": 50,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "188",
+     "104",
+     "324",
+     "94"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 724,
+  "key": "janine",
+  "name": "도희",
+  "nameEn": "Janine",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "169",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "257",
+     "440",
+     "109",
+     "369"
+    ]
+   },
+   {
+    "speciesId": "110",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "85",
+     "188",
+     "92",
+     "153"
+    ]
+   },
+   {
+    "speciesId": "454",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "238",
+     "398",
+     "213",
+     "164"
+    ]
+   },
+   {
+    "speciesId": "168",
+    "level": 58,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "92",
+     "340",
+     "207",
+     "101"
+    ]
+   },
+   {
+    "speciesId": "49",
+    "level": 59,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "79",
+     "104",
+     "405",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "452",
+    "level": 55,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "440",
+     "109",
+     "242",
+     "14"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 255,
+  "key": "lt_surge",
+  "name": "마티스",
+  "nameEn": "Lt. Surge",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 15,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "26",
+    "level": 51,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "86",
+     "98",
+     "351",
+     "104"
+    ]
+   },
+   {
+    "speciesId": "101",
+    "level": 47,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "86",
+     "104",
+     "351",
+     "113"
+    ]
+   },
+   {
+    "speciesId": "82",
+    "level": 47,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "48",
+     "104",
+     "351",
+     "429"
+    ]
+   },
+   {
+    "speciesId": "101",
+    "level": 47,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "103",
+     "104",
+     "120",
+     "451"
+    ]
+   },
+   {
+    "speciesId": "125",
+    "level": 53,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "98",
+     "351",
+     "113",
+     "67"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 722,
+  "key": "lt_surge",
+  "name": "마티스",
+  "nameEn": "Lt. Surge",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "26",
+    "level": 60,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "86",
+     "98",
+     "85",
+     "447"
+    ]
+   },
+   {
+    "speciesId": "310",
+    "level": 52,
+    "iv": 24,
+    "item": {
+     "slug": "pinap-berry",
+     "name": "파인열매"
+    },
+    "moves": [
+     "86",
+     "363",
+     "435",
+     "315"
+    ]
+   },
+   {
+    "speciesId": "462",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "85",
+     "104",
+     "393",
+     "429"
+    ]
+   },
+   {
+    "speciesId": "101",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "86",
+     "104",
+     "85",
+     "153"
+    ]
+   },
+   {
+    "speciesId": "417",
+    "level": 58,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "98",
+     "162",
+     "435",
+     "186"
+    ]
+   },
+   {
+    "speciesId": "466",
+    "level": 56,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "85",
+     "238",
+     "8",
+     "89"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 253,
+  "key": "brock",
+  "name": "웅",
+  "nameEn": "Brock",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 16,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "75",
+    "level": 51,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "111",
+     "157",
+     "205",
+     "89"
+    ]
+   },
+   {
+    "speciesId": "111",
+    "level": 51,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "201",
+     "184",
+     "89",
+     "32"
+    ]
+   },
+   {
+    "speciesId": "139",
+    "level": 53,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "246",
+     "362",
+     "182",
+     "131"
+    ]
+   },
+   {
+    "speciesId": "95",
+    "level": 54,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "231",
+     "157",
+     "103",
+     "201"
+    ]
+   },
+   {
+    "speciesId": "141",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "157",
+     "453",
+     "203",
+     "202"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 720,
+  "key": "brock",
+  "name": "웅",
+  "nameEn": "Brock",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "76",
+    "level": 55,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "201",
+     "157",
+     "397",
+     "89"
+    ]
+   },
+   {
+    "speciesId": "369",
+    "level": 54,
+    "iv": 24,
+    "item": {
+     "slug": "lum-berry",
+     "name": "리샘열매"
+    },
+    "moves": [
+     "457",
+     "401",
+     "89",
+     "156"
+    ]
+   },
+   {
+    "speciesId": "139",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "246",
+     "362",
+     "182",
+     "201"
+    ]
+   },
+   {
+    "speciesId": "95",
+    "level": 61,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "446",
+     "157",
+     "397",
+     "201"
+    ]
+   },
+   {
+    "speciesId": "141",
+    "level": 55,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "157",
+     "453",
+     "203",
+     "202"
+    ]
+   },
+   {
+    "speciesId": "409",
+    "level": 57,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "89",
+     "444",
+     "419",
+     "397"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 254,
+  "key": "misty",
+  "name": "이슬",
+  "nameEn": "Misty",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 17,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "55",
+    "level": 49,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "352",
+     "50",
+     "244",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "195",
+    "level": 49,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "352",
+     "133",
+     "89",
+     "240"
+    ]
+   },
+   {
+    "speciesId": "131",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "352",
+     "47",
+     "58",
+     "34"
+    ]
+   },
+   {
+    "speciesId": "121",
+    "level": 54,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "352",
+     "109",
+     "105",
+     "58"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 721,
+  "key": "misty",
+  "name": "이슬",
+  "nameEn": "Misty",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "121",
+    "level": 60,
+    "iv": 24,
+    "item": {
+     "slug": "colbur-berry",
+     "name": "마코열매"
+    },
+    "moves": [
+     "85",
+     "94",
+     "58",
+     "57"
+    ]
+   },
+   {
+    "speciesId": "195",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "352",
+     "133",
+     "89",
+     "240"
+    ]
+   },
+   {
+    "speciesId": "131",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "57",
+     "195",
+     "59",
+     "240"
+    ]
+   },
+   {
+    "speciesId": "171",
+    "level": 54,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "109",
+     "85",
+     "57",
+     "86"
+    ]
+   },
+   {
+    "speciesId": "419",
+    "level": 54,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "97",
+     "423",
+     "127",
+     "226"
+    ]
+   },
+   {
+    "speciesId": "350",
+    "level": 60,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "56",
+     "58",
+     "156",
+     "214"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 258,
+  "key": "sabrina",
+  "name": "초련",
+  "nameEn": "Sabrina",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 18,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "196",
+    "level": 53,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "247",
+     "285",
+     "347",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "122",
+    "level": 53,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "102",
+     "113",
+     "285",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "65",
+    "level": 55,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "285",
+     "94",
+     "412",
+     "115"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 725,
+  "key": "sabrina",
+  "name": "초련",
+  "nameEn": "Sabrina",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 15,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "65",
+    "level": 60,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "356",
+     "411",
+     "412",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "196",
+    "level": 58,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "347",
+     "226",
+     "247",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "122",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "115",
+     "285",
+     "87",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "124",
+    "level": 54,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "59",
+     "195",
+     "94",
+     "411"
+    ]
+   },
+   {
+    "speciesId": "202",
+    "level": 53,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "68",
+     "243",
+     "194",
+     "227"
+    ]
+   },
+   {
+    "speciesId": "475",
+    "level": 53,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "370",
+     "427",
+     "400",
+     "444"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 256,
+  "key": "erika",
+  "name": "민화",
+  "nameEn": "Erika",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 19,
+  "aiFlags": 519,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "189",
+    "level": 51,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "369",
+     "73",
+     "241",
+     "202"
+    ]
+   },
+   {
+    "speciesId": "114",
+    "level": 52,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "246",
+     "378",
+     "202",
+     "79"
+    ]
+   },
+   {
+    "speciesId": "71",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "241",
+     "235",
+     "447",
+     "437"
+    ]
+   },
+   {
+    "speciesId": "182",
+    "level": 56,
+    "iv": 24,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "241",
+     "235",
+     "202",
+     "76"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 723,
+  "key": "erika",
+  "name": "민화",
+  "nameEn": "Erika",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 519,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "275",
+    "level": 54,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "437",
+     "389",
+     "153",
+     "241"
+    ]
+   },
+   {
+    "speciesId": "189",
+    "level": 53,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "369",
+     "262",
+     "79",
+     "202"
+    ]
+   },
+   {
+    "speciesId": "71",
+    "level": 56,
+    "iv": 24,
+    "item": {
+     "slug": "kelpsy-berry",
+     "name": "시마열매"
+    },
+    "moves": [
+     "363",
+     "188",
+     "437",
+     "348"
+    ]
+   },
+   {
+    "speciesId": "182",
+    "level": 56,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "241",
+     "76",
+     "202",
+     "213"
+    ]
+   },
+   {
+    "speciesId": "465",
+    "level": 60,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "14",
+     "438",
+     "157",
+     "89"
+    ]
+   },
+   {
+    "speciesId": "407",
+    "level": 55,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "311",
+     "412",
+     "188",
+     "78"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 259,
+  "key": "blaine",
+  "name": "강연",
+  "nameEn": "Blaine",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 20,
+  "aiFlags": 519,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "219",
+    "level": 54,
+    "iv": 24,
+    "item": {
+     "slug": "white-herb",
+     "name": "하양허브"
+    },
+    "moves": [
+     "241",
+     "123",
+     "315",
+     "157"
+    ]
+   },
+   {
+    "speciesId": "126",
+    "level": 54,
+    "iv": 24,
+    "item": {
+     "slug": "white-herb",
+     "name": "하양허브"
+    },
+    "moves": [
+     "9",
+     "315",
+     "241",
+     "109"
+    ]
+   },
+   {
+    "speciesId": "78",
+    "level": 59,
+    "iv": 24,
+    "item": {
+     "slug": "white-herb",
+     "name": "하양허브"
+    },
+    "moves": [
+     "98",
+     "394",
+     "340",
+     "315"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 726,
+  "key": "blaine",
+  "name": "강연",
+  "nameEn": "Blaine",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "324",
+    "level": 54,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "241",
+     "281",
+     "34",
+     "315"
+    ]
+   },
+   {
+    "speciesId": "323",
+    "level": 57,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "89",
+     "284",
+     "76",
+     "241"
+    ]
+   },
+   {
+    "speciesId": "78",
+    "level": 60,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "224",
+     "98",
+     "315",
+     "394"
+    ]
+   },
+   {
+    "speciesId": "219",
+    "level": 58,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "174",
+     "360",
+     "315",
+     "444"
+    ]
+   },
+   {
+    "speciesId": "229",
+    "level": 54,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "247",
+     "399",
+     "53",
+     "389"
+    ]
+   },
+   {
+    "speciesId": "467",
+    "level": 62,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "85",
+     "67",
+     "53",
+     "109"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 261,
+  "key": "blue",
+  "name": "그린",
+  "nameEn": "Blue",
+  "role": "gym",
+  "battle": "story",
+  "chapter": 21,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "103",
+    "level": 55,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "437",
+     "94",
+     "95",
+     "433"
+    ]
+   },
+   {
+    "speciesId": "59",
+    "level": 58,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "46",
+     "406",
+     "394",
+     "245"
+    ]
+   },
+   {
+    "speciesId": "112",
+    "level": 58,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "224",
+     "444",
+     "422",
+     "89"
+    ]
+   },
+   {
+    "speciesId": "130",
+    "level": 52,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "423",
+     "127",
+     "349",
+     "216"
+    ]
+   },
+   {
+    "speciesId": "68",
+    "level": 56,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "223",
+     "89",
+     "444",
+     "9"
+    ]
+   },
+   {
+    "speciesId": "18",
+    "level": 60,
+    "iv": 30,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "216",
+     "18",
+     "403",
+     "119"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 727,
+  "key": "blue",
+  "name": "그린",
+  "nameEn": "Blue",
+  "role": "gym",
+  "battle": "rematch",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "103",
+    "level": 67,
+    "iv": 12,
+    "item": null,
+    "moves": [
+     "437",
+     "94",
+     "153",
+     "433"
+    ]
+   },
+   {
+    "speciesId": "68",
+    "level": 69,
+    "iv": 30,
+    "item": {
+     "slug": "iron-ball",
+     "name": "검은철구"
+    },
+    "moves": [
+     "223",
+     "444",
+     "374",
+     "213"
+    ]
+   },
+   {
+    "speciesId": "464",
+    "level": 70,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "224",
+     "444",
+     "422",
+     "89"
+    ]
+   },
+   {
+    "speciesId": "59",
+    "level": 68,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "394",
+     "245",
+     "422",
+     "242"
+    ]
+   },
+   {
+    "speciesId": "248",
+    "level": 70,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "67",
+     "424",
+     "157",
+     "89"
+    ]
+   },
+   {
+    "speciesId": "18",
+    "level": 72,
+    "iv": 30,
+    "item": {
+     "slug": "sitrus-berry",
+     "name": "자뭉열매"
+    },
+    "moves": [
+     "216",
+     "104",
+     "403",
+     "211"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 260,
+  "key": "red",
+  "name": "레드",
+  "nameEn": "Red",
+  "role": "final",
+  "battle": "story",
+  "chapter": 22,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "25",
+    "level": 88,
+    "iv": 30,
+    "item": {
+     "slug": "light-ball",
+     "name": "전기구슬"
+    },
+    "moves": [
+     "344",
+     "231",
+     "98",
+     "85"
+    ]
+   },
+   {
+    "speciesId": "131",
+    "level": 80,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "59",
+     "362",
+     "94",
+     "34"
+    ]
+   },
+   {
+    "speciesId": "143",
+    "level": 82,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "247",
+     "242",
+     "59",
+     "416"
+    ]
+   },
+   {
+    "speciesId": "3",
+    "level": 84,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "188",
+     "202",
+     "79",
+     "338"
+    ]
+   },
+   {
+    "speciesId": "6",
+    "level": 84,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "394",
+     "403",
+     "307",
+     "406"
+    ]
+   },
+   {
+    "speciesId": "9",
+    "level": 84,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "411",
+     "308",
+     "59",
+     "430"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 1,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 35,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "92",
+    "level": 14,
+    "iv": 3,
+    "item": null,
+    "moves": []
+   },
+   {
+    "speciesId": "41",
+    "level": 16,
+    "iv": 3,
+    "item": null,
+    "moves": []
+   },
+   {
+    "speciesId": "153",
+    "level": 18,
+    "iv": 3,
+    "item": null,
+    "moves": []
+   }
+  ]
+ },
+ {
+  "index": 2,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 1,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "155",
+    "level": 5,
+    "iv": 0,
+    "item": null,
+    "moves": []
+   }
+  ]
+ },
+ {
+  "index": 3,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 1,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "158",
+    "level": 5,
+    "iv": 0,
+    "item": null,
+    "moves": []
+   }
+  ]
+ },
+ {
+  "index": 263,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 35,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "92",
+    "level": 20,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "122",
+     "109",
+     "212",
+     "174"
+    ]
+   },
+   {
+    "speciesId": "81",
+    "level": 18,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "86",
+     "84",
+     "48",
+     "49"
+    ]
+   },
+   {
+    "speciesId": "41",
+    "level": 20,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "310",
+     "48",
+     "44",
+     "17"
+    ]
+   },
+   {
+    "speciesId": "153",
+    "level": 22,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "235",
+     "115",
+     "345",
+     "77"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 264,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "215",
+    "level": 36,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "98",
+     "196",
+     "185",
+     "154"
+    ]
+   },
+   {
+    "speciesId": "42",
+    "level": 38,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "310",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "82",
+    "level": 37,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "209",
+     "48",
+     "86",
+     "443"
+    ]
+   },
+   {
+    "speciesId": "93",
+    "level": 37,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "212",
+     "174",
+     "247",
+     "109"
+    ]
+   },
+   {
+    "speciesId": "64",
+    "level": 37,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "50",
+     "60",
+     "105",
+     "115"
+    ]
+   },
+   {
+    "speciesId": "154",
+    "level": 40,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "115",
+     "80",
+     "77",
+     "235"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 265,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 1,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "152",
+    "level": 5,
+    "iv": 0,
+    "item": null,
+    "moves": []
+   }
+  ]
+ },
+ {
+  "index": 266,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 35,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "92",
+    "level": 14,
+    "iv": 3,
+    "item": null,
+    "moves": []
+   },
+   {
+    "speciesId": "41",
+    "level": 16,
+    "iv": 3,
+    "item": null,
+    "moves": []
+   },
+   {
+    "speciesId": "156",
+    "level": 18,
+    "iv": 3,
+    "item": null,
+    "moves": []
+   }
+  ]
+ },
+ {
+  "index": 267,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 35,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "92",
+    "level": 20,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "122",
+     "109",
+     "212",
+     "174"
+    ]
+   },
+   {
+    "speciesId": "81",
+    "level": 18,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "86",
+     "84",
+     "48",
+     "49"
+    ]
+   },
+   {
+    "speciesId": "41",
+    "level": 20,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "310",
+     "48",
+     "44",
+     "17"
+    ]
+   },
+   {
+    "speciesId": "156",
+    "level": 22,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "172",
+     "108",
+     "52",
+     "98"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 268,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "215",
+    "level": 36,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "98",
+     "196",
+     "185",
+     "154"
+    ]
+   },
+   {
+    "speciesId": "42",
+    "level": 38,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "310",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "82",
+    "level": 37,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "209",
+     "48",
+     "86",
+     "443"
+    ]
+   },
+   {
+    "speciesId": "93",
+    "level": 37,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "212",
+     "174",
+     "247",
+     "109"
+    ]
+   },
+   {
+    "speciesId": "64",
+    "level": 37,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "50",
+     "60",
+     "105",
+     "115"
+    ]
+   },
+   {
+    "speciesId": "157",
+    "level": 40,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "436",
+     "129",
+     "98",
+     "172"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 269,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 35,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "92",
+    "level": 14,
+    "iv": 3,
+    "item": null,
+    "moves": []
+   },
+   {
+    "speciesId": "41",
+    "level": 16,
+    "iv": 3,
+    "item": null,
+    "moves": []
+   },
+   {
+    "speciesId": "159",
+    "level": 18,
+    "iv": 3,
+    "item": null,
+    "moves": []
+   }
+  ]
+ },
+ {
+  "index": 270,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 35,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "92",
+    "level": 20,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "122",
+     "109",
+     "212",
+     "174"
+    ]
+   },
+   {
+    "speciesId": "81",
+    "level": 18,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "86",
+     "84",
+     "48",
+     "49"
+    ]
+   },
+   {
+    "speciesId": "41",
+    "level": 20,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "310",
+     "48",
+     "44",
+     "17"
+    ]
+   },
+   {
+    "speciesId": "159",
+    "level": 22,
+    "iv": 9,
+    "item": null,
+    "moves": [
+     "184",
+     "423",
+     "55",
+     "44"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 271,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "42",
+    "level": 30,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "310",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "81",
+    "level": 28,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "48",
+     "209",
+     "49",
+     "86"
+    ]
+   },
+   {
+    "speciesId": "93",
+    "level": 30,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "109",
+     "212",
+     "174",
+     "247"
+    ]
+   },
+   {
+    "speciesId": "215",
+    "level": 32,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "196",
+     "98",
+     "154",
+     "185"
+    ]
+   },
+   {
+    "speciesId": "160",
+    "level": 32,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "423",
+     "55",
+     "242",
+     "37"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 272,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "215",
+    "level": 36,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "98",
+     "196",
+     "185",
+     "154"
+    ]
+   },
+   {
+    "speciesId": "42",
+    "level": 38,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "310",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "82",
+    "level": 37,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "209",
+     "48",
+     "86",
+     "443"
+    ]
+   },
+   {
+    "speciesId": "93",
+    "level": 37,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "212",
+     "174",
+     "247",
+     "109"
+    ]
+   },
+   {
+    "speciesId": "64",
+    "level": 37,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "50",
+     "60",
+     "105",
+     "115"
+    ]
+   },
+   {
+    "speciesId": "160",
+    "level": 40,
+    "iv": 19,
+    "item": null,
+    "moves": [
+     "127",
+     "423",
+     "242",
+     "163"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 285,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "215",
+    "level": 46,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "98",
+     "196",
+     "185",
+     "421"
+    ]
+   },
+   {
+    "speciesId": "42",
+    "level": 47,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "305",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "82",
+    "level": 46,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "435",
+     "48",
+     "86",
+     "443"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 48,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "212",
+     "174",
+     "247",
+     "109"
+    ]
+   },
+   {
+    "speciesId": "65",
+    "level": 48,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "50",
+     "105",
+     "115",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "154",
+    "level": 50,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "80",
+     "77",
+     "235",
+     "113"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 286,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "215",
+    "level": 46,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "98",
+     "196",
+     "185",
+     "421"
+    ]
+   },
+   {
+    "speciesId": "42",
+    "level": 47,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "305",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "82",
+    "level": 46,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "435",
+     "48",
+     "86",
+     "443"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 48,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "212",
+     "174",
+     "247",
+     "109"
+    ]
+   },
+   {
+    "speciesId": "65",
+    "level": 48,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "50",
+     "105",
+     "115",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "157",
+    "level": 50,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "53",
+     "98",
+     "172",
+     "129"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 287,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "215",
+    "level": 46,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "98",
+     "196",
+     "185",
+     "421"
+    ]
+   },
+   {
+    "speciesId": "42",
+    "level": 47,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "305",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "82",
+    "level": 46,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "435",
+     "48",
+     "86",
+     "443"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 48,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "212",
+     "174",
+     "247",
+     "109"
+    ]
+   },
+   {
+    "speciesId": "65",
+    "level": 48,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "50",
+     "105",
+     "115",
+     "94"
+    ]
+   },
+   {
+    "speciesId": "160",
+    "level": 50,
+    "iv": 24,
+    "item": null,
+    "moves": [
+     "127",
+     "423",
+     "242",
+     "163"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 288,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "42",
+    "level": 32,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "310",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "81",
+    "level": 30,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "48",
+     "209",
+     "49",
+     "86"
+    ]
+   },
+   {
+    "speciesId": "93",
+    "level": 32,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "109",
+     "212",
+     "174",
+     "247"
+    ]
+   },
+   {
+    "speciesId": "215",
+    "level": 34,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "196",
+     "98",
+     "154",
+     "185"
+    ]
+   },
+   {
+    "speciesId": "154",
+    "level": 34,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "115",
+     "235",
+     "77",
+     "80"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 289,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [],
+  "party": [
+   {
+    "speciesId": "42",
+    "level": 32,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "310",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "81",
+    "level": 30,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "48",
+     "209",
+     "49",
+     "86"
+    ]
+   },
+   {
+    "speciesId": "93",
+    "level": 32,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "109",
+     "212",
+     "174",
+     "247"
+    ]
+   },
+   {
+    "speciesId": "215",
+    "level": 34,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "196",
+     "98",
+     "154",
+     "185"
+    ]
+   },
+   {
+    "speciesId": "156",
+    "level": 34,
+    "iv": 14,
+    "item": null,
+    "moves": [
+     "108",
+     "129",
+     "98",
+     "172"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 489,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "215",
+    "level": 55,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "196",
+     "421",
+     "185",
+     "232"
+    ]
+   },
+   {
+    "speciesId": "169",
+    "level": 58,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "92",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "82",
+    "level": 55,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "435",
+     "429",
+     "86",
+     "443"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 56,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "399",
+     "188",
+     "247",
+     "109"
+    ]
+   },
+   {
+    "speciesId": "65",
+    "level": 56,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "105",
+     "411",
+     "94",
+     "115"
+    ]
+   },
+   {
+    "speciesId": "154",
+    "level": 60,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "80",
+     "34",
+     "113",
+     "235"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 490,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "215",
+    "level": 55,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "196",
+     "421",
+     "185",
+     "232"
+    ]
+   },
+   {
+    "speciesId": "169",
+    "level": 58,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "92",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "82",
+    "level": 55,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "435",
+     "429",
+     "86",
+     "443"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 56,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "399",
+     "188",
+     "247",
+     "109"
+    ]
+   },
+   {
+    "speciesId": "65",
+    "level": 56,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "105",
+     "411",
+     "94",
+     "115"
+    ]
+   },
+   {
+    "speciesId": "157",
+    "level": 60,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "205",
+     "53",
+     "261",
+     "129"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 491,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "215",
+    "level": 55,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "196",
+     "421",
+     "185",
+     "232"
+    ]
+   },
+   {
+    "speciesId": "169",
+    "level": 58,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "92",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "82",
+    "level": 55,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "435",
+     "429",
+     "86",
+     "443"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 56,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "399",
+     "188",
+     "247",
+     "109"
+    ]
+   },
+   {
+    "speciesId": "65",
+    "level": 56,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "105",
+     "411",
+     "94",
+     "115"
+    ]
+   },
+   {
+    "speciesId": "160",
+    "level": 60,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "242",
+     "401",
+     "163",
+     "423"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 735,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "154",
+    "level": 60,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "80",
+     "34",
+     "113",
+     "235"
+    ]
+   },
+   {
+    "speciesId": "169",
+    "level": 58,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "92",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 56,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "399",
+     "188",
+     "247",
+     "109"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 736,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "157",
+    "level": 60,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "205",
+     "53",
+     "261",
+     "129"
+    ]
+   },
+   {
+    "speciesId": "169",
+    "level": 58,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "92",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 56,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "399",
+     "188",
+     "247",
+     "109"
+    ]
+   }
+  ]
+ },
+ {
+  "index": 737,
+  "key": "rival",
+  "name": "라이벌",
+  "nameEn": "Silver",
+  "role": "rival",
+  "battle": "story",
+  "chapter": null,
+  "aiFlags": 7,
+  "double": false,
+  "bagItems": [
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   },
+   {
+    "slug": "full-restore",
+    "name": "회복약"
+   }
+  ],
+  "party": [
+   {
+    "speciesId": "160",
+    "level": 60,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "242",
+     "401",
+     "163",
+     "423"
+    ]
+   },
+   {
+    "speciesId": "169",
+    "level": 58,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "92",
+     "44",
+     "109",
+     "314"
+    ]
+   },
+   {
+    "speciesId": "94",
+    "level": 56,
+    "iv": 30,
+    "item": null,
+    "moves": [
+     "399",
+     "188",
+     "247",
+     "109"
+    ]
+   }
+  ]
+ }
+]
