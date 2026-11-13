@@ -18,7 +18,7 @@ export interface ShownSide {
 /** 스프라이트 연출 신호. key가 바뀔 때마다 같은 연출도 다시 재생한다 */
 export interface Cue {
   side: Side;
-  kind: 'enter' | 'attack' | 'hit' | 'faint';
+  kind: 'enter' | 'attack' | 'hit' | 'faint' | 'statUp' | 'statDown';
   key: number;
 }
 
@@ -79,7 +79,7 @@ export function applyEvent(shown: Shown, e: BattleEvent): Shown {
     case 'faint':
       return { ...shown, [e.side]: { ...shown[e.side], visible: false }, cue: { side: e.side, kind: 'faint', key } };
     case 'stage':
-      return shown; // 랭크 변화는 뒤따르는 메시지로 보여준다
+      return { ...shown, cue: { side: e.side, kind: e.delta > 0 ? 'statUp' : 'statDown', key } };
   }
 }
 
@@ -97,6 +97,8 @@ export function eventDuration(e: BattleEvent): number {
       return 500;
     case 'move':
       return 800; // 기술 이펙트 재생 시간 (MoveEffect)
+    case 'stage':
+      return 600; // 랭크 화살표 (StatArrows)
     default:
       return 0;
   }

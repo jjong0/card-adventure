@@ -6,6 +6,7 @@ import type { BattleState, Side } from '../../core/types';
 import { dex } from '../../lib/dex';
 import { TYPE_FX } from './effects';
 import type { Cue, Shown } from './playback';
+import { STAT_COLOR, StatArrows } from './StatArrows';
 
 const LAYOUT = {
   enemy: { platform: 'left-[760px] top-[200px] w-[360px] h-[72px]', sprite: 'left-[940px] top-[240px]', scale: 2.4, maxHeight: 220, dir: 1 },
@@ -55,6 +56,12 @@ function BattleSprite({ side, state, shown }: { side: Side; state: BattleState; 
         x: [0, 18 * dir, 18 * dir, 0],
         transition: { duration: 0.5 },
       });
+    } else if (cue.kind === 'statUp' || cue.kind === 'statDown') {
+      const c = cue.kind === 'statUp' ? STAT_COLOR.up : STAT_COLOR.down;
+      controls.start({
+        filter: [`drop-shadow(0 0 0px ${c})`, `drop-shadow(0 0 14px ${c})`, `drop-shadow(0 0 0px ${c})`],
+        transition: { duration: 0.5 },
+      });
     } else {
       controls.start({ y: 70, opacity: 0, transition: { duration: 0.5, ease: 'easeIn' } });
     }
@@ -66,6 +73,7 @@ function BattleSprite({ side, state, shown }: { side: Side; state: BattleState; 
       <motion.div animate={controls} initial={{ opacity: 0 }} className="flex items-end justify-center">
         <Sprite speciesId={mon.card.speciesId} name={mon.name} back={side === 'player'} scale={LAYOUT[side].scale} maxHeight={LAYOUT[side].maxHeight} />
       </motion.div>
+      {(cue?.kind === 'statUp' || cue?.kind === 'statDown') && <StatArrows key={cue.key} up={cue.kind === 'statUp'} />}
     </div>
   );
 }

@@ -58,4 +58,16 @@ describe('연출 재생', () => {
     expect(atFaint.cue).toMatchObject({ side: 'enemy', kind: 'faint' });
     expect(s1.events.reduce(applyEvent, shown).enemy).toMatchObject({ visible: true, activeIdx: 1 }); // 다음 포켓몬 등장
   });
+
+  it('랭크 상승·하락은 그 쪽에 화살표 연출 신호', () => {
+    const s0 = createBattle([card('445', 50, ['swords-dance', 'leer'])], [card('143', 50, ['growl'])], dex, 1);
+    const up = battle(s0, { kind: 'move', moveId: moveId('swords-dance') }, dex);
+    const cues = (s: typeof up, prev: typeof s0) => s.events.reduce<{ side: string; kind: string }[]>((acc, e) => {
+      const shown = applyEvent(shownBefore(prev, false), e);
+      if (e.type === 'stage' && shown.cue) acc.push({ side: shown.cue.side, kind: shown.cue.kind });
+      return acc;
+    }, []);
+    expect(cues(up, s0)).toContainEqual({ side: 'player', kind: 'statUp' });
+    expect(cues(battle(s0, { kind: 'move', moveId: moveId('leer') }, dex), s0)).toContainEqual({ side: 'enemy', kind: 'statDown' });
+  });
 });
