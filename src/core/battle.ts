@@ -457,6 +457,11 @@ const STRUGGLE: Move = {
 };
 
 const SELF_TARGETS = new Set(['user', 'users-field', 'user-or-ally', 'user-and-allies', 'all-allies']);
+
+/** 자신(또는 자기 편)이 대상인 기술인지. 화면 연출에서도 같은 기준을 쓴다 */
+export function isSelfTarget(move: Move) {
+  return SELF_TARGETS.has(move.target);
+}
 const UNSUPPORTED_STATUS = new Set(['unique', 'field-effect', 'whole-field-effect', 'force-switch']);
 
 function accuracyCheck(move: Move, user: BattleMon, target: BattleMon, rng: Rng): boolean {
