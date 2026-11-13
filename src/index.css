@@ -1,0 +1,39 @@
+@import 'tailwindcss';
+
+/* 디자인 토큰 (docs/spec.md §8) */
+@theme {
+  --color-bg: #0f1724;
+  --color-surface: #1a2436;
+  --color-surface-2: #131d2e;
+  --color-line: #2c3a52;
+  --color-text: #e8edf5;
+  --color-text-dim: #9aa8bc;
+  --color-accent: #f2c14e;
+
+  --color-rarity-n: #9aa4b2;
+  --color-rarity-r: #4fa3f7;
+  --color-rarity-sr: #b27cf2;
+  --color-rarity-ur: #f2c14e;
+
+  --color-node-wild: #5cc98b;
+  --color-node-trainer: #4fa3f7;
+  --color-node-elite: #f2795a;
+  --color-node-shop: #f2c14e;
+  --color-node-rest: #4fd1c5;
+  --color-node-leader: #b27cf2;
+
+  --font-title: 'Do Hyeon', sans-serif;
+  --font-sans: 'Noto Sans KR', system-ui, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
