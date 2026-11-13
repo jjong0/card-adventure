@@ -15,6 +15,7 @@ npm run build        # 타입 체크 + 빌드
 npm test             # vitest
 node scripts/build-data.mjs       # PokeAPI → species/moves/learnsets/typeChart/expTable
 node scripts/build-trainers.mjs   # 하트골드 원본 → trainers.json (build-data 다음에 실행)
+node scripts/build-evolutions.mjs # PokeAPI → evolutions.json (build-data 다음에 실행)
 node scripts/verify-type-chart.mjs # 상성표 324칸 검증
 ```
 spec §11의 1단계(Vite + React + TS + Tailwind v4 + Zustand + Framer Motion + Vitest 구성)는 끝났다. 다음은 2단계(엔진 보강)다.
