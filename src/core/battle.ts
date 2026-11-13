@@ -121,7 +121,17 @@ export function createBattleMon(card: Card, dex: Dex): BattleMon {
     flinched: false,
     stages: { ...ZERO_STAGES },
     lastHit: null,
+    facedBy: [],
   };
+}
+
+/** 지금 마주한 두 포켓몬을 서로의 facedBy에 기록 (경험치 분배용, 쓰러진 쪽은 제외) */
+function markFaced(state: BattleState) {
+  const p = active(state.player);
+  const e = active(state.enemy);
+  if (p.currentHp <= 0 || e.currentHp <= 0) return;
+  if (!e.facedBy.includes(state.player.activeIdx)) e.facedBy.push(state.player.activeIdx);
+  if (!p.facedBy.includes(state.enemy.activeIdx)) p.facedBy.push(state.enemy.activeIdx);
 }
 
 export function createBattle(playerCards: Card[], enemyCards: Card[], dex: Dex, seed: number): BattleState {
@@ -134,9 +144,11 @@ export function createBattle(playerCards: Card[], enemyCards: Card[], dex: Dex, 
     enemy: { party: enemy, activeIdx: 0 },
     log: [],
     events: [],
+    knockouts: [],
     pendingSwitch: false,
     result: 'ongoing',
   };
+  markFaced(state);
   const rec = recorder(state);
   rec.emit({ type: 'switchIn', side: 'enemy', idx: 0 });
   rec.say(`상대가 ${enemy[0].name}을(를) 내보냈다!`);
@@ -662,14 +674,21 @@ function resolveFaints(state: BattleState, rec: Recorder) {
     if (who === 'player' && state.pendingSwitch) continue; // 이미 처리됨
     rec.emit({ type: 'faint', side: who });
     rec.say(`${who === 'enemy' ? '상대 ' : ''}${mon.name}은(는) 쓰러졌다!`);
+    // 4세대: 쓰러뜨린 시점에 살아 있는, 그 포켓몬과 싸운 아군만 경험치를 나눠 받는다
+    if (who === 'enemy') {
+      const participants = mon.facedBy.filter((i) => state.player.party[i].currentHp > 0);
+      state.knockouts.push({ enemyIdx: side.activeIdx, participants });
+    }
     const next = firstAlive(side);
     if (next === -1) {
       state.result = who === 'enemy' ? 'win' : 'lose';
       rec.say(who === 'enemy' ? '승리했다!' : '눈앞이 깜깜해졌다...');
       return;
     }
-    if (who === 'enemy') switchIn(side, next, 'enemy', rec);
-    else state.pendingSwitch = true;
+    if (who === 'enemy') {
+      switchIn(side, next, 'enemy', rec);
+      markFaced(state);
+    } else state.pendingSwitch = true;
   }
 }
 
@@ -698,6 +717,7 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
     rec.emit({ type: 'switchIn', side: 'player', idx: action.toIdx });
     rec.say(`가랏! ${active(state.player).name}!`);
     state.pendingSwitch = false;
+    markFaced(state);
     state.seed = Math.floor(rng() * 2 ** 32);
     return finalize(state);
   }
@@ -733,6 +753,7 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
     if (me !== actors[i] || me.currentHp <= 0) continue;
     if (act.kind === 'switch') switchIn(state[side], act.toIdx, side, rec);
     else useMove(state, side, act.moveId, dex, rng, rec);
+    markFaced(state);
     // 행동 중 쓰러진 쪽 확인 (상대 쓰러지면 남은 행동 생략)
     if (active(state.player).currentHp <= 0 || active(state.enemy).currentHp <= 0) {
       resolveFaints(state, rec);

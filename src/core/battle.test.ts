@@ -268,3 +268,22 @@ describe('연출 이벤트', () => {
     }
   });
 });
+
+describe('경험치 분배 기록 (knockouts)', () => {
+  it('교체해서 함께 싸운 아군 둘 다 참여자로 기록', () => {
+    let s = createBattle([card('143', 50, ['tackle']), card('445', 100, ['earthquake'])], [card('4', 5, ['ember'])], dex, 1);
+    s = battle(s, { kind: 'switch', toIdx: 1 }, dex);
+    expect(s.knockouts).toEqual([]);
+    s = battle(s, { kind: 'move', moveId: moveId('earthquake') }, dex);
+    expect(s.knockouts).toEqual([{ enemyIdx: 0, participants: [0, 1] }]);
+  });
+
+  it('상대를 쓰러뜨리기 전에 쓰러진 아군은 빠진다', () => {
+    let s = createBattle([card('25', 5, ['thunder-shock']), card('445', 100, ['earthquake'])], [card('143', 60, ['tackle'])], dex, 1);
+    s = battle(s, { kind: 'move', moveId: moveId('thunder-shock') }, dex);
+    expect(s.pendingSwitch).toBe(true);
+    s = battle(s, { kind: 'switch', toIdx: 1 }, dex);
+    for (let t = 0; t < 10 && !s.knockouts.length; t++) s = battle(s, { kind: 'move', moveId: moveId('earthquake') }, dex);
+    expect(s.knockouts).toEqual([{ enemyIdx: 0, participants: [1] }]);
+  });
+});

@@ -135,6 +135,7 @@ export interface BattleMon {
   flinched: boolean;                          // 이번 턴 풀죽음
   stages: Record<BattleStat, number>;         // 랭크 -6~+6
   lastHit: { damage: number; category: MoveCategory } | null; // 이번 턴 받은 공격 (카운터류)
+  facedBy: number[];                          // 이 포켓몬과 마주한 상대 파티 idx (경험치 분배용)
 }
 
 export type Side = 'player' | 'enemy';
@@ -152,6 +153,8 @@ export interface BattleState {
   log: string[];
   /** 마지막 battle()/createBattle() 호출에서 생긴 연출 이벤트 (호출마다 새로 채움, 누적 아님) */
   events: BattleEvent[];
+  /** 쓰러뜨린 상대와, 그 시점에 살아 있던 함께 싸운 아군 파티 idx (전투 후 경험치 분배, 누적) */
+  knockouts: { enemyIdx: number; participants: number[] }[];
   /** 플레이어 포켓몬이 쓰러져 교체를 골라야 하는 상태 */
   pendingSwitch: boolean;
   result: 'ongoing' | 'win' | 'lose';
