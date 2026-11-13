@@ -1,9 +1,11 @@
 // 기술 이펙트 레이어: 전장 위 SVG. 타입별 모양·색으로 타격 / 투사체 / 오라를 그린다 (effects.ts)
 // 입자 배치는 각도·순서로 정해 무작위를 쓰지 않는다. 동작 줄이기 설정이면 그리지 않는다.
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
+import { useEffect, type ReactNode } from 'react';
 import type { Side } from '../../core/types';
 import { dex } from '../../lib/dex';
 import { effectPlan, SHAPE_PATH, SPINS, type TypeFx } from './effects';
+import { Beam, Bite, Explode, Fall, Punch, Quake, Slash, Sound, Stream } from './fxFamilies';
 import type { MoveFx } from './playback';
 
 /** 전장(1280×520) 안에서 각 스프라이트의 대략적인 중심 (Field.tsx 배치 기준) */
@@ -123,6 +125,33 @@ export function MoveEffect({ effect }: { effect: MoveFx | null }) {
       {plan.kind === 'impact' && <Impact fx={plan.fx} at={to} delay={0.15} />}
       {plan.kind === 'projectile' && <Projectile fx={plan.fx} from={from} to={to} />}
       {plan.kind === 'aura' && <Aura fx={plan.fx} at={to} dir={plan.dir} />}
+      {plan.kind === 'bite' && <Bite fx={plan.fx} at={to} />}
+      {plan.kind === 'punch' && <Punch fx={plan.fx} from={from} at={to} />}
+      {plan.kind === 'slash' && <Slash fx={plan.fx} at={to} />}
+      {plan.kind === 'beam' && <Beam fx={plan.fx} from={from} to={to} />}
+      {plan.kind === 'stream' && <Stream fx={plan.fx} shape={SHAPE_PATH[plan.fx.shape]} from={from} to={to} />}
+      {plan.kind === 'fall' && <Fall fx={plan.fx} shape={SHAPE_PATH[plan.fx.shape]} at={to} />}
+      {plan.kind === 'quake' && <Quake fx={plan.fx} shape={SHAPE_PATH[plan.fx.shape]} at={to} />}
+      {plan.kind === 'sound' && <Sound fx={plan.fx} from={from} to={to} />}
+      {plan.kind === 'explode' && <Explode fx={plan.fx} at={from} />}
     </svg>
+  );
+}
+
+/** 지진·폭발 계열이면 전장을 흔든다 (동작 줄이기 설정이면 흔들지 않음) */
+export function ShakeLayer({ effect, children }: { effect: MoveFx | null; children: ReactNode }) {
+  const controls = useAnimationControls();
+  const reduce = useReducedMotion();
+  useEffect(() => {
+    if (!effect || reduce) return;
+    const kind = effectPlan(dex.moves[effect.moveId], effect.side).kind;
+    if (kind === 'quake' || kind === 'explode') {
+      controls.start({ x: [0, -14, 14, -10, 10, -5, 0], transition: { duration: 0.5, delay: kind === 'quake' ? 0.1 : 0 } });
+    }
+  }, [effect, reduce, controls]);
+  return (
+    <motion.div animate={controls} className="absolute inset-0">
+      {children}
+    </motion.div>
   );
 }

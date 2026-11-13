@@ -5,7 +5,7 @@ import { CommandPanel } from './CommandPanel';
 import { Field } from './Field';
 import { InfoCard } from './InfoCard';
 import { MessageBox } from './MessageBox';
-import { MoveEffect } from './MoveEffect';
+import { MoveEffect, ShakeLayer } from './MoveEffect';
 import { eventDuration } from './playback';
 
 interface Props {
@@ -31,8 +31,10 @@ export function BattleScreen({ canRun, onRestart }: Props) {
 
   return (
     <div className="relative h-full w-full select-none">
-      <Field state={state} shown={shown} />
-      <MoveEffect effect={shown.effect} />
+      <ShakeLayer effect={shown.effect}>
+        <Field state={state} shown={shown} />
+        <MoveEffect effect={shown.effect} />
+      </ShakeLayer>
 
       <div className="absolute left-10 top-8">
         <InfoCard side="enemy" mon={state.enemy.party[shown.enemy.activeIdx]} shown={shown.enemy} />
