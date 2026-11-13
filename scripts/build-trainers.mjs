@@ -2,10 +2,9 @@
 // 하트골드·소울실버 원본 트레이너 데이터(pret/pokeheartgold 디컴파일) → src/data/trainers.json
 // 관장·사천왕·챔피언·레드·라이벌만 추출. 실행: node scripts/build-trainers.mjs (build-data.mjs 먼저)
 import { readFile, writeFile } from 'node:fs/promises';
+import { csv, KO } from './lib/pokeapi-csv.mjs';
 
 const SRC = 'https://raw.githubusercontent.com/pret/pokeheartgold/master/files/poketool/trainer/trainers.json';
-const POKEAPI = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv';
-const KO = '3';
 
 // 스토리 진행 순서 (하트골드 기준). 관동은 순서 자유라 관장 에이스 레벨 오름차순
 const STORY = [
@@ -17,13 +16,6 @@ const STORY = [
   ['SABRINA', '초련', 'gym'], ['ERIKA', '민화', 'gym'], ['BLAINE', '강연', 'gym'], ['BLUE', '그린', 'gym'],
   ['RED', '레드', 'final'],
 ];
-
-const parseCsv = (text) => {
-  const [h, ...rows] = text.trim().split('\n');
-  const keys = h.split(',');
-  return rows.map((r) => Object.fromEntries(r.split(',').map((v, i) => [keys[i], v])));
-};
-const csv = async (n) => parseCsv(await (await fetch(`${POKEAPI}/${n}.csv`)).text());
 
 // SPECIES_MR_MIME → mr-mime 처럼 PokeAPI slug로 변환 (예외는 직접 매핑)
 const SPECIES_FIX = { nidoran_f: 'nidoran-f', nidoran_m: 'nidoran-m', farfetchd: 'farfetchd', mr_mime: 'mr-mime', mime_jr: 'mime-jr', ho_oh: 'ho-oh', porygon_z: 'porygon-z' };
