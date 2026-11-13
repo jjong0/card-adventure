@@ -198,3 +198,73 @@ describe('전투 흐름', () => {
     }
   });
 });
+
+describe('연출 이벤트', () => {
+  it('전투 시작: 상대 → 내 포켓몬 순서로 등장 이벤트와 메시지', () => {
+    const s = createBattle([card('4', 5, ['ember'])], [card('16', 5, ['tackle'])], dex, 1);
+    expect(s.events.map((e) => e.type)).toEqual(['switchIn', 'message', 'switchIn', 'message']);
+    expect(s.events[0]).toEqual({ type: 'switchIn', side: 'enemy', idx: 0 });
+    expect(s.events[1]).toEqual({ type: 'message', text: '상대가 구구를 내보냈다!' }); // 조사 처리됨
+  });
+
+  it('events는 이번 호출분만 담는다 (누적 아님)', () => {
+    const s1 = battle(createBattle([card('445', 50, ['swords-dance'])], [card('1', 5, ['growl'])], dex, 1), { kind: 'move', moveId: moveId('swords-dance') }, dex);
+    const s2 = battle(s1, { kind: 'move', moveId: moveId('swords-dance') }, dex);
+    const texts = s2.events.flatMap((e) => (e.type === 'message' ? [e.text] : []));
+    expect(texts).toEqual(s2.log.slice(s1.log.length));
+  });
+
+  it('칼춤: stage 이벤트에 실제 변화량', () => {
+    const s = battle(createBattle([card('445', 50, ['swords-dance'])], [card('1', 5, ['growl'])], dex, 1), { kind: 'move', moveId: moveId('swords-dance') }, dex);
+    expect(s.events).toContainEqual({ type: 'stage', side: 'player', stat: 'atk', delta: 2 });
+    expect(s.events.findIndex((e) => e.type === 'move')).toBeLessThan(s.events.findIndex((e) => e.type === 'stage'));
+  });
+
+  it('효과가 굉장한 공격: damage 이벤트에 상성 배율, 쓰러지면 faint', () => {
+    const s = battle(createBattle([card('9', 50, ['water-gun'])], [card('4', 5, ['ember'])], dex, 1), { kind: 'move', moveId: moveId('water-gun') }, dex);
+    const dmg = s.events.find((e) => e.type === 'damage' && e.side === 'enemy');
+    expect(dmg).toMatchObject({ effectiveness: 2, to: 0 });
+    expect(s.events).toContainEqual({ type: 'faint', side: 'enemy' });
+  });
+
+  it('무작위 3v3 전투 100판: 이벤트만 재생해도 HP·로그가 실제 상태와 일치', () => {
+    const ls = learnsets as Learnsets;
+    const all = Object.keys(dex.species);
+    const rng = createRng(77);
+    const randomCard = (): Card => {
+      const id = all[Math.floor(rng() * all.length)];
+      const level = 20 + Math.floor(rng() * 60);
+      return makeCard(id, level, defaultEquip(learnableUpTo(ls[id], level)));
+    };
+    for (let g = 0; g < 100; g++) {
+      let s = createBattle([randomCard(), randomCard(), randomCard()], [randomCard(), randomCard(), randomCard()], dex, g);
+      let steps = 0;
+      while (s.result === 'ongoing' && steps++ < 400) {
+        const prev = s;
+        if (s.pendingSwitch) {
+          s = battle(s, { kind: 'switch', toIdx: s.player.party.findIndex((m) => m.currentHp > 0) }, dex);
+        } else {
+          const me = s.player.party[s.player.activeIdx];
+          const usable = me.card.moves.filter((id) => me.pp[id] > 0);
+          s = battle(s, { kind: 'move', moveId: usable[Math.floor(rng() * usable.length)] ?? me.card.moves[0] }, dex);
+        }
+        // 이전 상태에서 출발해 이벤트만으로 HP와 출전 포켓몬을 재구성
+        const hp = { player: prev.player.party.map((m) => m.currentHp), enemy: prev.enemy.party.map((m) => m.currentHp) };
+        const act = { player: prev.player.activeIdx, enemy: prev.enemy.activeIdx };
+        const texts: string[] = [];
+        for (const e of s.events) {
+          if (e.type === 'message') texts.push(e.text);
+          else if (e.type === 'switchIn') act[e.side] = e.idx;
+          else if (e.type === 'damage' || e.type === 'heal') {
+            expect(e.from).toBe(hp[e.side][act[e.side]]);
+            hp[e.side][act[e.side]] = e.to;
+          } else if (e.type === 'faint') expect(hp[e.side][act[e.side]]).toBe(0);
+        }
+        expect(texts).toEqual(s.log.slice(prev.log.length));
+        expect(hp.player).toEqual(s.player.party.map((m) => m.currentHp));
+        expect(hp.enemy).toEqual(s.enemy.party.map((m) => m.currentHp));
+        expect(act).toEqual({ player: s.player.activeIdx, enemy: s.enemy.activeIdx });
+      }
+    }
+  });
+});

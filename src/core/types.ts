@@ -150,10 +150,27 @@ export interface BattleState {
   player: BattleSide;
   enemy: BattleSide;
   log: string[];
+  /** 마지막 battle()/createBattle() 호출에서 생긴 연출 이벤트 (호출마다 새로 채움, 누적 아님) */
+  events: BattleEvent[];
   /** 플레이어 포켓몬이 쓰러져 교체를 골라야 하는 상태 */
   pendingSwitch: boolean;
   result: 'ongoing' | 'win' | 'lose';
 }
+
+/**
+ * UI가 하나씩 재생하는 전투 연출 단위. 발생 순서대로 들어있고,
+ * message 이벤트의 text를 이어 붙이면 이번 호출에서 늘어난 log와 같다.
+ * status의 ailment 'none'은 상태이상이 풀렸다는 뜻.
+ */
+export type BattleEvent =
+  | { type: 'switchIn'; side: Side; idx: number }
+  | { type: 'move'; side: Side; moveId: string }
+  | { type: 'damage'; side: Side; from: number; to: number; effectiveness: number; crit: boolean }
+  | { type: 'heal'; side: Side; from: number; to: number }
+  | { type: 'status'; side: Side; ailment: Ailment }
+  | { type: 'stage'; side: Side; stat: BattleStat; delta: number }
+  | { type: 'faint'; side: Side }
+  | { type: 'message'; text: string };
 
 /** 전투 계산에 필요한 정적 데이터 묶음 */
 export interface Dex {
