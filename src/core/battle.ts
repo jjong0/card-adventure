@@ -624,7 +624,7 @@ function resolveFaints(state: BattleState) {
 
 type Resolved = { side: Side; action: BattleAction };
 
-function priorityOf(r: Resolved, state: BattleState, dex: Dex) {
+function priorityOf(r: Resolved, dex: Dex) {
   if (r.action.kind === 'switch') return 7; // 교체는 항상 먼저
   return dex.moves[r.action.moveId]?.priority ?? 0;
 }
@@ -663,7 +663,7 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
     { side: 'enemy', action: chooseEnemyAction(state, dex) },
   ];
   order.sort((a, b) => {
-    const p = priorityOf(b, state, dex) - priorityOf(a, state, dex);
+    const p = priorityOf(b, dex) - priorityOf(a, dex);
     if (p) return p;
     const s = effectiveSpeed(active(state[b.side])) - effectiveSpeed(active(state[a.side]));
     return s || (rng() < 0.5 ? -1 : 1); // 동속은 랜덤
