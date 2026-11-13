@@ -10,6 +10,13 @@ import { BattleScreen } from '../battle/BattleScreen';
 const TEST_PARTY = ['155', '158', '152']; // 브케인, 리아코, 치코리타
 const TEST_LEVEL = 12;                    // 비상 에이스 Lv13 근처
 
+/** 주소에 ?moves=crunch,ice-beam 처럼 기술 slug를 주면 첫 포켓몬이 그 기술(최대 4개)을 쓴다 (연출 확인용) */
+function movesFromUrl(): string[] {
+  const slugs = new URLSearchParams(window.location.search).get('moves')?.split(',') ?? [];
+  const bySlug = new Map(Object.values(dex.moves).map((m) => [m.slug, m.id]));
+  return slugs.map((s) => bySlug.get(s.trim())).filter((id): id is string => !!id).slice(0, 4);
+}
+
 export function BattleTestScreen() {
   const start = useBattleStore((s) => s.start);
 
@@ -17,6 +24,8 @@ export function BattleTestScreen() {
     const seed = Date.now() >>> 0; // 시드만 시각에서 얻고, 난수는 모두 createRng로
     const rng = createRng(seed);
     const party = TEST_PARTY.map((id) => createCard(dex.species[id], TEST_LEVEL, dex, rng));
+    const custom = movesFromUrl();
+    if (custom.length) party[0] = { ...party[0], moves: custom, learnedMoves: [...new Set([...party[0].learnedMoves, ...custom])] };
     const falkner = trainers.find((t) => t.key === 'falkner' && t.battle === 'story')!;
     start(party, trainerCards(falkner, dex), seed);
   }, [start]);
