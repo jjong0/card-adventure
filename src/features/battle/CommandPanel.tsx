@@ -108,7 +108,8 @@ export function CommandPanel({ state, shown, busy, canRun, onAct, onHover }: Pro
                 className={`${btn} flex items-center gap-2 rounded-lg border border-line bg-surface px-2 text-left hover:border-accent ${active ? 'ring-1 ring-accent' : ''}`}
               >
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden">
-                  <Sprite speciesId={m.card.speciesId} name={m.name} still scale={0.8} /> {/* PNG 여백이 커서 확대 후 가운데만 */}
+                  {/* PNG는 96px 캔버스에 여백이 커서 확대 후 가운데만 (max-w-none: 기본 스타일의 img 최대 너비 100% 해제) */}
+                  <Sprite speciesId={m.card.speciesId} name={m.name} still scale={1.1} className="max-w-none shrink-0" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex justify-between font-pixel text-[13px]">
