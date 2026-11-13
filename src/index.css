@@ -1,5 +1,19 @@
 @import 'tailwindcss';
 
+/* 전투·대사용 한글 도트 글꼴 갈무리 (OFL-1.1, spec §8). 쓰는 굵기 두 개만 등록해 번들을 줄인다 */
+@font-face {
+  font-family: 'Galmuri11';
+  font-weight: 400;
+  font-display: swap;
+  src: url('../node_modules/galmuri/dist/Galmuri11.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Galmuri11';
+  font-weight: 700;
+  font-display: swap;
+  src: url('../node_modules/galmuri/dist/Galmuri11-Bold.woff2') format('woff2');
+}
+
 /* 디자인 토큰 (docs/spec.md §8) */
 @theme {
   --color-bg: #0f1724;
@@ -24,6 +38,7 @@
 
   --font-title: 'Do Hyeon', sans-serif;
   --font-sans: 'Noto Sans KR', system-ui, sans-serif;
+  --font-pixel: 'Galmuri11', 'Noto Sans KR', monospace;
 }
 
 html,
