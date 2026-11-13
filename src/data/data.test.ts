@@ -7,6 +7,7 @@ import trainersJson from './trainers.json';
 import chaptersJson from './chapters.json';
 import evolutionsJson from './evolutions.json';
 import tmJson from './tmCompat.json';
+import moveFxJson from './moveFx.json';
 import assets from './assets.json';
 import type { ChapterData, Evolutions, Move, Species, TmData, Trainer } from '../core/types';
 
@@ -97,5 +98,31 @@ describe('tmCompat.json', () => {
       expect(species[sid]).toBeDefined();
       for (const m of list) expect(tmMoves.has(m)).toBe(true);
     }
+  });
+});
+
+describe('moveFx.json', () => {
+  const FAMILIES = ['bite', 'punch', 'slash', 'beam', 'stream', 'fall', 'quake', 'sound', 'explode'];
+  const fx = moveFxJson as Record<string, string>;
+  const slugFx = (slug: string) => fx[Object.values(moves).find((m) => m.slug === slug)!.id];
+
+  it('모든 기술 id가 moves에 있고 계열이 유효', () => {
+    for (const [id, family] of Object.entries(fx)) {
+      expect(moves[id], id).toBeDefined();
+      expect(FAMILIES).toContain(family);
+    }
+  });
+
+  it('대표 기술의 계열', () => {
+    expect(slugFx('crunch')).toBe('bite');
+    expect(slugFx('fire-punch')).toBe('punch');
+    expect(slugFx('slash')).toBe('slash');
+    expect(slugFx('ice-beam')).toBe('beam');
+    expect(slugFx('flamethrower')).toBe('stream');
+    expect(slugFx('thunder')).toBe('fall');
+    expect(slugFx('earthquake')).toBe('quake');
+    expect(slugFx('growl')).toBe('sound');
+    expect(slugFx('explosion')).toBe('explode');
+    expect(slugFx('tackle')).toBeUndefined(); // 기본 연출
   });
 });
