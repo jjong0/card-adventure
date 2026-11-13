@@ -196,6 +196,52 @@ export type BattleAction =
   | { kind: 'move'; moveId: string }
   | { kind: 'switch'; toIdx: number };
 
+// ── 트레이너 · 챕터 · 기술머신 데이터 ─────────
+/** trainers.json (scripts/build-trainers.mjs, 하트골드 원본) */
+export interface TrainerMon {
+  speciesId: string;
+  level: number;
+  iv: number;                         // 전 스탯 동일 (difficulty × 31 / 255)
+  item: { slug: string; name: string } | null;
+  moves: string[];                    // 비어 있으면 원작처럼 레벨업 기본 기술
+}
+
+export interface Trainer {
+  index: number;                      // 원본 트레이너 번호
+  key: string;
+  class: string;                      // 직업 (assets.json trainerClasses 키)
+  name: string;                       // 표시 이름 (일반 트레이너는 직업 이름)
+  nameEn: string;
+  role: 'gym' | 'elite4' | 'champion' | 'final' | 'rival' | 'trainer';
+  battle: 'story' | 'rematch';
+  chapter: number | null;             // 관장 등 스토리 보스만
+  aiFlags: number;
+  double: boolean;                    // 원작 더블배틀 (이 게임은 싱글로 진행)
+  bagItems: { slug: string; name: string }[];
+  party: TrainerMon[];
+}
+
+/** chapters.json (scripts/build-chapters.mjs + overrides/chapters.json) */
+export interface ChapterData {
+  chapter: number;
+  place: string;
+  type: ElementType;
+  leader: { key: string; name: string; trainerIndex: number; aceLevel: number };
+  areas: string[];                    // PokeAPI 지역 식별자
+  wild: { speciesId: string; minLevel: number; maxLevel: number; weight: number }[]; // weight: %
+  packLevel: number;
+  trainerLevel: { above: number; upTo: number }; // 파티 최고 레벨 (above, upTo]
+  trainers: number[];                 // 일반 트레이너 원본 번호
+  /** 플레이어 스타터 타입 → 라이벌전 원본 번호. 이 챕터에 라이벌전이 없으면 null */
+  rivals: Record<'grass' | 'fire' | 'water', number> | null;
+}
+
+/** tmCompat.json (scripts/build-tm-compat.mjs) */
+export interface TmData {
+  machines: { id: string; name: string; moveId: string }[]; // 하트골드 TM01~92, HM01~08
+  compat: Record<string, string[]>;   // speciesId → 배울 수 있는 기술머신의 moveId
+}
+
 // ── 진행 · 저장 ─────────────────────────────
 export type Difficulty = 'easy' | 'normal' | 'hard' | 'extreme';
 
