@@ -516,8 +516,9 @@ function useMove(state: BattleState, side: Side, moveId: string, dex: Dex, rng: 
   if (!canAct(user, move, rng, rec)) return;
   if (hasPp) user.pp[moveId]--;
   if (!hasPp) rec.say(`${user.name}은(는) 쓸 수 있는 기술이 없다!`);
-  rec.emit({ type: 'move', side, moveId: move.id });
+  // 메시지가 먼저, 기술 연출이 뒤따른다 ("○○의 △△!" → 이펙트)
   rec.say(`${user.name}의 ${move.name}!`);
+  rec.emit({ type: 'move', side, moveId: move.id });
 
   const selfTarget = SELF_TARGETS.has(move.target);
 
