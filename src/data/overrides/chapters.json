@@ -1,0 +1,19 @@
+{
+  "_note": "챕터 설정(수동). scripts/build-chapters.mjs가 이 파일로 src/data/chapters.json을 만든다. areas는 PokeAPI 'location' 또는 'location/area' 식별자. 챕터 레벨대에 맞지 않는 층(예: 야돈의우물 지하 1층 Lv19~23)은 넣지 않는다.",
+  "chapters": [
+    {
+      "chapter": 1,
+      "leader": "falkner",
+      "place": "도라지시티",
+      "type": "flying",
+      "areas": ["johto-route-29", "johto-route-30", "johto-route-31", "sprout-tower/2f", "sprout-tower/3f"]
+    },
+    {
+      "chapter": 2,
+      "leader": "bugsy",
+      "place": "고동마을",
+      "type": "bug",
+      "areas": ["johto-route-32", "union-cave/1f", "union-cave/b1f", "johto-route-33", "slowpoke-well/1f"]
+    }
+  ]
+}
