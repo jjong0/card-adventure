@@ -17,7 +17,7 @@ node scripts/build-data.mjs       # PokeAPI → species/moves/learnsets/typeChar
 node scripts/build-trainers.mjs   # 하트골드 원본 → trainers.json (build-data 다음에 실행)
 node scripts/verify-type-chart.mjs # 상성표 324칸 검증
 ```
-아직 Vite 프로젝트가 아니다. 첫 작업은 spec §11의 1단계(이 폴더에 Vite + React + TS 구성, 기존 파일 유지)다.
+spec §11의 1단계(Vite + React + TS + Tailwind v4 + Zustand + Framer Motion + Vitest 구성)는 끝났다. 다음은 2단계(엔진 보강)다.
 
 ## 구조 규칙
 - `src/core/`는 **순수 TypeScript**. React, 브라우저 API, Zustand를 import하지 않는다. 모든 규칙은 여기서 구현하고 Vitest로 테스트한다.
