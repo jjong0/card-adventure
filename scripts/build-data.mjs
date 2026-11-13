@@ -191,7 +191,6 @@ for (const pm of T.pokemon_moves) {
 }
 
 const learnsets = {};
-const usedMoves = new Set([TACKLE]);
 const sourceVg = {};
 const tackleAdded = [];
 for (const sp of species) {
@@ -209,11 +208,11 @@ for (const sp of species) {
     list.unshift({ moveId: TACKLE, level: 1, fallback: true });
     tackleAdded.push(sp.name);
   }
-  list.forEach((x) => usedMoves.add(x.moveId));
   learnsets[sp.id] = list;
 }
 
-const moves = Object.fromEntries([...usedMoves].sort((a, b) => a - b).map((id) => [id, allMoves[id]]));
+// 레벨업 기술만이 아니라 전체를 담는다: 원작 트레이너 파티와 기술머신에 레벨업으로는 못 배우는 기술이 있다
+const moves = allMoves;
 
 // ── 출력 ────────────────────────────────────
 await mkdir('src/data', { recursive: true });
