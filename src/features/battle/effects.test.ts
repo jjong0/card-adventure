@@ -13,8 +13,15 @@ describe('기술 이펙트 계획', () => {
 
   it('변화기: 자신 대상 상승은 자신에게 위로, 상대 하락은 상대에게 아래로, 상태이상은 방향 없음', () => {
     expect(effectPlan(bySlug('swords-dance'), 'player')).toMatchObject({ kind: 'aura', to: 'player', dir: 'up' });
-    expect(effectPlan(bySlug('growl'), 'player')).toMatchObject({ kind: 'aura', to: 'enemy', dir: 'down' });
+    expect(effectPlan(bySlug('leer'), 'player')).toMatchObject({ kind: 'aura', to: 'enemy', dir: 'down' });
     expect(effectPlan(bySlug('thunder-wave'), 'player')).toMatchObject({ kind: 'aura', to: 'enemy', dir: 'none', fx: TYPE_FX.electric });
+  });
+
+  it('동작 계열이 있으면 계열 연출: 깨물어부수기 물기, 울음소리 소리(상대에게), 지진 흔들림', () => {
+    expect(effectPlan(bySlug('crunch'), 'player')).toMatchObject({ kind: 'bite', to: 'enemy', fx: TYPE_FX.dark });
+    expect(effectPlan(bySlug('growl'), 'player')).toMatchObject({ kind: 'sound', from: 'player', to: 'enemy' });
+    expect(effectPlan(bySlug('heal-bell'), 'player')).toMatchObject({ kind: 'sound', to: 'player' });
+    expect(effectPlan(bySlug('earthquake'), 'enemy')).toMatchObject({ kind: 'quake', to: 'player' });
   });
 
   it('데이터에 없는 기술(발버둥)은 노말 물리', () => {

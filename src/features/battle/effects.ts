@@ -1,6 +1,7 @@
 // src/features/battle/effects.ts
-// 기술 이펙트 설계: 타입 → 색·모양, 분류 → 움직임. 이미지 없이 SVG로 그린다(IP 원칙, spec §9).
-//   물리: 맞는 쪽에서 타격이 터짐 / 특수: 쓰는 쪽 → 맞는 쪽 투사체 / 변화: 대상 주위 오라
+// 기술 이펙트 설계: 타입 → 색·모양, 동작 계열(moveFx.json) → 움직임. 이미지 없이 SVG로 그린다(IP 원칙, spec §9).
+// 계열이 없는 기술은 분류로 정한다 — 물리: 맞는 쪽 타격 / 특수: 투사체 / 변화: 대상 주위 오라
+import moveFx from '../../data/moveFx.json';
 import { isSelfTarget } from '../../core/battle';
 import type { ElementType, Move, Side } from '../../core/types';
 
@@ -52,8 +53,12 @@ export const TYPE_FX: Record<ElementType, TypeFx> = {
   fairy: { shape: 'star', color: '#FFC0E4', glow: '#C86FA8' },
 };
 
+/** 동작 계열 (scripts/build-move-fx.mjs) */
+export type FxFamily = 'bite' | 'punch' | 'slash' | 'beam' | 'stream' | 'fall' | 'quake' | 'sound' | 'explode';
+const FAMILY = moveFx as Record<string, FxFamily>;
+
 export interface EffectPlan {
-  kind: 'impact' | 'projectile' | 'aura';
+  kind: 'impact' | 'projectile' | 'aura' | FxFamily;
   from: Side;
   to: Side;
   fx: TypeFx;
@@ -67,6 +72,12 @@ const other = (s: Side): Side => (s === 'player' ? 'enemy' : 'player');
 export function effectPlan(move: Move | undefined, user: Side): EffectPlan {
   if (!move) return { kind: 'impact', from: user, to: other(user), fx: TYPE_FX.normal, dir: 'none' };
   const fx = TYPE_FX[move.type];
+  const family = FAMILY[move.id];
+  if (family) {
+    // 소리 계열 변화기(치료방울 등)는 자기 편 대상일 수 있다. 폭발은 쓰는 쪽에서 터진다
+    const to = move.category === 'status' && isSelfTarget(move) ? user : other(user);
+    return { kind: family, from: user, to, fx, dir: 'none' };
+  }
   if (move.category === 'status') {
     const to = isSelfTarget(move) ? user : other(user);
     const sum = (move.meta?.statChanges ?? []).reduce((a, c) => a + c.change, 0);
