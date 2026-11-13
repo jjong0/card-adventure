@@ -2,12 +2,11 @@
 // PokeAPI CSV → src/data/{species,typeChart,moves,learnsets}.json
 // 실행: node scripts/build-data.mjs
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { csv, KO, num } from './lib/pokeapi-csv.mjs';
 
 // 한국어 설명이 없는 기술의 직접 번역 (slug → 설명)
 const descOverrides = JSON.parse(await readFile('src/data/overrides/move-desc-ko.json', 'utf8'));
 
-const BASE = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv';
-const KO = '3';
 const MAX_SPECIES = 1025;
 const TYPE_COUNT = 18;
 const TACKLE = '33';
@@ -29,33 +28,6 @@ const TARGET = {
   16: 'fainting-pokemon',
 };
 
-// ── CSV (따옴표 안 쉼표/줄바꿈 처리) ─────────────────
-function parseCsv(text) {
-  const rows = [];
-  let row = [], field = '', q = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (q) {
-      if (c === '"' && text[i + 1] === '"') { field += '"'; i++; }
-      else if (c === '"') q = false;
-      else field += c;
-    } else if (c === '"') q = true;
-    else if (c === ',') { row.push(field); field = ''; }
-    else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
-    else if (c !== '\r') field += c;
-  }
-  if (field || row.length) { row.push(field); rows.push(row); }
-  const [keys, ...data] = rows;
-  return data.map((v) => Object.fromEntries(keys.map((k, i) => [k, v[i] ?? ''])));
-}
-
-async function csv(name) {
-  const res = await fetch(`${BASE}/${name}.csv`);
-  if (!res.ok) throw new Error(`${name}: ${res.status}`);
-  return parseCsv(await res.text());
-}
-
-const num = (v) => (v === '' || v == null ? null : Number(v));
 const groupBy = (arr, key) =>
   arr.reduce((m, x) => ((m[x[key]] ??= []).push(x), m), {});
 
