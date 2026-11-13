@@ -1,0 +1,286 @@
+[
+  {
+    "chapter": 1,
+    "place": "도라지시티",
+    "type": "flying",
+    "leader": {
+      "key": "falkner",
+      "name": "비상",
+      "trainerIndex": 20,
+      "aceLevel": 13
+    },
+    "areas": [
+      "johto-route-29",
+      "johto-route-30",
+      "johto-route-31",
+      "sprout-tower/2f",
+      "sprout-tower/3f"
+    ],
+    "wild": [
+      {
+        "speciesId": "19",
+        "minLevel": 2,
+        "maxLevel": 6,
+        "weight": 35.7
+      },
+      {
+        "speciesId": "16",
+        "minLevel": 2,
+        "maxLevel": 4,
+        "weight": 17.3
+      },
+      {
+        "speciesId": "92",
+        "minLevel": 3,
+        "maxLevel": 6,
+        "weight": 11.3
+      },
+      {
+        "speciesId": "10",
+        "minLevel": 3,
+        "maxLevel": 5,
+        "weight": 10.3
+      },
+      {
+        "speciesId": "163",
+        "minLevel": 2,
+        "maxLevel": 5,
+        "weight": 8.3
+      },
+      {
+        "speciesId": "161",
+        "minLevel": 2,
+        "maxLevel": 3,
+        "weight": 5.3
+      },
+      {
+        "speciesId": "69",
+        "minLevel": 3,
+        "maxLevel": 3,
+        "weight": 4
+      },
+      {
+        "speciesId": "167",
+        "minLevel": 2,
+        "maxLevel": 3,
+        "weight": 4
+      },
+      {
+        "speciesId": "11",
+        "minLevel": 4,
+        "maxLevel": 5,
+        "weight": 3.7
+      }
+    ],
+    "packLevel": 6,
+    "trainerLevel": {
+      "above": 0,
+      "upTo": 13
+    },
+    "trainers": [
+      4,
+      8,
+      10,
+      12,
+      13,
+      23,
+      25,
+      26,
+      27,
+      29,
+      43,
+      47,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      60,
+      61,
+      62,
+      64,
+      65,
+      67,
+      68,
+      69,
+      101,
+      105,
+      106,
+      107,
+      154,
+      233,
+      249,
+      290,
+      319,
+      383,
+      384,
+      387,
+      390,
+      391,
+      392,
+      393,
+      409,
+      486,
+      533,
+      601
+    ],
+    "rivals": {
+      "grass": 2,
+      "fire": 3,
+      "water": 265
+    }
+  },
+  {
+    "chapter": 2,
+    "place": "고동마을",
+    "type": "bug",
+    "leader": {
+      "key": "bugsy",
+      "name": "호일",
+      "trainerIndex": 21,
+      "aceLevel": 17
+    },
+    "areas": [
+      "johto-route-32",
+      "union-cave/1f",
+      "union-cave/b1f",
+      "johto-route-33",
+      "slowpoke-well/1f"
+    ],
+    "wild": [
+      {
+        "speciesId": "41",
+        "minLevel": 4,
+        "maxLevel": 9,
+        "weight": 30.7
+      },
+      {
+        "speciesId": "19",
+        "minLevel": 4,
+        "maxLevel": 7,
+        "weight": 19.7
+      },
+      {
+        "speciesId": "27",
+        "minLevel": 6,
+        "maxLevel": 8,
+        "weight": 12
+      },
+      {
+        "speciesId": "74",
+        "minLevel": 6,
+        "maxLevel": 8,
+        "weight": 12
+      },
+      {
+        "speciesId": "187",
+        "minLevel": 6,
+        "maxLevel": 8,
+        "weight": 6
+      },
+      {
+        "speciesId": "69",
+        "minLevel": 6,
+        "maxLevel": 6,
+        "weight": 5.3
+      },
+      {
+        "speciesId": "179",
+        "minLevel": 6,
+        "maxLevel": 6,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "79",
+        "minLevel": 6,
+        "maxLevel": 8,
+        "weight": 3
+      },
+      {
+        "speciesId": "95",
+        "minLevel": 6,
+        "maxLevel": 8,
+        "weight": 3
+      },
+      {
+        "speciesId": "21",
+        "minLevel": 6,
+        "maxLevel": 6,
+        "weight": 2.7
+      },
+      {
+        "speciesId": "194",
+        "minLevel": 6,
+        "maxLevel": 6,
+        "weight": 2.3
+      }
+    ],
+    "packLevel": 9,
+    "trainerLevel": {
+      "above": 13,
+      "upTo": 17
+    },
+    "trainers": [
+      5,
+      6,
+      7,
+      18,
+      22,
+      24,
+      45,
+      63,
+      66,
+      70,
+      71,
+      72,
+      74,
+      75,
+      76,
+      77,
+      78,
+      80,
+      81,
+      88,
+      129,
+      134,
+      138,
+      141,
+      147,
+      151,
+      178,
+      180,
+      181,
+      182,
+      184,
+      207,
+      208,
+      216,
+      219,
+      229,
+      282,
+      340,
+      341,
+      342,
+      343,
+      344,
+      345,
+      347,
+      385,
+      386,
+      388,
+      394,
+      395,
+      494,
+      535,
+      537,
+      679,
+      680,
+      728
+    ],
+    "rivals": null
+  }
+]
