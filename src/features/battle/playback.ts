@@ -22,11 +22,19 @@ export interface Cue {
   key: number;
 }
 
+/** 기술 이펙트 신호. key가 바뀔 때마다 새로 재생한다 */
+export interface MoveFx {
+  side: Side;
+  moveId: string;
+  key: number;
+}
+
 export interface Shown {
   player: ShownSide;
   enemy: ShownSide;
   message: string | null;
   cue: Cue | null;
+  effect: MoveFx | null;
 }
 
 function sideSnapshot(state: BattleState, side: Side, visible: boolean): ShownSide {
@@ -45,6 +53,7 @@ export function shownBefore(state: BattleState, isNewBattle: boolean): Shown {
     enemy: sideSnapshot(state, 'enemy', !isNewBattle),
     message: null,
     cue: null,
+    effect: null,
   };
 }
 
@@ -60,7 +69,7 @@ export function applyEvent(shown: Shown, e: BattleEvent): Shown {
     case 'switchIn':
       return { ...shown, [e.side]: { ...shown[e.side], activeIdx: e.idx, visible: true }, cue: { side: e.side, kind: 'enter', key } };
     case 'move':
-      return { ...shown, cue: { side: e.side, kind: 'attack', key } };
+      return { ...shown, cue: { side: e.side, kind: 'attack', key }, effect: { side: e.side, moveId: e.moveId, key } };
     case 'damage':
       return { ...shown, [e.side]: updateActive(shown[e.side], (m) => ({ ...m, hp: e.to })), cue: { side: e.side, kind: 'hit', key } };
     case 'heal':
@@ -87,7 +96,7 @@ export function eventDuration(e: BattleEvent): number {
     case 'switchIn':
       return 500;
     case 'move':
-      return 350;
+      return 800; // 기술 이펙트 재생 시간 (MoveEffect)
     default:
       return 0;
   }
