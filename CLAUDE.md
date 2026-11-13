@@ -18,7 +18,7 @@ node scripts/build-trainers.mjs   # 하트골드 원본 → trainers.json (build
 node scripts/build-evolutions.mjs # PokeAPI → evolutions.json (build-data 다음에 실행)
 node scripts/verify-type-chart.mjs # 상성표 324칸 검증
 ```
-spec §11의 1단계(Vite + React + TS + Tailwind v4 + Zustand + Framer Motion + Vitest 구성)는 끝났다. 다음은 2단계(엔진 보강)다.
+spec §11의 1단계(프로젝트 구성)와 2단계(BattleEvent, progress.ts, evolutions.json)는 끝났다. 다음은 3단계(데이터 확장)다.
 
 ## 구조 규칙
 - `src/core/`는 **순수 TypeScript**. React, 브라우저 API, Zustand를 import하지 않는다. 모든 규칙은 여기서 구현하고 Vitest로 테스트한다.
