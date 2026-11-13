@@ -315,7 +315,9 @@ public/assets/  사용자 수집 이미지 (git 제외)
 | typeChart.json | 18×18 상성 (veekun 표와 324칸 일치 검증) | build-data.mjs |
 | expTable.json | 성장 곡선 6종 × 레벨별 누적 경험치 | build-data.mjs |
 | trainers.json | 하트골드 원본: 스토리 22, 재대결 24, 라이벌 24 | build-trainers.mjs |
+| evolutions.json | 진화 전 종 → 진화 목록 (레벨 / 도구 / 대체 레벨). 지역폼 전용 진화 10종 제외 | build-evolutions.mjs |
 | overrides/move-desc-ko.json | 한국어 설명이 없는 기술 65개 비공식 번역 | 수동 |
+| overrides/evolution-levels.json | 진화 대상 id → 대체 레벨 (제외된 진화도 여기 넣으면 추가됨) | 수동 |
 
 ---
 
@@ -345,7 +347,7 @@ public/assets/  사용자 수집 이미지 (git 제외)
 | ★5 이후 중복 골드 | N 100 / R 200 / SR 500 / UR 1,500 |
 | 강화 노드 레벨 상승량 | +3 |
 | 팩 카드 레벨 | 챕터 야생 최고 레벨 |
-| 대체 진화 레벨 | §4.6 기본 규칙 |
+| 대체 진화 레벨 | §4.6 기본 규칙. 기타 조건인데 이전 진화가 없으면(마임맨, 글라이온 등 22종) Lv30 |
 | 관장 대사 | 직접 작성 (원작 대사는 쓰지 않음) |
 | 게임 제목 | [미정] |
 | 모바일 대응 | MVP 이후, 최소 1024px 이상만 지원 |
