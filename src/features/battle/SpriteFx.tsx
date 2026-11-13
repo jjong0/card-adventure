@@ -38,8 +38,9 @@ export function SpriteFx({ sprite, from, to }: { sprite: FxSprite; from: Pt; to:
     backgroundSize: `${frames * 100}% 100%`,
     backgroundRepeat: 'no-repeat',
     imageRendering: 'pixelated' as const,
-    // 0% → 100%를 frames-1 단계로 끊어 frames장을 차례로 보여준다 (index.css @keyframes fx-strip)
-    animation: frames > 1 ? `fx-strip ${duration}s steps(${frames - 1}, jump-none) forwards` : undefined,
+    // 0% → 100%를 frames개 위치로 끊어 한 장씩 보여준다. jump-none은 0%와 100%를 포함해 n개 위치를 만든다
+    // (index.css @keyframes fx-strip)
+    animation: frames > 1 ? `fx-strip ${duration}s steps(${frames}, jump-none) forwards` : undefined,
   };
   const fade = { opacity: [1, 1, 0] };
   const fadeT = { duration: duration + 0.08, times: [0, 0.9, 1] };
