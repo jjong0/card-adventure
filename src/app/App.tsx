@@ -1,11 +1,11 @@
-// 지금은 전투 테스트 화면만 있다 (로드맵 4단계). 타이틀 화면은 7단계에서 만든다.
+// 지금은 개발용 임시 메뉴(DevHub)만 있다. 타이틀 화면은 로드맵 7단계에서 만든다.
 import { Stage } from '../components/Stage';
-import { BattleTestScreen } from '../features/battle-test/BattleTestScreen';
+import { DevHub } from './DevHub';
 
 export default function App() {
   return (
     <Stage>
-      <BattleTestScreen />
+      <DevHub />
     </Stage>
   );
 }
