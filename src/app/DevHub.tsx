@@ -1,13 +1,15 @@
 // 개발용 임시 메뉴: 화면을 오가며 확인한다. 타이틀·지도가 생기면(로드맵 6~7단계) 실제 진행 흐름으로 바꾼다.
 import { useState } from 'react';
 import { BattleTestScreen } from '../features/battle-test/BattleTestScreen';
+import { BoxScreen } from '../features/box/BoxScreen';
 import { PackScreen } from '../features/pack/PackScreen';
 import { StarterScreen } from '../features/pack/StarterScreen';
 import { useGameStore } from '../store/gameStore';
 
-type Tab = 'pack' | 'battle';
+type Tab = 'pack' | 'box' | 'battle';
 const TABS: { key: Tab; label: string }[] = [
   { key: 'pack', label: '팩 개봉' },
+  { key: 'box', label: '보관함' },
   { key: 'battle', label: '전투 테스트' },
 ];
 
@@ -52,7 +54,10 @@ export function DevHub() {
           {ch.chapter}장 {ch.place} · 관장 {ch.leader.name} · 보관함 {collection.length}계열 · {gold.toLocaleString()}G
         </span>
       </header>
-      <main className="min-h-0 flex-1 overflow-hidden">{tab === 'pack' && <PackScreen />}</main>
+      <main className="min-h-0 flex-1 overflow-hidden">
+        {tab === 'pack' && <PackScreen />}
+        {tab === 'box' && <BoxScreen />}
+      </main>
     </div>
   );
 }
