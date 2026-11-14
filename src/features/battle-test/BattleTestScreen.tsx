@@ -1,10 +1,11 @@
-// 전투 테스트 화면 (로드맵 4단계): 성도 스타터 3마리로 관장 비상과 대결
+// 전투 테스트 화면: 내 파티(없으면 성도 스타터 3마리)로 관장 비상과 대결
 // 지도·저장이 생기면(6~7단계) 실제 진행 흐름으로 대체한다.
 import { useCallback, useEffect } from 'react';
 import { trainerCards } from '../../core/encounter';
 import { createCard, createRng } from '../../core/gacha';
 import { dex, trainers } from '../../lib/dex';
 import { useBattleStore } from '../../store/battleStore';
+import { useGameStore } from '../../store/gameStore';
 import { BattleScreen } from '../battle/BattleScreen';
 
 const TEST_PARTY = ['155', '158', '152']; // 브케인, 리아코, 치코리타
@@ -19,16 +20,18 @@ function movesFromUrl(): string[] {
 
 export function BattleTestScreen() {
   const start = useBattleStore((s) => s.start);
+  const { collection, party: partyUids } = useGameStore();
 
   const restart = useCallback(() => {
     const seed = Date.now() >>> 0; // 시드만 시각에서 얻고, 난수는 모두 createRng로
     const rng = createRng(seed);
-    const party = TEST_PARTY.map((id) => createCard(dex.species[id], TEST_LEVEL, dex, rng));
+    const owned = partyUids.map((u) => collection.find((c) => c.uid === u)).filter((c) => c !== undefined);
+    const party = owned.length ? owned : TEST_PARTY.map((id) => createCard(dex.species[id], TEST_LEVEL, dex, rng));
     const custom = movesFromUrl();
     if (custom.length) party[0] = { ...party[0], moves: custom, learnedMoves: [...new Set([...party[0].learnedMoves, ...custom])] };
     const falkner = trainers.find((t) => t.key === 'falkner' && t.battle === 'story')!;
     start(party, trainerCards(falkner, dex), seed);
-  }, [start]);
+  }, [start, collection, partyUids]);
 
   useEffect(restart, [restart]);
 
