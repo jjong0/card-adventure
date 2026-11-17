@@ -1,11 +1,10 @@
-// 지금은 개발용 임시 메뉴(DevHub)만 있다. 타이틀 화면은 로드맵 7단계에서 만든다.
+// 게임 본편(Game). 주소에 ?test=battle을 붙이면 전투 연출 확인용 테스트 전투를 연다 (?moves=와 함께 쓴다).
 import { Stage } from '../components/Stage';
-import { DevHub } from './DevHub';
+import { BattleTestScreen } from '../features/battle-test/BattleTestScreen';
+import { Game } from './Game';
+
+const testBattle = new URLSearchParams(window.location.search).get('test') === 'battle';
 
 export default function App() {
-  return (
-    <Stage>
-      <DevHub />
-    </Stage>
-  );
+  return <Stage>{testBattle ? <BattleTestScreen /> : <Game />}</Stage>;
 }
