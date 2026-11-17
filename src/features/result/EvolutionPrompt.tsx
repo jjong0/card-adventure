@@ -1,4 +1,5 @@
 // 진화 확인: 지금 레벨로 가능한 진화를 보여주고 고르게 한다. 갈래가 여럿이면 모두, 그만둘 수도 있다 (원작처럼)
+// 진화한 뒤에도 레벨 조건이 맞으면(리아코 Lv37 → 엘리게이 → 장크로다일) 이어서 묻는다.
 import { useState } from 'react';
 import { Sprite } from '../../components/Sprite';
 import { fixJosa } from '../../core/battle';
@@ -13,19 +14,15 @@ export function EvolutionPrompt({ uid }: { uid: string }) {
   const [evolvedFrom, setEvolvedFrom] = useState<string | null>(null);
   if (!card) return null;
   const name = dex.species[card.speciesId].name;
-
-  if (evolvedFrom) {
-    return (
-      <p className="rounded-lg bg-surface-2 px-3 py-2 font-pixel text-[14px] text-accent">
-        {fixJosa(`축하합니다! ${evolvedFrom}은(는) ${name}(으)로 진화했다!`)}
-      </p>
-    );
-  }
-  const options = levelEvolutions(card, dex);
-  if (!options.length || declined) return null;
+  const options = declined ? [] : levelEvolutions(card, dex);
+  const congrats = evolvedFrom && (
+    <p className="text-[14px] text-accent">{fixJosa(`축하합니다! ${evolvedFrom}은(는) ${name}(으)로 진화했다!`)}</p>
+  );
+  if (!options.length) return congrats ? <div className="rounded-lg bg-surface-2 px-3 py-2 font-pixel">{congrats}</div> : null;
 
   return (
     <div className="rounded-lg bg-surface-2 px-3 py-2 font-pixel">
+      {congrats}
       <p className="text-[14px]">{fixJosa(`${name}이(가) 진화하려 한다!`)}</p>
       <div className="mt-2 flex flex-wrap items-center gap-2">
         {options.map((e) => (
