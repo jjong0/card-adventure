@@ -1,9 +1,10 @@
 // src/core/encounter.ts
-// 전투 상대 생성: 원본 트레이너 파티 → 전투용 카드 (docs/spec.md §3.4, §5.3)
-// 난이도 보정(레벨·개체값·관장 파티)은 지도 단계(로드맵 6단계)에서 추가한다.
+// 전투 상대 생성: 지도 노드 → 야생·트레이너·엘리트·관장 상대와 보상 (docs/spec.md §3.2~3.4)
+// 난이도 보정(레벨·개체값·관장 파티, §5.3)은 난이도 선택이 생기는 새 게임 화면(로드맵 7단계)과 함께 추가한다.
 import { defaultEquip, learnableUpTo } from './card';
-import { lineRootOf } from './gacha';
-import type { Card, Learnsets, Move, Species, Stats, Trainer } from './types';
+import { createCard, createRng, lineRootOf, type Rng } from './gacha';
+import type { MapNode } from './map';
+import type { Card, ChapterData, Learnsets, Move, Rarity, Species, Stats, Trainer } from './types';
 
 export interface EncounterDex {
   species: Record<string, Species>;
@@ -40,4 +41,99 @@ export function trainerCards(trainer: Trainer, dex: EncounterDex): Card[] {
       heldItem: p.item?.slug ?? null,
     };
   });
+}
+
+// ════════════════════════════════════════════
+// 지도 노드의 상대
+// ════════════════════════════════════════════
+
+export type StarterType = 'grass' | 'fire' | 'water';
+export type BattleKind = 'wild' | 'trainer' | 'elite' | 'leader';
+
+export interface Opponent {
+  kind: BattleKind;
+  /** 화면 표시 이름 (야생 구구, 곤충채집소년, 라이벌, 관장 비상) */
+  name: string;
+  /** 트레이너 직업 (assets.json 이미지 키). 야생은 없음 */
+  trainerClass?: string;
+  rival?: boolean;
+  cards: Card[];
+}
+
+/** 엘리트 노드 후보: 그 챕터 풀에서 파티 최고 레벨이 가장 높은 순으로 이만큼 */
+const ELITE_POOL = 5;
+
+/** 노드마다 고정된 시드: 같은 세이브에서 같은 노드는 다시 도전해도 같은 상대 */
+export function nodeSeed(seed: number, chapter: number, node: Pick<MapNode, 'floor' | 'index'>): number {
+  return (seed ^ Math.imul(chapter, 0x85ebca6b) ^ Math.imul(node.floor * 31 + node.index + 1, 0xc2b2ae35)) >>> 0;
+}
+
+const maxLevel = (t: Trainer) => Math.max(...t.party.map((p) => p.level));
+
+/** 야생 포켓몬 1마리: 챕터 출현표의 확률대로, 레벨은 출현 범위에서 (spec §3.3) */
+export function wildCard(chapter: ChapterData, dex: EncounterDex, rng: Rng): Card {
+  const total = chapter.wild.reduce((a, w) => a + w.weight, 0);
+  let x = rng() * total;
+  const entry = chapter.wild.find((w) => (x -= w.weight) < 0) ?? chapter.wild[chapter.wild.length - 1];
+  const level = entry.minLevel + Math.floor(rng() * (entry.maxLevel - entry.minLevel + 1));
+  return createCard(dex.species[entry.speciesId], level, dex, rng);
+}
+
+/**
+ * 전투 노드의 상대. 상점·휴식 노드는 null.
+ * - 트레이너: 챕터 풀에서 무작위 / 엘리트: 풀에서 가장 강한 몇 명 중 하나, 라이벌 노드면 라이벌
+ * - 라이벌은 내 스타터에게 유리한 스타터를 가진 쪽 (chapters.json rivals)
+ */
+export function nodeOpponent(
+  node: MapNode,
+  chapter: ChapterData,
+  trainers: Trainer[],
+  starterType: StarterType,
+  dex: EncounterDex,
+  seed: number,
+): Opponent | null {
+  const rng = createRng(nodeSeed(seed, chapter.chapter, node));
+  const byIndex = (i: number) => trainers.find((t) => t.index === i)!;
+  const fromTrainer = (t: Trainer, kind: BattleKind, name = t.name): Opponent => ({ kind, name, trainerClass: t.class, cards: trainerCards(t, dex) });
+
+  switch (node.kind) {
+    case 'wild': {
+      const card = wildCard(chapter, dex, rng);
+      return { kind: 'wild', name: `야생 ${dex.species[card.speciesId].name}`, cards: [card] };
+    }
+    case 'trainer':
+      return fromTrainer(byIndex(chapter.trainers[Math.floor(rng() * chapter.trainers.length)]), 'trainer');
+    case 'elite': {
+      if (node.rival && chapter.rivals) return { ...fromTrainer(byIndex(chapter.rivals[starterType]), 'elite'), rival: true };
+      const strongest = chapter.trainers.map(byIndex).sort((a, b) => maxLevel(b) - maxLevel(a) || a.index - b.index).slice(0, ELITE_POOL);
+      return fromTrainer(strongest[Math.floor(rng() * strongest.length)], 'elite');
+    }
+    case 'leader': {
+      const t = byIndex(chapter.leader.trainerIndex);
+      return fromTrainer(t, 'leader', `관장 ${t.name}`);
+    }
+    default:
+      return null;
+  }
+}
+
+// ════════════════════════════════════════════
+// 보상
+// ════════════════════════════════════════════
+
+/**
+ * 승리 골드 (spec §12 기본값). 야생 50 + 레벨×5.
+ * 트레이너는 원작 상금 공식(마지막 포켓몬 레벨 × 직업별 기본 상금 × 4)을 따르되,
+ * 직업별 기본 상금 데이터가 없어 일반 10(레벨×40), 관장 30(레벨×120)으로 통일했다. 엘리트는 ×2.
+ */
+export function battleGold(op: Opponent): number {
+  const last = op.cards[op.cards.length - 1].level;
+  if (op.kind === 'wild') return 50 + last * 5;
+  if (op.kind === 'leader') return last * 120;
+  return last * 40 * (op.kind === 'elite' ? 2 : 1);
+}
+
+/** 승리 보상 팩의 최소 등급: 엘리트 R 이상, 관장 SR 이상 (spec §3.2) */
+export function rewardMinRarity(kind: BattleKind): Rarity | undefined {
+  return kind === 'elite' ? 'R' : kind === 'leader' ? 'SR' : undefined;
 }
