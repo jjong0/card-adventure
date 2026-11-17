@@ -132,6 +132,11 @@
       "grass": 2,
       "fire": 3,
       "water": 265
+    },
+    "rewardTm": {
+      "id": "tm51",
+      "name": "기술머신51",
+      "moveId": "355"
     }
   },
   {
@@ -281,6 +286,11 @@
       680,
       728
     ],
-    "rivals": null
+    "rivals": null,
+    "rewardTm": {
+      "id": "tm89",
+      "name": "기술머신89",
+      "moveId": "369"
+    }
   }
 ]
