@@ -236,6 +236,8 @@ export interface ChapterData {
   trainers: number[];                 // 일반 트레이너 원본 번호
   /** 플레이어 스타터 타입 → 라이벌전 원본 번호. 이 챕터에 라이벌전이 없으면 null */
   rivals: Record<'grass' | 'fire' | 'water', number> | null;
+  /** 관장을 이기면 받는 기술머신 */
+  rewardTm: { id: string; name: string; moveId: string };
 }
 
 /** tmCompat.json (scripts/build-tm-compat.mjs) */

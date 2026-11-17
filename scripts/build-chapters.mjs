@@ -1,6 +1,6 @@
 // scripts/build-chapters.mjs
 // overrides/chapters.json(수동 설정) + 하트골드 야생 출현 + trainers.json → src/data/chapters.json
-// 실행: node scripts/build-chapters.mjs  (build-data, build-trainers 다음에 실행)
+// 실행: node scripts/build-chapters.mjs  (build-data, build-trainers, build-tm-compat 다음에 실행)
 //
 // 챕터마다 다음을 계산한다
 //   wild          하트골드 풀숲·동굴 출현표 (spec §3.3)
@@ -8,6 +8,7 @@
 //   trainerLevel  일반 트레이너 풀의 파티 최고 레벨 범위 (spec §3.4)
 //   trainers      그 범위의 일반 트레이너 (원본 번호)
 //   rivals        플레이어 스타터 타입별 라이벌전 (원본 번호)
+//   rewardTm      관장을 이기면 받는 기술머신 (tmCompat.json에서 기술 id를 찾음)
 import { readFile, writeFile } from 'node:fs/promises';
 import { csv } from './lib/pokeapi-csv.mjs';
 
@@ -28,6 +29,7 @@ const config = JSON.parse(await readFile('src/data/overrides/chapters.json', 'ut
 const trainers = JSON.parse(await readFile('src/data/trainers.json', 'utf8'));
 const species = JSON.parse(await readFile('src/data/species.json', 'utf8'));
 const speciesName = Object.fromEntries(species.map((s) => [s.id, s.name]));
+const tm = JSON.parse(await readFile('src/data/tmCompat.json', 'utf8'));
 
 const [locations, areas, encounters, slots, methods, condMap, condValues, pokemon] = await Promise.all([
   csv('locations'), csv('location_areas'), csv('encounters'), csv('encounter_slots'),
@@ -126,6 +128,11 @@ const out = config.chapters.map((c) => {
     .map((m) => ({ ...m, weight: round(m.weight) }))
     .sort((a, b) => b.weight - a.weight);
 
+  // 관장 보상 기술머신 (tm 번호 → 기술 id)
+  const machine = tm.machines.find((m) => m.id === c.rewardTm);
+  if (!machine) throw new Error(`없는 기술머신: ${c.rewardTm}`);
+  const rewardTm = { id: machine.id, name: machine.name, moveId: machine.moveId };
+
   const range = trainerLevelRange(c.chapter);
   const rivals = {};
   for (const [playerType, line] of Object.entries(RIVAL_LINE_FOR_PLAYER)) {
@@ -147,6 +154,7 @@ const out = config.chapters.map((c) => {
     trainerLevel: range,
     trainers: trainers.filter((t) => t.role === 'trainer' && inRange(t, range)).map((t) => t.index),
     rivals: Object.keys(rivals).length === 3 ? rivals : null,
+    rewardTm,
   };
 });
 
