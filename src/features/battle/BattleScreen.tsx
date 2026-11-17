@@ -1,5 +1,6 @@
 // 전투 화면 (spec §8 화면 5): 전장 + 정보창 + 메시지 상자 + 명령 패널, 이벤트를 하나씩 재생
 import { useEffect, useState } from 'react';
+import type { BattleState } from '../../core/types';
 import { useBattleStore } from '../../store/battleStore';
 import { CommandPanel } from './CommandPanel';
 import { Field } from './Field';
@@ -9,12 +10,15 @@ import { MoveEffect, ShakeLayer } from './MoveEffect';
 import { eventDuration } from './playback';
 
 interface Props {
-  /** 야생이면 도망칠 수 있다 */
-  canRun: boolean;
-  onRestart: () => void;
+  /** 도망쳤을 때. 없으면 도망칠 수 없다 (트레이너전) */
+  onRun?: () => void;
+  /** 승부가 난 뒤 버튼을 눌렀을 때 */
+  onEnd: (state: BattleState) => void;
+  /** 결과 창 버튼 문구 (이겼을 때 / 졌을 때) */
+  endLabel: { win: string; lose: string };
 }
 
-export function BattleScreen({ canRun, onRestart }: Props) {
+export function BattleScreen({ onRun, onEnd, endLabel }: Props) {
   const { state, shown, queue, current, act, next, skip } = useBattleStore();
   const [detail, setDetail] = useState<string | null>(null);
   const busy = queue.length > 0;
@@ -45,7 +49,7 @@ export function BattleScreen({ canRun, onRestart }: Props) {
 
       <div className="absolute inset-x-0 bottom-0 grid h-[200px] grid-cols-[1fr_460px] gap-3 border-t-2 border-line bg-bg p-3">
         <MessageBox text={shown.message} detail={busy ? null : detail} busy={busy} onNext={next} onSkip={skip} />
-        <CommandPanel state={state} shown={shown} busy={busy || ended} canRun={canRun} onAct={act} onHover={setDetail} />
+        <CommandPanel state={state} shown={shown} busy={busy || ended} onRun={onRun} onAct={act} onHover={setDetail} />
       </div>
 
       {ended && (
@@ -57,11 +61,11 @@ export function BattleScreen({ canRun, onRestart }: Props) {
             <p className="mt-2 font-pixel text-[15px] text-text-dim">{state.turn - 1}턴 만에 승부가 났다.</p>
             <button
               type="button"
-              onClick={onRestart}
+              onClick={() => onEnd(state)}
               autoFocus
               className="mt-6 rounded-lg bg-accent px-6 py-2.5 font-pixel text-[18px] font-bold text-bg hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
-              다시 하기
+              {endLabel[state.result === 'win' ? 'win' : 'lose']}
             </button>
           </div>
         </div>

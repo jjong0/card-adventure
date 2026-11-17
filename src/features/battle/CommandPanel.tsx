@@ -19,7 +19,8 @@ interface Props {
   state: BattleState;
   shown: Shown;
   busy: boolean;
-  canRun: boolean;
+  /** 도망쳤을 때. 없으면 도망 버튼이 비활성 */
+  onRun?: () => void;
   onAct: (a: BattleAction) => void;
   onHover: (detail: string | null) => void;
 }
@@ -34,7 +35,7 @@ function moveDetail(moveId: string, state: BattleState, shown: Shown) {
   return `${head}${eff}\n${mv.description}`;
 }
 
-export function CommandPanel({ state, shown, busy, canRun, onAct, onHover }: Props) {
+export function CommandPanel({ state, shown, busy, onRun, onAct, onHover }: Props) {
   const [mode, setMode] = useState<'menu' | 'fight' | 'party'>('menu');
   const forcedSwitch = state.pendingSwitch && !busy;
   const view = forcedSwitch ? 'party' : mode;
@@ -129,15 +130,15 @@ export function CommandPanel({ state, shown, busy, canRun, onAct, onHover }: Pro
   return (
     <div className="grid h-full grid-cols-2 grid-rows-2 gap-2.5">
       {MENU.map((m) => {
-        const disabled = busy || m.key === 'bag' || (m.key === 'run' && !canRun);
-        const title = m.key === 'bag' ? '아이템은 아직 쓸 수 없습니다' : m.key === 'run' && !canRun ? '트레이너와의 승부에서는 도망칠 수 없습니다' : undefined;
+        const disabled = busy || m.key === 'bag' || (m.key === 'run' && !onRun);
+        const title = m.key === 'bag' ? '아이템은 아직 쓸 수 없습니다' : m.key === 'run' && !onRun ? '트레이너와의 승부에서는 도망칠 수 없습니다' : undefined;
         return (
           <button
             key={m.key}
             type="button"
             disabled={disabled}
             title={title}
-            onClick={() => (m.key === 'fight' || m.key === 'party' ? setMode(m.key) : undefined)}
+            onClick={() => (m.key === 'fight' || m.key === 'party' ? setMode(m.key) : m.key === 'run' ? onRun?.() : undefined)}
             className={`${btn} rounded-xl font-pixel text-[26px] font-bold text-bg shadow-[inset_0_-5px_0_rgba(0,0,0,0.22)] enabled:hover:brightness-110`}
             style={{ backgroundColor: m.color }}
           >

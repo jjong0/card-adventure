@@ -37,7 +37,7 @@ export function BattleTestScreen() {
 
   return (
     <div className="relative h-full w-full">
-      <BattleScreen canRun={false} onRestart={restart} />
+      <BattleScreen onEnd={restart} endLabel={{ win: '다시 하기', lose: '다시 하기' }} />
       <div className="pointer-events-none absolute left-1/2 top-3 -translate-x-1/2 text-center font-pixel text-[12px] leading-5 text-text-dim">
         <p>테스트 전투 · 관장 비상</p>
         <p className="opacity-70">비공식 팬 프로젝트 · 닌텐도·게임프리크·주식회사 포켓몬과 무관</p>
