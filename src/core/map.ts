@@ -86,6 +86,8 @@ export function generateMap(seed: number, chapter: number, opts: { hasRival?: bo
   for (const n of floors[total - 2]) n.kind = 'rest';
   const free = floors.slice(0, total - 2).flat();
   for (const n of free) n.kind = rng() < 0.5 ? 'wild' : 'trainer';
+  // 1층에는 야생을 반드시 하나: 스타터 한 마리로도 첫 전투를 이기고 팩을 받을 길을 보장한다
+  if (!floors[0].some((n) => n.kind === 'wild')) pick(rng, floors[0]).kind = 'wild';
 
   /** 조건에 맞는 아직 일반(야생·트레이너) 노드 하나를 골라 종류를 바꾼다. 이미 쓴 층은 피한다 */
   const usedFloors = new Set<number>();

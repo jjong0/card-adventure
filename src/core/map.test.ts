@@ -37,7 +37,7 @@ describe('지도 구조', () => {
 });
 
 describe('노드 배치', () => {
-  it('엘리트는 4층 이상, 상점은 3층 이상 1~2개, 중간 휴식은 최대 1개, 1층은 야생·트레이너만', () => {
+  it('엘리트는 4층 이상, 상점은 3층 이상 1~2개, 중간 휴식은 최대 1개, 1층은 야생·트레이너만(야생 하나 이상)', () => {
     each(1, (m) => {
       const all = m.floors.flat();
       for (const n of all.filter((x) => x.kind === 'elite')) expect(n.floor).toBeGreaterThanOrEqual(4);
@@ -46,6 +46,7 @@ describe('노드 배치', () => {
       for (const n of shops) expect(n.floor).toBeGreaterThanOrEqual(3);
       expect(all.filter((x) => x.kind === 'rest' && x.floor < 9).length).toBeLessThanOrEqual(1);
       for (const n of m.floors[0]) expect(['wild', 'trainer']).toContain(n.kind);
+      expect(m.floors[0].some((n) => n.kind === 'wild')).toBe(true); // 첫 전투를 이길 길 보장
     });
   });
 
