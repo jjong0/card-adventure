@@ -7,9 +7,11 @@ import learnsets from '../data/learnsets.json';
 import trainersJson from '../data/trainers.json';
 import expTable from '../data/expTable.json';
 import evolutionsJson from '../data/evolutions.json';
+import tmJson from '../data/tmCompat.json';
+import chaptersJson from '../data/chapters.json';
 import type { EncounterDex } from '../core/encounter';
 import type { ProgressDex } from '../core/progress';
-import type { Dex, Evolutions, Learnsets, Move, Species, Trainer, TypeChart } from '../core/types';
+import type { ChapterData, Dex, Evolutions, Learnsets, Move, Species, TmData, Trainer, TypeChart } from '../core/types';
 
 export const dex: Dex & EncounterDex & ProgressDex = {
   species: Object.fromEntries((speciesList as Species[]).map((s) => [s.id, s])),
@@ -21,3 +23,5 @@ export const dex: Dex & EncounterDex & ProgressDex = {
 };
 
 export const trainers = trainersJson as Trainer[];
+export const tmData = tmJson as TmData;
+export const chapters = chaptersJson as ChapterData[];
