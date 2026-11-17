@@ -48,7 +48,7 @@ describe('trainerCards', () => {
 describe('지도 노드의 상대', () => {
   const ch1 = (chaptersJson as ChapterData[])[0];
   const node = (kind: MapNode['kind'], floor = 4, index = 0, rival = false): MapNode => ({ id: `${floor}-${index}`, floor, index, x: 0.5, kind, rival, next: [] });
-  const opp = (n: MapNode, seed = 1, starter: 'grass' | 'fire' | 'water' = 'fire') => nodeOpponent(n, ch1, all, starter, dex, seed)!;
+  const opp = (n: MapNode, seed = 1, starter: 'grass' | 'fire' | 'water' = 'fire') => nodeOpponent(n, 10, ch1, all, starter, dex, seed)!;
 
   it('야생: 출현표에 있는 종, 레벨은 출현 범위 안 (1000번)', () => {
     const rng = createRng(3);
@@ -78,6 +78,15 @@ describe('지도 노드의 상대', () => {
     }
   });
 
+  it('트레이너는 층이 높을수록 강하다: 1층은 풀의 약한 쪽, 8층은 강한 쪽', () => {
+    const top = (floor: number, seed: number) => Math.max(...opp(node('trainer', floor), seed).cards.map((c) => c.level));
+    const avg = (floor: number) => Array.from({ length: 100 }, (_, s) => top(floor, s + 1)).reduce((a, b) => a + b, 0) / 100;
+    for (let seed = 1; seed <= 100; seed++) expect(top(1, seed)).toBeLessThanOrEqual(7); // 풀(Lv3~13)의 아래 25%: 스타터(팩 Lv6)로 싸울 만한 상대
+    expect(avg(1)).toBeLessThan(avg(4));
+    expect(avg(4)).toBeLessThan(avg(8));
+    expect(avg(8)).toBeGreaterThan(10);
+  });
+
   it('라이벌 노드: 내 스타터에 유리한 스타터를 가진 라이벌', () => {
     const line = { grass: '155', fire: '158', water: '152' } as const;
     for (const starter of ['grass', 'fire', 'water'] as const) {
@@ -89,8 +98,8 @@ describe('지도 노드의 상대', () => {
 
   it('관장은 원작 파티, 상점·휴식은 상대 없음', () => {
     expect(opp(node('leader', 10)).cards.map((c) => [c.speciesId, c.level])).toEqual([['16', 9], ['17', 13]]);
-    expect(nodeOpponent(node('shop'), ch1, all, 'fire', dex, 1)).toBeNull();
-    expect(nodeOpponent(node('rest'), ch1, all, 'fire', dex, 1)).toBeNull();
+    expect(nodeOpponent(node('shop'), 10, ch1, all, 'fire', dex, 1)).toBeNull();
+    expect(nodeOpponent(node('rest'), 10, ch1, all, 'fire', dex, 1)).toBeNull();
   });
 
   it('보상: 골드와 팩 최소 등급', () => {

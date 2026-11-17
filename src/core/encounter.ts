@@ -79,13 +79,19 @@ export function wildCard(chapter: ChapterData, dex: EncounterDex, rng: Rng): Car
   return createCard(dex.species[entry.speciesId], level, dex, rng);
 }
 
+/** 트레이너 노드가 고르는 범위: 풀을 레벨순으로 놓았을 때 층 위치 주변의 이 비율만큼 */
+const TRAINER_WINDOW = 0.25;
+
 /**
  * 전투 노드의 상대. 상점·휴식 노드는 null.
- * - 트레이너: 챕터 풀에서 무작위 / 엘리트: 풀에서 가장 강한 몇 명 중 하나, 라이벌 노드면 라이벌
+ * - 트레이너: 챕터 풀을 레벨순으로 놓고 층 위치에 맞는 구간에서 무작위.
+ *   낮은 층은 약한 트레이너, 높은 층은 강한 트레이너 (스타터 한 마리로 Lv13 상대를 만나지 않게)
+ * - 엘리트: 풀에서 가장 강한 몇 명 중 하나, 라이벌 노드면 라이벌
  * - 라이벌은 내 스타터에게 유리한 스타터를 가진 쪽 (chapters.json rivals)
  */
 export function nodeOpponent(
   node: MapNode,
+  totalFloors: number,
   chapter: ChapterData,
   trainers: Trainer[],
   starterType: StarterType,
@@ -101,8 +107,14 @@ export function nodeOpponent(
       const card = wildCard(chapter, dex, rng);
       return { kind: 'wild', name: `야생 ${dex.species[card.speciesId].name}`, cards: [card] };
     }
-    case 'trainer':
-      return fromTrainer(byIndex(chapter.trainers[Math.floor(rng() * chapter.trainers.length)]), 'trainer');
+    case 'trainer': {
+      const pool = chapter.trainers.map(byIndex).sort((a, b) => maxLevel(a) - maxLevel(b) || a.index - b.index);
+      // 일반 노드가 있는 층은 1 ~ totalFloors-2 (그 위는 휴식·관장)
+      const progress = totalFloors > 3 ? Math.min(1, (node.floor - 1) / (totalFloors - 3)) : 0;
+      const size = Math.max(1, Math.round(pool.length * TRAINER_WINDOW));
+      const start = Math.round(progress * (pool.length - size));
+      return fromTrainer(pool[start + Math.floor(rng() * size)], 'trainer');
+    }
     case 'elite': {
       if (node.rival && chapter.rivals) return { ...fromTrainer(byIndex(chapter.rivals[starterType]), 'elite'), rival: true };
       const strongest = chapter.trainers.map(byIndex).sort((a, b) => maxLevel(b) - maxLevel(a) || a.index - b.index).slice(0, ELITE_POOL);
