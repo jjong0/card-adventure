@@ -327,3 +327,38 @@ describe('경험치 분배 기록 (knockouts)', () => {
     expect(s.knockouts).toEqual([{ enemyIdx: 0, participants: [1] }]);
   });
 });
+
+describe('전투 옵션 (지도 진행용)', () => {
+  it('시작 HP를 이어받고, 쓰러진 카드는 건너뛰어 첫 번째로 싸울 수 있는 카드가 나간다', () => {
+    const a = card('25', 20, ['thunder-shock']);
+    const b = card('4', 20, ['ember']);
+    const s = createBattle([a, b], [card('16', 5, ['tackle'])], dex, 1, { playerHp: { [a.uid]: 0, [b.uid]: 7 } });
+    expect(s.player.activeIdx).toBe(1);
+    expect(s.player.party.map((m) => m.currentHp)).toEqual([0, 7]);
+    expect(s.events).toContainEqual({ type: 'switchIn', side: 'player', idx: 1 });
+    expect(s.log.at(-1)).toBe('가랏! 파이리!');
+  });
+
+  it('최대 HP보다 큰 값은 최대 HP로 맞추고, 전원이 쓰러져 있으면 시작할 수 없다', () => {
+    const a = card('25', 20, ['thunder-shock']);
+    const s = createBattle([a], [card('16', 5, ['tackle'])], dex, 1, { playerHp: { [a.uid]: 9999 } });
+    expect(s.player.party[0].currentHp).toBe(s.player.party[0].stats.hp);
+    expect(() => createBattle([a], [card('16', 5, ['tackle'])], dex, 1, { playerHp: { [a.uid]: 0 } })).toThrow();
+  });
+
+  it('야생: 등장 문구가 다르고, 여러 기술을 섞어 쓴다 (트레이너는 가장 센 기술만)', () => {
+    const used = (wild: boolean) => {
+      const seen = new Set<string>();
+      for (let seed = 1; seed <= 40; seed++) {
+        const s0 = createBattle([card('143', 50, ['growl'])], [card('16', 30, ['tackle', 'gust', 'sand-attack'])], dex, seed, { wild });
+        const s1 = battle(s0, { kind: 'move', moveId: moveId('growl') }, dex);
+        const mv = s1.events.find((e) => e.type === 'move' && e.side === 'enemy');
+        if (mv && mv.type === 'move') seen.add(mv.moveId);
+      }
+      return seen.size;
+    };
+    expect(createBattle([card('143', 50, ['growl'])], [card('16', 30, ['tackle'])], dex, 1, { wild: true }).log[0]).toBe('야생 구구가 나타났다!');
+    expect(used(true)).toBe(3);
+    expect(used(false)).toBe(1);
+  });
+});

@@ -134,13 +134,29 @@ function markFaced(state: BattleState) {
   if (!p.facedBy.includes(state.enemy.activeIdx)) p.facedBy.push(state.enemy.activeIdx);
 }
 
-export function createBattle(playerCards: Card[], enemyCards: Card[], dex: Dex, seed: number): BattleState {
-  const player = playerCards.map((c) => createBattleMon(c, dex));
+export interface BattleOptions {
+  /** 전투 시작 HP (Card.uid → HP). 없는 카드는 가득. 지도에서는 전투가 끝나도 HP가 이어진다 */
+  playerHp?: Record<string, number>;
+  /** 야생 포켓몬: 기술을 무작위로 고른다 (spec §5.3) */
+  wild?: boolean;
+}
+
+export function createBattle(playerCards: Card[], enemyCards: Card[], dex: Dex, seed: number, opts: BattleOptions = {}): BattleState {
+  const player = playerCards.map((c) => {
+    const mon = createBattleMon(c, dex);
+    const hp = opts.playerHp?.[c.uid];
+    if (hp !== undefined) mon.currentHp = Math.max(0, Math.min(mon.stats.hp, hp));
+    return mon;
+  });
   const enemy = enemyCards.map((c) => createBattleMon(c, dex));
+  // 쓰러진 채로 시작하는 카드는 건너뛰고 첫 번째로 싸울 수 있는 카드를 내보낸다
+  const lead = player.findIndex((m) => m.currentHp > 0);
+  if (lead === -1) throw new Error('싸울 수 있는 포켓몬이 없다');
   const state: BattleState = {
     turn: 1,
     seed,
-    player: { party: player, activeIdx: 0 },
+    wild: !!opts.wild,
+    player: { party: player, activeIdx: lead },
     enemy: { party: enemy, activeIdx: 0 },
     log: [],
     events: [],
@@ -151,9 +167,9 @@ export function createBattle(playerCards: Card[], enemyCards: Card[], dex: Dex, 
   markFaced(state);
   const rec = recorder(state);
   rec.emit({ type: 'switchIn', side: 'enemy', idx: 0 });
-  rec.say(`상대가 ${enemy[0].name}을(를) 내보냈다!`);
-  rec.emit({ type: 'switchIn', side: 'player', idx: 0 });
-  rec.say(`가랏! ${player[0].name}!`);
+  rec.say(opts.wild ? `야생 ${enemy[0].name}이(가) 나타났다!` : `상대가 ${enemy[0].name}을(를) 내보냈다!`);
+  rec.emit({ type: 'switchIn', side: 'player', idx: lead });
+  rec.say(`가랏! ${player[lead].name}!`);
   return finalize(state);
 }
 
@@ -769,7 +785,7 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
 
   const order: Resolved[] = [
     { side: 'player', action },
-    { side: 'enemy', action: chooseEnemyAction(state, dex) },
+    { side: 'enemy', action: state.wild ? randomEnemyAction(state, dex, rng) : chooseEnemyAction(state, dex) },
   ];
   order.sort((a, b) => {
     const p = priorityOf(b, dex) - priorityOf(a, dex);
@@ -810,6 +826,14 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
 // ════════════════════════════════════════════
 // 상대 AI: 기대 데미지가 가장 높은 기술 (상대를 쓰러뜨릴 수 있으면 우선)
 // ════════════════════════════════════════════
+
+/** 야생 포켓몬: PP가 남은 기술 중 무작위 (spec §5.3) */
+function randomEnemyAction(state: BattleState, dex: Dex, rng: Rng): BattleAction {
+  const me = active(state.enemy);
+  const usable = me.card.moves.filter((id) => (me.pp[id] ?? 0) > 0 && dex.moves[id]);
+  if (!usable.length) return { kind: 'move', moveId: me.card.moves[0] ?? 'struggle' };
+  return { kind: 'move', moveId: usable[Math.floor(rng() * usable.length)] };
+}
 
 export function chooseEnemyAction(state: BattleState, dex: Dex): BattleAction {
   const me = active(state.enemy);
