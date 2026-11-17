@@ -24,10 +24,16 @@ function rates(min?: Rarity) {
   return allowed.map((r) => ({ r, p: (RARITY_RATES[r] / total) * 100 }));
 }
 
-export function PackScreen() {
+interface Props {
+  /** 보상 팩: 최소 등급이 정해져 있고 한 번만 연다. 다 열면 onDone으로 돌아간다 */
+  reward?: { minRarity?: Rarity; onDone: () => void };
+}
+
+export function PackScreen({ reward }: Props) {
   const { openTypePack, chapterData, gold } = useGameStore();
   const [type, setType] = useState<ElementType>('fire');
-  const [min, setMin] = useState<Rarity | undefined>(undefined);
+  const [freeMin, setMin] = useState<Rarity | undefined>(undefined);
+  const min = reward ? reward.minRarity : freeMin;
   const [opening, setOpening] = useState<PackOpening | null>(null);
   const [revealed, setRevealed] = useState<boolean[]>([]);
   const allOpen = revealed.length > 0 && revealed.every(Boolean);
@@ -45,7 +51,7 @@ export function PackScreen() {
     <div className="grid h-full grid-cols-[380px_1fr] gap-6 px-8 py-5">
       <aside className="flex min-h-0 flex-col gap-3.5 rounded-2xl border border-line bg-surface p-5">
         <div>
-          <h2 className="font-title text-[24px] leading-tight">속성 팩</h2>
+          <h2 className="font-title text-[24px] leading-tight">{reward ? (reward.minRarity ? `보상 팩 (${reward.minRarity} 이상 확정)` : '보상 팩') : '속성 팩'}</h2>
           <p className="font-pixel text-[13px] text-text-dim">
             고른 속성의 포켓몬 5장을 모두 받는다. 카드 레벨 Lv{chapterData().packLevel} · 보유 {gold.toLocaleString()}G
           </p>
@@ -64,8 +70,8 @@ export function PackScreen() {
             </button>
           ))}
         </div>
-        <div>
-          <p className="mb-1.5 font-pixel text-[12px] text-text-dim">팩 종류 (테스트용 · 지도가 생기면 노드가 정함)</p>
+        <div className={reward ? 'hidden' : ''}>
+          <p className="mb-1.5 font-pixel text-[12px] text-text-dim">팩 종류 (테스트용)</p>
           <div className="flex gap-1.5">
             {MIN_OPTIONS.map((o) => (
               <button
@@ -91,8 +97,8 @@ export function PackScreen() {
             </div>
           ))}
         </div>
-        <button type="button" onClick={open} disabled={!!opening && !allOpen} className={`${btn} mt-auto bg-accent py-2.5 text-[18px] text-bg`}>
-          {TYPE_LABEL[type]} 팩 열기
+        <button type="button" onClick={open} disabled={!!opening && (!allOpen || !!reward)} className={`${btn} mt-auto bg-accent py-2.5 text-[18px] text-bg`}>
+          {reward && opening ? '팩을 열었다' : `${TYPE_LABEL[type]} 팩 열기`}
         </button>
       </aside>
 
@@ -131,9 +137,14 @@ export function PackScreen() {
                   <button type="button" onClick={skip} className={`${btn} text-text-dim hover:text-text`}>연출 건너뛰기 ≫</button>
                 </>
               ) : (
-                <p className="font-pixel text-[15px] text-text-dim">
-                  {opening.gold > 0 ? `중복 카드가 ${opening.gold}G로 바뀌었다. ` : ''}카드는 보관함에 들어갔다.
-                </p>
+                <div className="flex items-center gap-4">
+                  <p className="font-pixel text-[15px] text-text-dim">
+                    {opening.gold > 0 ? `중복 카드가 ${opening.gold}G로 바뀌었다. ` : ''}카드는 보관함에 들어갔다.
+                  </p>
+                  {reward && (
+                    <button type="button" onClick={reward.onDone} autoFocus className={`${btn} bg-accent text-bg`}>계속한다</button>
+                  )}
+                </div>
               )}
             </div>
           </>
