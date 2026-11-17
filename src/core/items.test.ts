@@ -1,0 +1,78 @@
+// src/core/items.test.ts  (vitest) — 회복약, 휴식, 기술머신, 상점 구성
+import { describe, expect, it } from 'vitest';
+import speciesList from '../data/species.json';
+import moves from '../data/moves.json';
+import typeChart from '../data/typeChart.json';
+import learnsets from '../data/learnsets.json';
+import evolutions from '../data/evolutions.json';
+import tmJson from '../data/tmCompat.json';
+import chaptersJson from '../data/chapters.json';
+import { createCard, createRng } from './gacha';
+import { hpOf, maxHp, restParty, shopStock, shopTms, teachTm, useHealItem } from './items';
+import type { ChapterData, Dex, Evolutions, Learnsets, Move, Species, TmData, TypeChart } from './types';
+
+const species = Object.fromEntries((speciesList as Species[]).map((s) => [s.id, s]));
+const dex: Dex = { species, moves: moves as unknown as Record<string, Move>, typeChart: typeChart as TypeChart };
+const tm = tmJson as TmData;
+const chapters = chaptersJson as ChapterData[];
+const rng = createRng(9);
+const make = (id: string, level = 20) => createCard(species[id], level, { species, learnsets: learnsets as Learnsets }, rng);
+const slugId = (slug: string) => Object.values(dex.moves).find((m) => m.slug === slug)!.id;
+
+describe('회복약', () => {
+  const c = make('143', 30);
+  const max = maxHp(c, dex);
+
+  it('기록이 없으면 가득, 상처약은 20 회복하되 최대 HP를 넘지 않는다', () => {
+    expect(hpOf(c, {}, dex)).toBe(max);
+    expect(useHealItem('potion', c, { [c.uid]: 10 }, dex)).toEqual({ [c.uid]: 30 });
+    expect(useHealItem('hyper-potion', c, { [c.uid]: max - 5 }, dex)).toEqual({ [c.uid]: max });
+  });
+
+  it('가득 찼거나 쓰러진 포켓몬에는 못 쓰고, 기력의조각은 쓰러진 포켓몬만 절반으로 되살린다', () => {
+    expect(useHealItem('potion', c, {}, dex)).toBe('full');
+    expect(useHealItem('potion', c, { [c.uid]: 0 }, dex)).toBe('fainted');
+    expect(useHealItem('revive', c, { [c.uid]: 5 }, dex)).toBe('not-fainted');
+    expect(useHealItem('revive', c, { [c.uid]: 0 }, dex)).toEqual({ [c.uid]: Math.floor(max / 2) });
+    expect(useHealItem('nope', c, {}, dex)).toBe('unknown-item');
+  });
+
+  it('휴식: 쓰러진 포켓몬까지 전원 회복, 비율을 주면 그만큼만', () => {
+    const d = make('25', 20);
+    const hp = { [c.uid]: 0, [d.uid]: 3 };
+    expect(restParty([c, d], hp, dex)).toEqual({ [c.uid]: max, [d.uid]: maxHp(d, dex) });
+    expect(restParty([c], hp, dex, 0.5)[c.uid]).toBe(Math.ceil(max * 0.5));
+  });
+});
+
+describe('기술머신', () => {
+  it('배울 수 있는 종만 배우고, 빈 칸이 있으면 자동 장착', () => {
+    const rockTomb = slugId('rock-tomb');
+    const geodude = make('74', 5);
+    const r = teachTm(geodude, rockTomb, tm);
+    if (typeof r === 'string') throw new Error(r);
+    expect(r.learnedMoves).toContain(rockTomb);
+    expect(teachTm(r, rockTomb, tm)).toBe('already-known');
+    expect(teachTm(make('129'), rockTomb, tm)).toBe('cannot-learn'); // 잉어킹
+    expect(teachTm(geodude, slugId('tackle'), tm)).toBe('not-a-tm');
+  });
+});
+
+describe('상점', () => {
+  it('챕터 기술머신: 관장 타입에 효과가 굉장한 공격기 3개, 위력이 낮은 순', () => {
+    for (const ch of chapters) {
+      const list = shopTms(ch, tm, dex);
+      expect(list).toHaveLength(3);
+      for (const m of list) expect(dex.typeChart[m.move.type][ch.type]).toBe(2);
+      expect(list.map((m) => m.move.power)).toEqual([...list.map((m) => m.move.power!)].sort((a, b) => a - b));
+    }
+  });
+
+  it('구성: 회복약 4 + 진화의돌 6 + 기술머신 3, 가격은 spec 값', () => {
+    const stock = shopStock(chapters[0], tm, dex, evolutions as Evolutions);
+    expect(stock.filter((i) => i.category === 'heal').map((i) => [i.name, i.price])).toEqual([['상처약', 300], ['좋은상처약', 700], ['고급상처약', 1200], ['기력의조각', 1500]]);
+    expect(stock.filter((i) => i.category === 'stone').map((i) => i.name)).toEqual(['불꽃의돌', '물의돌', '천둥의돌', '리프의돌', '달의돌', '태양의돌']);
+    expect(stock.filter((i) => i.category === 'stone').every((i) => i.price === 2100)).toBe(true);
+    expect(stock.filter((i) => i.category === 'tm').every((i) => i.price === 3000 && i.moveId)).toBe(true);
+  });
+});
