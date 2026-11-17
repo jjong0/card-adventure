@@ -2,7 +2,7 @@
 // 진행 상태: 보관함·파티·골드·챕터·지도 위치·HP·가방. 규칙은 모두 core 함수가 처리하고 여기서는 상태만 바꾼다.
 // 저장(localStorage, 세이브 파일)은 로드맵 7단계에서 saveRepository로 붙인다.
 import { create } from 'zustand';
-import { sellCard, setParty as checkParty } from '../core/collection';
+import { MAX_PARTY, sellCard, setParty as checkParty } from '../core/collection';
 import { battleGold, type Opponent, type StarterType } from '../core/encounter';
 import { addToCollection, CARDS_PER_PACK, createRng, openPack, type AddResult } from '../core/gacha';
 import { HEAL_ITEMS, hpOf, maxHp, restParty, teachTm, useHealItem, type HpMap, type ShopItem } from '../core/items';
@@ -77,7 +77,7 @@ interface GameStore {
   restTrain: (uid: string) => LevelUpResult | null;
   buy: (item: ShopItem) => 'no-gold' | 'owned' | 'ok';
   /** 회복약·진화의돌 사용. 실패하면 이유 */
-  useItem: (itemId: string, uid: string) => string | null;
+  applyItem: (itemId: string, uid: string) => string | null;
   teach: (uid: string, moveId: string) => string | null;
 }
 
@@ -162,7 +162,7 @@ export const useGameStore = create<GameStore>((set, get) => {
       const { collection } = addToCollection(get().collection, [card], dex.species);
       const types = dex.species[card.speciesId].types;
       const starterType = STARTER_TYPES.find((t) => types.includes(t)) ?? 'fire';
-      set({ collection, party: [...get().party, card.uid].slice(0, 6), starterChoices: null, starterType });
+      set({ collection, party: [...get().party, card.uid].slice(0, MAX_PARTY), starterChoices: null, starterType });
     },
 
     openTypePack: (type, minRarity) => {
@@ -171,7 +171,10 @@ export const useGameStore = create<GameStore>((set, get) => {
         openPack({ kind: 'type', cardsPerPack: CARDS_PER_PACK, typeFilter: type, minRarity, level }, dex, rng),
       );
       const { collection, results, gold } = addToCollection(get().collection, cards, dex.species);
-      set({ collection, seed, gold: get().gold + gold });
+      // 새로 얻은 카드는 파티에 빈 칸이 있으면 바로 합류한다 (원작에서 잡은 포켓몬이 파티에 들어가듯)
+      const party = [...get().party];
+      for (const r of results) if (r.kind === 'new' && party.length < MAX_PARTY) party.push(r.card.uid);
+      set({ collection, party, seed, gold: get().gold + gold });
       return { type, minRarity, cards, results, gold };
     },
 
@@ -268,7 +271,7 @@ export const useGameStore = create<GameStore>((set, get) => {
       return 'ok';
     },
 
-    useItem: (itemId, uid) => {
+    applyItem: (itemId, uid) => {
       const card = get().collection.find((c) => c.uid === uid);
       if (!card || (get().bag[itemId] ?? 0) <= 0) return '가방에 없는 도구다.';
       const spend = () => set({ bag: { ...get().bag, [itemId]: get().bag[itemId] - 1 } });
