@@ -34,11 +34,39 @@
 
 ## 2. 노드 아이콘 `public/assets/nodes/`
 
-| 파일 | 노드 |
-|---|---|
-| grass.png | 야생 포켓몬 (풀숲) |
-| center.png | 휴식·강화 (포켓몬센터) |
-| mart.png | 상점 |
+지도에서 노드 종류마다 공통으로 뜨는 아이콘. 작은 도트(24~32px)가 노드 원에 잘 맞는다. 배경이 투명하지 않으면 흰 상자처럼 보이니 투명 PNG로.
+
+| 파일 | 노드 | 추천 그림 |
+|---|---|---|
+| grass.png | 야생 포켓몬 | 풀숲 |
+| trainer.png | 트레이너 | 몬스터볼 (가방 아이템 아이콘) |
+| elite.png | 엘리트 (라이벌 그림이 없으면 라이벌 노드도) | 하이퍼볼 |
+| center.png | 휴식·강화 | 포켓몬센터 |
+| mart.png | 상점 | 프렌들리숍 |
+
+## 2-1. 관장 노드 배지 `public/assets/badges/`
+
+관장 노드에는 그 체육관 배지가 뜬다. 배지 그림이 없으면 아래 3절의 관장 그림, 그것도 없으면 글자로 대체한다.
+사천왕·챔피언·레드(9~13장, 22장)는 배지가 없어 관장 그림을 쓴다.
+
+| 파일 | 배지 | 관장 | 장 |
+|---|---|---|---|
+| zephyr-badge.png | 윙배지 | 비상 | 1 |
+| hive-badge.png | 인섹트배지 | 호일 | 2 |
+| plain-badge.png | 레귤러배지 | 꼭두 | 3 |
+| fog-badge.png | 팬텀배지 | 유빈 | 4 |
+| storm-badge.png | 쇼크배지 | 사도 | 5 |
+| mineral-badge.png | 스틸배지 | 규리 | 6 |
+| glacier-badge.png | 아이스배지 | 류옹 | 7 |
+| rising-badge.png | 라이징배지 | 이향 | 8 |
+| soul-badge.png | 핑크배지 | 도희 | 14 |
+| thunder-badge.png | 오렌지배지 | 마티스 | 15 |
+| boulder-badge.png | 그레이배지 | 웅 | 16 |
+| cascade-badge.png | 블루배지 | 이슬 | 17 |
+| marsh-badge.png | 골드배지 | 초련 | 18 |
+| rainbow-badge.png | 레인보우배지 | 민화 | 19 |
+| volcano-badge.png | 크림슨배지 | 강연 | 20 |
+| earth-badge.png | 그린배지 | 그린 | 21 |
 
 ## 3. 관장·사천왕·챔피언·레드 `public/assets/leaders/`
 
@@ -69,7 +97,7 @@
 
 ## 4. 트레이너 `public/assets/trainers/`
 
-트레이너 노드는 실제로 배정된 트레이너의 **직업 이미지**를 쓴다. 엘리트 노드 기본 이미지는 `ace-trainer-m.png`(엘리트트레이너), 라이벌전은 `rival.png`.
+지도 노드에는 쓰지 않는다(노드는 2절의 공통 아이콘). 나중에 대화 화면·전투 시작 연출에서 인물 그림으로 쓴다. 라이벌 노드만 `rival.png`이 있으면 지도에도 뜬다.
 직업 키는 하트골드 원본 데이터의 `TRAINERCLASS_` 뒤 이름이다(괄호 안은 원본 데이터에 등장하는 트레이너 수).
 
 | 파일 | 직업 키 | 등장 수 |
@@ -129,7 +157,7 @@
 | rocket-boss.png | ROCKET_BOSS | 1 |
 | tower-tycoon.png | TOWER_TYCOON | 1 |
 
-MVP(1~2장)만 먼저 하려면: city-01·02, grass, center, mart, falkner, bugsy, rival, ace-trainer-m, 그리고 1~2장 레벨대 트레이너 직업(youngster, bird-keeper-gs, bug-catcher, sage, camper, picnicker, hiker, fisherman 등)부터 모으면 된다.
+MVP(1~2장)만 먼저 하려면: 노드 아이콘 5개(grass, trainer, elite, center, mart), 배지 2개(zephyr-badge, hive-badge), rival, 그리고 지도 배경 city-01·02부터 모으면 된다.
 
 ## 5. 기술 이펙트 `public/assets/fx/`
 
