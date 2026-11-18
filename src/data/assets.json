@@ -1,5 +1,5 @@
 {
-  "_note": "사용자가 수집한 이미지 경로. 파일이 없으면 UI가 기본 표시로 대체한다. 이 파일만 수동 관리(생성 스크립트 대상 아님).",
+  "_note": "사용자가 수집한 이미지 경로. 파일이 없으면 UI가 기본 표시로 대체한다. 이 파일만 수동 관리(생성 스크립트 대상 아님). 지도 노드: nodes(야생·트레이너·엘리트·휴식·상점), 관장은 badges → leaders → 글자, 라이벌은 rival → nodes.elite → 글자 순. trainerClasses는 지도에 쓰지 않고 나중에 대화·전투 연출용.",
   "chapterBackgrounds": {
     "1": "/assets/map/city-01.png",
     "2": "/assets/map/city-02.png",
@@ -26,8 +26,28 @@
   },
   "nodes": {
     "wild": "/assets/nodes/grass.png",
+    "trainer": "/assets/nodes/trainer.png",
+    "elite": "/assets/nodes/elite.png",
     "rest": "/assets/nodes/center.png",
     "shop": "/assets/nodes/mart.png"
+  },
+  "badges": {
+    "falkner": "/assets/badges/zephyr-badge.png",
+    "bugsy": "/assets/badges/hive-badge.png",
+    "whitney": "/assets/badges/plain-badge.png",
+    "morty": "/assets/badges/fog-badge.png",
+    "chuck": "/assets/badges/storm-badge.png",
+    "jasmine": "/assets/badges/mineral-badge.png",
+    "pryce": "/assets/badges/glacier-badge.png",
+    "clair": "/assets/badges/rising-badge.png",
+    "janine": "/assets/badges/soul-badge.png",
+    "lt_surge": "/assets/badges/thunder-badge.png",
+    "brock": "/assets/badges/boulder-badge.png",
+    "misty": "/assets/badges/cascade-badge.png",
+    "sabrina": "/assets/badges/marsh-badge.png",
+    "erika": "/assets/badges/rainbow-badge.png",
+    "blaine": "/assets/badges/volcano-badge.png",
+    "blue": "/assets/badges/earth-badge.png"
   },
   "leaders": {
     "falkner": "/assets/leaders/falkner.png",

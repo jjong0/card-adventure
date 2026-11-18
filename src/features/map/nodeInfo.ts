@@ -1,6 +1,5 @@
 // 노드 종류별 표시 정보: 이름, 색(spec §3.2), 이미지가 없을 때 쓰는 글자, 설명
 import assets from '../../data/assets.json';
-import type { Opponent } from '../../core/encounter';
 import type { MapNode, NodeKind } from '../../core/map';
 import type { ChapterData } from '../../core/types';
 
@@ -13,23 +12,28 @@ export const NODE_INFO: Record<NodeKind, { label: string; color: string; glyph: 
   leader: { label: '관장', color: '#B27CF2', glyph: '관', desc: '체육관 관장에게 도전한다.', reward: '배지 + SR 이상 확정 팩 + 기술머신' },
 };
 
-const trainerClasses = assets.trainerClasses as Record<string, string>;
+const badges = assets.badges as Record<string, string>;
 const leaders = assets.leaders as Record<string, string>;
 
-/** 노드 이미지 경로 (assets.json). 트레이너는 배정된 직업, 엘리트 기본은 엘리트트레이너, 라이벌·관장은 전용 */
-export function nodeImage(node: MapNode, opponent: Opponent | null, chapter: ChapterData): string | undefined {
+/**
+ * 노드 이미지 후보 (assets.json). 앞에서부터 처음으로 있는 파일을 쓴다.
+ * 노드 종류마다 공통 아이콘(트레이너 몬스터볼, 엘리트 하이퍼볼). 관장은 배지 → 관장 그림,
+ * 라이벌은 라이벌 그림 → 엘리트 아이콘. 사천왕·챔피언·레드는 배지가 없어 인물 그림을 쓴다.
+ */
+export function nodeImages(node: MapNode, chapter: ChapterData): string[] {
+  const key = chapter.leader.key;
   switch (node.kind) {
-    case 'wild':
-      return assets.nodes.wild;
-    case 'rest':
-      return assets.nodes.rest;
-    case 'shop':
-      return assets.nodes.shop;
     case 'leader':
-      return leaders[chapter.leader.key];
+      return [badges[key], leaders[key]].filter(Boolean);
     case 'elite':
-      return node.rival ? assets.rival : (opponent?.trainerClass && trainerClasses[opponent.trainerClass]) || assets.eliteDefault;
+      return node.rival ? [assets.rival, assets.nodes.elite] : [assets.nodes.elite];
+    case 'wild':
+      return [assets.nodes.wild];
     case 'trainer':
-      return opponent?.trainerClass ? trainerClasses[opponent.trainerClass] : undefined;
+      return [assets.nodes.trainer];
+    case 'rest':
+      return [assets.nodes.rest];
+    case 'shop':
+      return [assets.nodes.shop];
   }
 }

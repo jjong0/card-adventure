@@ -8,16 +8,16 @@ import { useAssetImage } from '../../lib/assetImage';
 import { dex, trainers } from '../../lib/dex';
 import { TYPE_LABEL } from '../../lib/labels';
 import { currentHp, useGameStore } from '../../store/gameStore';
-import { NODE_INFO, nodeImage } from './nodeInfo';
+import { NODE_INFO, nodeImages } from './nodeInfo';
 
 const W = 800;
 const H = 648;
 const PAD_Y = 56;
 
-function NodeIcon({ src, glyph, size }: { src?: string; glyph: string; size: number }) {
-  const status = useAssetImage(src);
+function NodeIcon({ srcs, glyph, size }: { srcs: string[]; glyph: string; size: number }) {
+  const src = useAssetImage(srcs);
   // 도트 이미지가 많아서 자르지 않고 원 안에 온전히 넣고, 픽셀이 뭉개지지 않게 확대한다
-  if (status === 'ok') return <img src={src} alt="" draggable={false} className="h-[78%] w-[78%] object-contain" style={{ imageRendering: 'pixelated' }} />;
+  if (src) return <img src={src} alt="" draggable={false} className="h-[78%] w-[78%] object-contain" style={{ imageRendering: 'pixelated' }} />;
   return <span className="font-pixel font-bold" style={{ fontSize: size * 0.4 }}>{glyph}</span>;
 }
 
@@ -118,7 +118,7 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, notice }: Props) {
                     boxShadow: selectedId === n.id ? '0 0 0 3px #0F1724, 0 0 0 6px #F2C14E' : isReach ? `0 0 14px ${info.color}` : undefined,
                   }}
                 >
-                  <NodeIcon src={nodeImage(n, opponents.get(n.id) ?? null, chapter)} glyph={n.rival ? '라' : info.glyph} size={size} />
+                  <NodeIcon srcs={nodeImages(n, chapter)} glyph={n.rival ? '라' : info.glyph} size={size} />
                   {n.kind === 'elite' && <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#F2795A] font-pixel text-[13px] font-bold text-bg">!</span>}
                   {isHere && <span className="absolute -bottom-5 font-pixel text-[11px] text-accent">현재</span>}
                 </button>
