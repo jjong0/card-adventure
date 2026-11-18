@@ -16,8 +16,21 @@ const PAD_Y = 56;
 
 function NodeIcon({ srcs, glyph, size }: { srcs: string[]; glyph: string; size: number }) {
   const src = useAssetImage(srcs);
-  // 도트 이미지가 많아서 자르지 않고 원 안에 온전히 넣고, 픽셀이 뭉개지지 않게 확대한다
-  if (src) return <img src={src} alt="" draggable={false} className="h-[78%] w-[78%] object-contain" style={{ imageRendering: 'pixelated' }} />;
+  const [pixel, setPixel] = useState(true);
+  // 자르지 않고 원 안에 온전히 넣는다. 작은 도트를 키울 때만 픽셀 그대로(pixelated),
+  // 큰 일러스트를 줄일 때는 부드럽게 (pixelated로 줄이면 가장자리가 들쭉날쭉해진다)
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt=""
+        draggable={false}
+        onLoad={(e) => setPixel(e.currentTarget.naturalWidth < size)}
+        className="h-[78%] w-[78%] object-contain"
+        style={{ imageRendering: pixel ? 'pixelated' : 'auto' }}
+      />
+    );
+  }
   return <span className="font-pixel font-bold" style={{ fontSize: size * 0.4 }}>{glyph}</span>;
 }
 
