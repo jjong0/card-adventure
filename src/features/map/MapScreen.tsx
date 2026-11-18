@@ -14,6 +14,9 @@ const W = 800;
 const H = 648;
 const PAD_Y = 56;
 
+/** 노드 원 안에서 이미지가 차지하는 비율 */
+const ICON_RATIO = 0.78;
+
 function NodeIcon({ srcs, glyph, size }: { srcs: string[]; glyph: string; size: number }) {
   const src = useAssetImage(srcs);
   const [pixel, setPixel] = useState(true);
@@ -25,9 +28,9 @@ function NodeIcon({ srcs, glyph, size }: { srcs: string[]; glyph: string; size: 
         src={src}
         alt=""
         draggable={false}
-        onLoad={(e) => setPixel(e.currentTarget.naturalWidth < size)}
-        className="h-[78%] w-[78%] object-contain"
-        style={{ imageRendering: pixel ? 'pixelated' : 'auto' }}
+        onLoad={(e) => setPixel(e.currentTarget.naturalWidth < size * ICON_RATIO)}
+        className="object-contain"
+        style={{ width: `${ICON_RATIO * 100}%`, height: `${ICON_RATIO * 100}%`, imageRendering: pixel ? 'pixelated' : 'auto' }}
       />
     );
   }
