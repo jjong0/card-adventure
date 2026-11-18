@@ -16,7 +16,8 @@ const PAD_Y = 56;
 
 function NodeIcon({ src, glyph, size }: { src?: string; glyph: string; size: number }) {
   const status = useAssetImage(src);
-  if (status === 'ok') return <img src={src} alt="" draggable={false} className="h-full w-full rounded-full object-cover" />;
+  // 도트 이미지가 많아서 자르지 않고 원 안에 온전히 넣고, 픽셀이 뭉개지지 않게 확대한다
+  if (status === 'ok') return <img src={src} alt="" draggable={false} className="h-[78%] w-[78%] object-contain" style={{ imageRendering: 'pixelated' }} />;
   return <span className="font-pixel font-bold" style={{ fontSize: size * 0.4 }}>{glyph}</span>;
 }
 
