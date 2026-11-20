@@ -21,7 +21,7 @@ node scripts/build-tm-compat.mjs  # 하트골드 기술머신 + 종별 호환 �
 node scripts/build-move-fx.mjs    # 기술 → 연출 계열(물기·광선 등) → moveFx.json (build-data 다음에 실행)
 node scripts/verify-type-chart.mjs # 상성표 324칸 검증
 ```
-spec §11의 1~6단계(프로젝트 구성, 엔진 보강, 데이터 확장, 전투 화면, 카드 화면, 지도)는 끝났다. 다음은 7단계(저장)다. 전투 연출 확인용 테스트 전투는 주소에 `?test=battle`(+ `&moves=기술slug,…`)을 붙여 연다.
+spec §11의 1~7단계(프로젝트 구성, 엔진 보강, 데이터 확장, 전투 화면, 카드 화면, 지도, 저장)는 끝났다. 다음은 8단계(MVP 완성: 밸런스, Vercel 배포, README)다. 전투 연출 확인용 테스트 전투는 주소에 `?test=battle`(+ `&moves=기술slug,…`)을 붙여 연다.
 
 ## 구조 규칙
 - `src/core/`는 **순수 TypeScript**. React, 브라우저 API, Zustand를 import하지 않는다. 모든 규칙은 여기서 구현하고 Vitest로 테스트한다.
