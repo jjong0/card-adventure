@@ -4,7 +4,7 @@ import speciesList from '../data/species.json';
 import moves from '../data/moves.json';
 import typeChart from '../data/typeChart.json';
 import learnsets from '../data/learnsets.json';
-import { battle, calcDamage, calcStats, createBattle, fixJosa, typeEffectiveness } from './battle';
+import { battle, calcDamage, calcStats, chooseEnemyAction, createBattle, fixJosa, typeEffectiveness } from './battle';
 import { createRng } from './gacha';
 import { defaultEquip, learnableUpTo } from './card';
 import type { BattleState, Card, Dex, Learnsets, Move, Species, TypeChart } from './types';
@@ -360,5 +360,29 @@ describe('전투 옵션 (지도 진행용)', () => {
     expect(createBattle([card('143', 50, ['growl'])], [card('16', 30, ['tackle'])], dex, 1, { wild: true }).log[0]).toBe('야생 구구가 나타났다!');
     expect(used(true)).toBe(3);
     expect(used(false)).toBe(1);
+  });
+});
+
+describe('상대 AI (보통: 기대 데미지 최대)', () => {
+  const pick = (enemy: Card, player: Card) => {
+    const s = createBattle([player], [enemy], dex, 1);
+    const a = chooseEnemyAction(s, dex);
+    return a.kind === 'move' ? dex.moves[a.moveId].slug : 'switch';
+  };
+
+  it('데미지가 작아도 공격기가 있으면 변화기를 쓰지 않는다', () => {
+    expect(pick(card('393', 6, ['growl', 'pound']), card('167', 6, ['poison-sting']))).toBe('pound');
+  });
+
+  it('공격기가 무효면 변화기, 공격기가 없으면 변화기', () => {
+    expect(pick(card('16', 10, ['tackle', 'sand-attack']), card('92', 10, ['lick']))).toBe('sand-attack'); // 노말 → 고스트 무효
+    expect(pick(card('1', 10, ['growl']), card('16', 10, ['tackle']))).toBe('growl');
+  });
+
+  it('쓰러뜨릴 수 있는 기술이 있으면 그 기술', () => {
+    const s = createBattle([card('16', 10, ['tackle'])], [card('445', 60, ['tackle', 'earthquake'])], dex, 1);
+    s.player.party[0].currentHp = 1;
+    const a = chooseEnemyAction(s, dex);
+    expect(a.kind === 'move' && ['tackle', 'earthquake'].includes(dex.moves[a.moveId].slug)).toBe(true);
   });
 });

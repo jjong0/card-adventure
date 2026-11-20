@@ -844,15 +844,17 @@ export function chooseEnemyAction(state: BattleState, dex: Dex): BattleAction {
   const usable = me.card.moves.filter((id) => (me.pp[id] ?? 0) > 0 && dex.moves[id]);
   if (!usable.length) return { kind: 'move', moveId: me.card.moves[0] ?? 'struggle' };
 
+  // 보통·어려움은 "기대 데미지 최대" (spec §5.3). 변화기는 공격기가 없을 때만 쓴다
+  // (예전에는 변화기에 고정 점수 15를 줘서, 초반처럼 데미지가 작을 때 울음소리만 반복했다).
+  // 우선순위: 공격기(기대 데미지순, 쓰러뜨릴 수 있으면 최우선) > 변화기 > 무효인 공격기 > 낭비되는 상태이상기
   let best = usable[0];
-  let bestScore = -1;
+  let bestScore = -Infinity;
   for (const id of usable) {
     const mv = dex.moves[id];
     let score: number;
     if (mv.category === 'status') {
-      // 변화기는 낮은 점수, 상대가 이미 상태이상이면 상태이상기는 0
       const wasted = mv.meta?.ailment !== 'none' && foe.ailment !== 'none';
-      score = wasted ? 0 : 15;
+      score = wasted ? -3 : -1;
     } else {
       const power = mv.power ?? 60;
       const physical = mv.category === 'physical';
@@ -864,7 +866,7 @@ export function chooseEnemyAction(state: BattleState, dex: Dex): BattleAction {
         stab: me.types.includes(mv.type), effectiveness: eff,
         crit: false, burned: physical && me.ailment === 'burn', randomRoll: 92,
       }) * ((mv.accuracy ?? 100) / 100);
-      score = expected >= foe.currentHp ? 10000 + expected : expected;
+      score = eff === 0 ? -2 : expected >= foe.currentHp ? 10000 + expected : expected;
     }
     if (score > bestScore) {
       bestScore = score;
