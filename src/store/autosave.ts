@@ -3,12 +3,13 @@
 // 노드 완료·상점 구매·카드 편성 변경이 모두 상태 변화라 여기서 한꺼번에 다룬다.
 // 플레이 시간은 매초 바뀌므로 그것만으로는 저장하지 않고 30초마다, 그리고 창을 닫거나 숨길 때 저장한다.
 import { useGameStore } from './gameStore';
-import { writeSlot } from './saveRepository';
+import { deleteSlot, writeSlot } from './saveRepository';
 
 const DEBOUNCE_MS = 400;
 const PLAYTIME_SAVE_MS = 30_000;
 /** 바뀌어도 저장할 필요가 없는 값 */
 const IGNORED = new Set(['playTimeSec', 'lastLost', 'slot']);
+// gameOver는 바뀌면 바로 처리해야 해서 따로 본다
 
 let timer: ReturnType<typeof setTimeout> | null = null;
 let failed = false;
@@ -17,7 +18,12 @@ export function saveNow(): boolean {
   if (timer) clearTimeout(timer);
   timer = null;
   const s = useGameStore.getState();
-  if (s.slot === null || s.gameOver) return true;
+  if (s.slot === null) return true;
+  // 너즐록 게임 오버: 그 자리에서 세이브를 지운다. 새로고침으로 전투 전 세이브를 이어하지 못하게
+  if (s.gameOver) {
+    deleteSlot(s.slot);
+    return true;
+  }
   const ok = writeSlot(s.slot, s.toSave());
   failed = !ok;
   return ok;
@@ -31,6 +37,7 @@ export function startAutosave(): () => void {
   const unsubscribe = useGameStore.subscribe((s, prev) => {
     if (s.slot === null) return;
     const changed = (Object.keys(s) as (keyof typeof s)[]).some((k) => typeof s[k] !== 'function' && !IGNORED.has(k) && s[k] !== prev[k]);
+    if (s.gameOver && !prev.gameOver) return void saveNow();
     if (!changed) return;
     if (timer) clearTimeout(timer);
     timer = setTimeout(saveNow, DEBOUNCE_MS);
