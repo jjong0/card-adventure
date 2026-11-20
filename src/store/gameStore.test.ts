@@ -24,7 +24,7 @@ function enterFirst(kind?: string) {
   const ids = reachableNodes(map, g().mapNodeId);
   const node = map.floors.flat().find((n) => ids.includes(n.id) && (!kind || n.kind === kind))!;
   expect(g().moveTo(node.id)).toBe(true);
-  return nodeOpponent(node, map.floors.length, g().chapterData(), trainers, g().starterType, dex, g().runSeed)!;
+  return nodeOpponent(node, { totalFloors: map.floors.length, chapter: g().chapterData(), trainers, starterType: g().starterType, difficulty: g().difficulty, seed: g().runSeed }, dex)!;
 }
 
 /** 승패가 날 때까지 첫 기술만 쓴다 */

@@ -39,7 +39,7 @@ export function Game() {
 
   const enter = (node: MapNode, opponent: Opponent | null) => {
     if (opponent) {
-      startBattle(game.partyCards(), opponent.cards, game.nextSeed(), { playerHp: game.hp, wild: opponent.kind === 'wild' });
+      startBattle(game.partyCards(), opponent.cards, game.nextSeed(), { playerHp: game.hp, wild: opponent.kind === 'wild', randomAi: opponent.randomAi });
       setPhase({ name: 'battle', opponent });
     } else {
       setPhase(node.kind === 'shop' ? { name: 'shop' } : { name: 'rest' });

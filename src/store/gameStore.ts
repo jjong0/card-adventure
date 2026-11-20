@@ -8,7 +8,7 @@ import { addToCollection, CARDS_PER_PACK, createRng, openPack, type AddResult } 
 import { HEAL_ITEMS, hpOf, maxHp, restParty, teachTm, useHealItem, type HpMap, type ShopItem } from '../core/items';
 import { generateMap, reachableNodes, type ChapterMap } from '../core/map';
 import { addLevels, distributeExp, evolve, evolveWithItem, gainExp, type LevelUpResult } from '../core/progress';
-import type { BattleState, Card, ChapterData, ElementType, Rarity } from '../core/types';
+import type { BattleState, Card, ChapterData, Difficulty, ElementType, Rarity } from '../core/types';
 import { chapters, dex, tmData } from '../lib/dex';
 
 /** 강화 노드에서 오르는 레벨 (spec §12 기본값) */
@@ -36,6 +36,8 @@ interface GameStore {
   /** 굴릴 때마다 바뀌는 시드: 팩·전투 난수 */
   seed: number;
   chapter: number;
+  /** 시작할 때 고르고 바꿀 수 없다 (spec §5.3) */
+  difficulty: Difficulty;
   /** 준비된 챕터(1~2장)를 모두 끝냄 */
   finished: boolean;
   gold: number;
@@ -123,6 +125,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     runSeed: initialSeed,
     seed: initialSeed,
     chapter: 1,
+    difficulty: 'normal',
     finished: false,
     gold: 0,
     badges: [],

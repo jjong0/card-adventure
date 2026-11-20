@@ -9,7 +9,7 @@ import chaptersJson from '../data/chapters.json';
 import { battleGold, nodeOpponent, nodeSeed, rewardMinRarity, trainerCards, wildCard, type EncounterDex } from './encounter';
 import { createRng } from './gacha';
 import type { MapNode } from './map';
-import type { ChapterData, Learnsets, Move, Species, Trainer } from './types';
+import type { ChapterData, Difficulty, Learnsets, Move, Species, Trainer } from './types';
 
 const species = Object.fromEntries((speciesList as Species[]).map((s) => [s.id, s]));
 const dex: EncounterDex = { species, moves: moves as unknown as Record<string, Move>, learnsets: learnsets as Learnsets };
@@ -48,7 +48,8 @@ describe('trainerCards', () => {
 describe('지도 노드의 상대', () => {
   const ch1 = (chaptersJson as ChapterData[])[0];
   const node = (kind: MapNode['kind'], floor = 4, index = 0, rival = false): MapNode => ({ id: `${floor}-${index}`, floor, index, x: 0.5, kind, rival, next: [] });
-  const opp = (n: MapNode, seed = 1, starter: 'grass' | 'fire' | 'water' = 'fire') => nodeOpponent(n, 10, ch1, all, starter, dex, seed)!;
+  const ctx = (seed = 1, starter: 'grass' | 'fire' | 'water' = 'fire', difficulty: Difficulty = 'normal') => ({ totalFloors: 10, chapter: ch1, trainers: all, starterType: starter, difficulty, seed });
+  const opp = (n: MapNode, seed = 1, starter: 'grass' | 'fire' | 'water' = 'fire', difficulty: Difficulty = 'normal') => nodeOpponent(n, ctx(seed, starter, difficulty), dex)!;
 
   it('야생: 출현표에 있는 종, 레벨은 출현 범위 안 (1000번)', () => {
     const rng = createRng(3);
@@ -98,8 +99,8 @@ describe('지도 노드의 상대', () => {
 
   it('관장은 원작 파티, 상점·휴식은 상대 없음', () => {
     expect(opp(node('leader', 10)).cards.map((c) => [c.speciesId, c.level])).toEqual([['16', 9], ['17', 13]]);
-    expect(nodeOpponent(node('shop'), 10, ch1, all, 'fire', dex, 1)).toBeNull();
-    expect(nodeOpponent(node('rest'), 10, ch1, all, 'fire', dex, 1)).toBeNull();
+    expect(nodeOpponent(node('shop'), ctx(), dex)).toBeNull();
+    expect(nodeOpponent(node('rest'), ctx(), dex)).toBeNull();
   });
 
   it('보상: 골드와 팩 최소 등급', () => {
@@ -109,5 +110,19 @@ describe('지도 노드의 상대', () => {
     const tr = opp(node('trainer'));
     expect(battleGold({ ...tr, kind: 'elite' })).toBe(battleGold(tr) * 2);
     expect([rewardMinRarity('wild'), rewardMinRarity('trainer'), rewardMinRarity('elite'), rewardMinRarity('leader')]).toEqual([undefined, undefined, 'R', 'SR']);
+  });
+
+  it('난이도: 트레이너 레벨 보정, 쉬움은 무작위 AI, 어려움 관장은 1마리 더, 야생은 레벨만', () => {
+    const lv = (d: Difficulty) => opp(node('leader', 10), 1, 'fire', d).cards.map((c) => c.level);
+    expect(lv('normal')).toEqual([9, 13]);
+    expect(lv('easy')).toEqual([7, 11]);
+    expect(lv('hard')).toEqual([12, 16, 16]); // 원작 2마리 + 재대결 에이스(Lv13으로 스케일) 모두 +3
+    expect(opp(node('trainer'), 1, 'fire', 'easy').randomAi).toBe(true);
+    expect(opp(node('trainer'), 1, 'fire', 'normal').randomAi).toBe(false);
+    const wN = opp(node('wild'), 1, 'fire', 'normal').cards[0];
+    const wE = opp(node('wild'), 1, 'fire', 'extreme').cards[0];
+    expect(wE.speciesId).toBe(wN.speciesId);
+    expect(wE.level).toBe(wN.level + 5);
+    expect(wE.ivBase).toEqual(wN.ivBase); // 야생 개체값은 난이도와 무관
   });
 });

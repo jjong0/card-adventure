@@ -1,10 +1,11 @@
 // src/core/encounter.ts
 // 전투 상대 생성: 지도 노드 → 야생·트레이너·엘리트·관장 상대와 보상 (docs/spec.md §3.2~3.4)
-// 난이도 보정(레벨·개체값·관장 파티, §5.3)은 난이도 선택이 생기는 새 게임 화면(로드맵 7단계)과 함께 추가한다.
+// 난이도 보정(레벨·개체값·관장 파티, §5.3)은 difficulty.ts 규칙을 쓴다.
 import { defaultEquip, learnableUpTo } from './card';
+import { adjustOpponent, DIFFICULTY, leaderTrainer } from './difficulty';
 import { createCard, createRng, lineRootOf, type Rng } from './gacha';
 import type { MapNode } from './map';
-import type { Card, ChapterData, Learnsets, Move, Rarity, Species, Stats, Trainer } from './types';
+import type { Card, ChapterData, Difficulty, Learnsets, Move, Rarity, Species, Stats, Trainer } from './types';
 
 export interface EncounterDex {
   species: Record<string, Species>;
@@ -57,7 +58,21 @@ export interface Opponent {
   /** 트레이너 직업 (assets.json 이미지 키). 야생은 없음 */
   trainerClass?: string;
   rival?: boolean;
+  /** 상대가 기술을 무작위로 고른다 (야생, 쉬움) */
+  randomAi: boolean;
   cards: Card[];
+}
+
+/** 노드 상대를 정하는 데 필요한 진행 상황 */
+export interface EncounterContext {
+  /** 지도 층 수 (트레이너 강도를 층 위치로 정한다) */
+  totalFloors: number;
+  chapter: ChapterData;
+  trainers: Trainer[];
+  starterType: StarterType;
+  difficulty: Difficulty;
+  /** 세이브 고정 시드 */
+  seed: number;
 }
 
 /** 엘리트 노드 후보: 그 챕터 풀에서 파티 최고 레벨이 가장 높은 순으로 이만큼 */
@@ -89,23 +104,21 @@ const TRAINER_WINDOW = 0.25;
  * - 엘리트: 풀에서 가장 강한 몇 명 중 하나, 라이벌 노드면 라이벌
  * - 라이벌은 내 스타터에게 유리한 스타터를 가진 쪽 (chapters.json rivals)
  */
-export function nodeOpponent(
-  node: MapNode,
-  totalFloors: number,
-  chapter: ChapterData,
-  trainers: Trainer[],
-  starterType: StarterType,
-  dex: EncounterDex,
-  seed: number,
-): Opponent | null {
+export function nodeOpponent(node: MapNode, ctx: EncounterContext, dex: EncounterDex): Opponent | null {
+  const { totalFloors, chapter, trainers, starterType, difficulty, seed } = ctx;
   const rng = createRng(nodeSeed(seed, chapter.chapter, node));
   const byIndex = (i: number) => trainers.find((t) => t.index === i)!;
-  const fromTrainer = (t: Trainer, kind: BattleKind, name = t.name): Opponent => ({ kind, name, trainerClass: t.class, cards: trainerCards(t, dex) });
+  const randomAi = DIFFICULTY[difficulty].randomAi;
+  const fromTrainer = (t: Trainer, kind: BattleKind, name = t.name): Opponent => ({
+    kind, name, trainerClass: t.class, randomAi, cards: adjustOpponent(trainerCards(t, dex), difficulty, rng),
+  });
 
   switch (node.kind) {
     case 'wild': {
-      const card = wildCard(chapter, dex, rng);
-      return { kind: 'wild', name: `야생 ${dex.species[card.speciesId].name}`, cards: [card] };
+      // 야생은 레벨만 난이도를 따른다 (개체값은 원래 무작위, 기술 선택도 늘 무작위)
+      const base = wildCard(chapter, dex, rng);
+      const [card] = adjustOpponent([base], difficulty, rng).map((c) => ({ ...c, ivBase: base.ivBase }));
+      return { kind: 'wild', name: `야생 ${dex.species[card.speciesId].name}`, randomAi: true, cards: [card] };
     }
     case 'trainer': {
       const pool = chapter.trainers.map(byIndex).sort((a, b) => maxLevel(a) - maxLevel(b) || a.index - b.index);
@@ -121,8 +134,9 @@ export function nodeOpponent(
       return fromTrainer(strongest[Math.floor(rng() * strongest.length)], 'elite');
     }
     case 'leader': {
-      const t = byIndex(chapter.leader.trainerIndex);
-      return fromTrainer(t, 'leader', `관장 ${t.name}`);
+      const story = byIndex(chapter.leader.trainerIndex);
+      const rematch = trainers.find((t) => t.key === story.key && t.battle === 'rematch');
+      return fromTrainer(leaderTrainer(story, rematch, difficulty), 'leader', `관장 ${story.name}`);
     }
     default:
       return null;

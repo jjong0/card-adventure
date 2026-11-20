@@ -47,7 +47,7 @@ interface Props {
 }
 
 export function MapScreen({ onEnter, onOpenBox, onOpenBag, notice }: Props) {
-  const { map, chapterData, mapNodeId, visitedNodes, runSeed, starterType, gold, badges, hp, partyCards, moveTo } = useGameStore();
+  const { map, chapterData, mapNodeId, visitedNodes, runSeed, starterType, difficulty, gold, badges, hp, partyCards, moveTo } = useGameStore();
   const chapter = chapterData();
   const m = map();
   const party = partyCards();
@@ -57,9 +57,9 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, notice }: Props) {
   const selected = nodes.find((n) => n.id === selectedId) ?? null;
 
   const opponents = useMemo(
-    () => new Map(nodes.map((n) => [n.id, nodeOpponent(n, m.floors.length, chapter, trainers, starterType, dex, runSeed)])),
+    () => new Map(nodes.map((n) => [n.id, nodeOpponent(n, { totalFloors: m.floors.length, chapter, trainers, starterType, difficulty, seed: runSeed }, dex)])),
     // nodes는 m에서 나오므로 m만 본다: 지도(시드·챕터)와 스타터 타입이 같으면 상대도 같다
-    [m, chapter, starterType, runSeed],
+    [m, chapter, starterType, difficulty, runSeed],
   );
 
   const step = (H - PAD_Y * 2) / (m.floors.length - 1);
