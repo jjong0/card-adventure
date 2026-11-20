@@ -42,11 +42,12 @@ interface Props {
   onEnter: (node: MapNode, opponent: Opponent | null) => void;
   onOpenBox: () => void;
   onOpenBag: () => void;
+  onExit: () => void;
   /** 방금 일어난 일 안내 (패배 후 재시작, 도망 등). 노드를 고르기 전까지 정보 칸에 보인다 */
   notice?: string;
 }
 
-export function MapScreen({ onEnter, onOpenBox, onOpenBag, notice }: Props) {
+export function MapScreen({ onEnter, onOpenBox, onOpenBag, onExit, notice }: Props) {
   const { map, chapterData, mapNodeId, visitedNodes, runSeed, starterType, difficulty, gold, badges, hp, partyCards, moveTo } = useGameStore();
   const chapter = chapterData();
   const m = map();
@@ -89,6 +90,7 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, notice }: Props) {
         <span className="text-[13px] text-text-dim">배지 {badges.length}</span>
         <button type="button" onClick={onOpenBox} className={topBtn}>보관함</button>
         <button type="button" onClick={onOpenBag} className={topBtn}>가방</button>
+        <button type="button" onClick={onExit} className={topBtn} title="저장하고 타이틀로">타이틀로</button>
       </header>
 
       <div className="grid min-h-0 flex-1 grid-cols-[1fr_400px]">

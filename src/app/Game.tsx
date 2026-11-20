@@ -1,8 +1,9 @@
 // 게임 진행 흐름: 스타터 → 지도 ↔ (전투 → 정산 → 보상 팩) / 휴식 / 상점 / 보관함 → 관장 → 다음 챕터
-// 타이틀·새 게임·저장은 로드맵 7단계에서 이 앞에 붙는다.
-import { useState } from 'react';
+// 진행 상태는 자동 저장되고(store/autosave), 불러오면 열지 않은 보상 팩·관장 클리어 화면부터 이어진다.
+import { useEffect, useState } from 'react';
 import { fixJosa } from '../core/battle';
-import { rewardMinRarity, type Opponent } from '../core/encounter';
+import { DIFFICULTY } from '../core/difficulty';
+import { rewardMinRarity, type BattleKind, type Opponent } from '../core/encounter';
 import type { MapNode } from '../core/map';
 import type { BattleState } from '../core/types';
 import { BagPanel } from '../features/bag/BagPanel';
@@ -16,13 +17,14 @@ import { BattleResultScreen } from '../features/result/BattleResultScreen';
 import { ShopScreen } from '../features/shop/ShopScreen';
 import { dex } from '../lib/dex';
 import { useBattleStore } from '../store/battleStore';
+import { saveNow } from '../store/autosave';
 import { useGameStore, type BattleSettlement } from '../store/gameStore';
 
 type Phase =
   | { name: 'map'; notice?: string }
   | { name: 'battle'; opponent: Opponent }
   | { name: 'result'; opponent: Opponent; settlement: BattleSettlement }
-  | { name: 'pack'; opponent: Opponent }
+  | { name: 'pack'; kind: BattleKind }
   | { name: 'clear' }
   | { name: 'rest' }
   | { name: 'shop' }
@@ -31,9 +33,45 @@ type Phase =
 export function Game() {
   const game = useGameStore();
   const startBattle = useBattleStore((s) => s.start);
-  const [phase, setPhase] = useState<Phase>({ name: 'map' });
+  // 불러온 세이브에 열지 않은 보상 팩이나 관장 클리어가 남아 있으면 그 화면부터
+  const [phase, setPhase] = useState<Phase>(() =>
+    game.pendingReward ? { name: 'pack', kind: game.pendingReward } : game.pendingClear ? { name: 'clear' } : { name: 'map' },
+  );
   const [bagOpen, setBagOpen] = useState(false);
   const toMap = (notice?: string) => setPhase({ name: 'map', notice });
+  const tick = game.tick;
+
+  // 플레이 시간: 탭이 보일 때만 센다
+  useEffect(() => {
+    const t = setInterval(() => document.visibilityState === 'visible' && tick(1), 1000);
+    return () => clearInterval(t);
+  }, [tick]);
+
+  const exitToTitle = () => {
+    saveNow();
+    game.leaveToTitle();
+  };
+
+  if (game.gameOver) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-4 text-center font-pixel">
+        <h2 className="font-title text-[44px] text-text-dim">모험이 끝났다</h2>
+        <p className="text-[15px] leading-7 text-text-dim">
+          너즐록: 모든 포켓몬을 잃었다. 이 세이브는 지워졌다.
+          <br />
+          {game.chapter}장 · 배지 {game.badges.length}개 · 플레이 {Math.floor(game.playTimeSec / 60)}분
+        </p>
+        <button
+          type="button"
+          autoFocus
+          onClick={game.leaveToTitle}
+          className="rounded-lg bg-accent px-8 py-2.5 text-[17px] font-bold text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          타이틀로
+        </button>
+      </div>
+    );
+  }
 
   if (!game.collection.length) return <StarterScreen />;
 
@@ -46,17 +84,28 @@ export function Game() {
     }
   };
 
+  /** 너즐록으로 잃은 포켓몬 안내 */
+  const lostNotice = () => {
+    const lost = useGameStore.getState().lastLost;
+    return lost.length ? ` ${lost.join(', ')}을(를) 영영 잃었다.` : '';
+  };
+
   const endBattle = (opponent: Opponent) => (state: BattleState) => {
     const settlement = game.settleBattle(state, opponent);
     if (settlement) return setPhase({ name: 'result', opponent, settlement });
+    const before = useGameStore.getState().gold;
     game.restartChapter();
-    toMap('눈앞이 깜깜해졌다… 포켓몬센터에서 회복하고 챕터 처음부터 다시 도전한다.');
+    const lostGold = before - useGameStore.getState().gold;
+    toMap(fixJosa(
+      `눈앞이 깜깜해졌다… 챕터 처음부터 다시 도전한다.${lostGold ? ` ${lostGold.toLocaleString()}G를 잃었다.` : ''}${lostNotice()}`,
+    ));
   };
 
   const runAway = (opponent: Opponent) => () => {
     const state = useBattleStore.getState().state;
     if (state) game.settleBattle(state, opponent);
-    toMap('무사히 도망쳤다. 보상은 없다.');
+    game.finishNode();
+    toMap(fixJosa(`무사히 도망쳤다. 보상은 없다.${lostNotice()}`));
   };
 
   switch (phase.name) {
@@ -69,13 +118,24 @@ export function Game() {
         />
       );
     case 'result':
-      return <BattleResultScreen opponent={phase.opponent} settlement={phase.settlement} onNext={() => setPhase({ name: 'pack', opponent: phase.opponent })} />;
+      return (
+        <div className="relative h-full">
+          <BattleResultScreen opponent={phase.opponent} settlement={phase.settlement} onNext={() => setPhase({ name: 'pack', kind: phase.opponent.kind })} />
+          {useGameStore.getState().lastLost.length > 0 && (
+            <p className="absolute inset-x-0 top-6 text-center font-pixel text-[14px] text-[#F2795A]" role="status">{fixJosa(lostNotice().trim())}</p>
+          )}
+        </div>
+      );
     case 'pack':
       return (
         <PackScreen
           reward={{
-            minRarity: rewardMinRarity(phase.opponent.kind),
-            onDone: () => (phase.opponent.kind === 'leader' ? setPhase({ name: 'clear' }) : toMap()),
+            minRarity: rewardMinRarity(phase.kind),
+            onDone: () => {
+              game.claimReward();
+              if (phase.kind === 'leader') setPhase({ name: 'clear' });
+              else toMap();
+            },
           }}
         />
       );
@@ -103,7 +163,7 @@ export function Game() {
     case 'rest':
       return <RestScreen onDone={() => toMap()} />;
     case 'shop':
-      return <ShopScreen onDone={() => toMap()} />;
+      return <ShopScreen onDone={() => { game.finishNode(); toMap(); }} />;
     case 'box':
       return (
         <div className="flex h-full flex-col">
@@ -121,15 +181,18 @@ export function Game() {
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center font-pixel">
             <h2 className="font-title text-[40px] text-accent">여기까지!</h2>
             <p className="text-[15px] leading-7 text-text-dim">
-              지금 준비된 챕터(1~2장)를 모두 끝냈다.<br />배지 {game.badges.length}개 · 보관함 {game.collection.length}계열 · {game.gold.toLocaleString()}G
+              지금 준비된 챕터(1~2장)를 모두 끝냈다.<br />{DIFFICULTY[game.difficulty].label} · 배지 {game.badges.length}개 · 보관함 {game.collection.length}계열 · {game.gold.toLocaleString()}G
             </p>
-            <button type="button" onClick={() => setPhase({ name: 'box' })} className="rounded-lg bg-surface px-5 py-2 text-[15px] ring-1 ring-line hover:ring-accent">보관함 보기</button>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => setPhase({ name: 'box' })} className="rounded-lg bg-surface px-5 py-2 text-[15px] ring-1 ring-line hover:ring-accent">보관함 보기</button>
+              <button type="button" onClick={exitToTitle} className="rounded-lg bg-surface px-5 py-2 text-[15px] ring-1 ring-line hover:ring-accent">타이틀로</button>
+            </div>
           </div>
         );
       }
       return (
         <div className="relative h-full">
-          <MapScreen onEnter={enter} onOpenBox={() => setPhase({ name: 'box' })} onOpenBag={() => setBagOpen(true)} notice={phase.notice} />
+          <MapScreen onEnter={enter} onOpenBox={() => setPhase({ name: 'box' })} onOpenBag={() => setBagOpen(true)} onExit={exitToTitle} notice={phase.notice} />
           {bagOpen && <BagPanel onClose={() => setBagOpen(false)} />}
         </div>
       );
