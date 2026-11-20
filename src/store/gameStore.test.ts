@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { battle, createBattle } from '../core/battle';
 import { nodeOpponent } from '../core/encounter';
 import { maxHp, shopStock } from '../core/items';
+import { parseSave } from '../core/save';
 import { reachableNodes } from '../core/map';
 import type { BattleState } from '../core/types';
 import { dex, tmData, trainers } from '../lib/dex';
@@ -12,8 +13,9 @@ const initial = useGameStore.getState();
 const g = () => useGameStore.getState();
 
 /** 스타터를 고르고 시작. 시드를 고정해 지도가 항상 같다 */
-function start() {
-  useGameStore.setState({ ...initial, runSeed: 1234, seed: 1234 }, true);
+function start(difficulty: 'easy' | 'normal' | 'hard' | 'extreme' = 'normal', nuzlocke = false) {
+  useGameStore.setState(initial, true);
+  g().newGame({ slot: 1, difficulty, challenges: { nuzlocke, randomStarter: false }, seed: 1234 });
   g().openStarterPack();
   g().chooseStarter(g().starterChoices![0].uid);
 }
@@ -38,7 +40,7 @@ function fight(state: BattleState): BattleState {
   return state;
 }
 
-beforeEach(start);
+beforeEach(() => start());
 
 describe('지도 이동', () => {
   it('갈 수 있는 노드로만 이동하고 방문 기록이 쌓인다', () => {
@@ -142,5 +144,108 @@ describe('상점과 아이템', () => {
     const lv = g().collection[0].level;
     expect(g().restTrain(uid)!.toLevel).toBe(lv + 3);
     expect(g().collection[0].level).toBe(lv + 3);
+  });
+});
+
+describe('저장과 불러오기', () => {
+  it('저장 → JSON → 검사 → 불러오기를 거쳐도 진행 상태가 같다', () => {
+    g().openTypePack('water');
+    g().moveTo(g().map().floors[0][0].id);
+    g().finishNode();
+    useGameStore.setState({ gold: 777, bag: { potion: 3 }, playTimeSec: 90.7 });
+    const save = g().toSave();
+    const parsed = parseSave(JSON.stringify(save));
+    if (typeof parsed === 'string') throw new Error(parsed);
+    const before = g();
+    useGameStore.setState(initial, true);
+    g().loadSave(parsed, 2);
+    for (const k of ['runSeed', 'seed', 'chapter', 'difficulty', 'gold', 'collection', 'party', 'mapNodeId', 'visitedNodes', 'bag', 'starterType'] as const) {
+      expect(g()[k], k).toEqual(before[k]);
+    }
+    expect(g().slot).toBe(2);
+    expect(g().playTimeSec).toBe(90);
+  });
+
+  it('진행 중이던 노드(전투 도중 등)는 저장하지 않는다', () => {
+    const first = g().map().floors[0][0];
+    g().moveTo(first.id);
+    expect(g().toSave()).toMatchObject({ mapNodeId: null, visitedNodes: [] });
+    g().finishNode();
+    expect(g().toSave()).toMatchObject({ mapNodeId: first.id, visitedNodes: [first.id] });
+  });
+
+  it('이기면 노드는 끝나고 보상 팩이 대기한다. 팩을 열면 비고, 관장이었으면 클리어 대기', () => {
+    const op = enterFirst();
+    const won = { ...createBattle(g().partyCards(), op.cards, dex, 1), result: 'win' as const };
+    g().settleBattle(won, op);
+    expect(g().toSave()).toMatchObject({ pendingReward: op.kind, pendingClear: false });
+    expect(g().toSave().visitedNodes).toHaveLength(1);
+    g().claimReward();
+    expect(g()).toMatchObject({ pendingReward: null, pendingClear: false });
+    useGameStore.setState({ pendingReward: 'leader' });
+    g().claimReward();
+    expect(g().pendingClear).toBe(true);
+    g().completeChapter();
+    expect(g().pendingClear).toBe(false);
+  });
+
+  it('스타터를 고르기 전에 저장해도 같은 5장이 남는다', () => {
+    useGameStore.setState(initial, true);
+    g().newGame({ slot: 1, difficulty: 'normal', challenges: { nuzlocke: false, randomStarter: false }, seed: 99 });
+    g().openStarterPack();
+    expect(g().toSave().starterChoices).toEqual(g().starterChoices);
+  });
+});
+
+describe('난이도와 챌린지', () => {
+  it('골드: 쉬움 ×1.5, 패배하면 어려움은 절반을 잃는다', () => {
+    start('easy');
+    const op = enterFirst('wild');
+    const won = { ...createBattle(g().partyCards(), op.cards, dex, 1, { wild: true }), result: 'win' as const };
+    expect(g().settleBattle(won, op)!.gold).toBe(Math.round((50 + op.cards[0].level * 5) * 1.5));
+    start('hard');
+    useGameStore.setState({ gold: 1001 });
+    g().restartChapter();
+    expect(g().gold).toBe(500);
+  });
+
+  it('휴식 회복: 어려움은 최대 HP의 50%만', () => {
+    start('hard');
+    const uid = g().party[0];
+    useGameStore.setState({ hp: { [uid]: 0 } });
+    g().restHeal();
+    expect(g().hp[uid]).toBe(Math.ceil(maxHp(g().collection[0], dex) * 0.5));
+  });
+
+  it('너즐록: 쓰러진 파티 포켓몬은 보관함에서 사라지고, 하나도 안 남으면 게임 오버', () => {
+    start('normal', true);
+    g().openTypePack('water');
+    const [a, b] = g().party;
+    const op = enterFirst();
+    const s = createBattle(g().partyCards(), op.cards, dex, 1);
+    s.player.party.find((m) => m.card.uid === a)!.currentHp = 0;
+    g().settleBattle({ ...s, result: 'win' }, op);
+    expect(g().collection.some((c) => c.uid === a)).toBe(false);
+    expect(g().party).not.toContain(a);
+    expect(g().party).toContain(b);
+    expect(g().lastLost).toHaveLength(1);
+    expect(g().gameOver).toBe(false);
+    const s2 = createBattle(g().partyCards(), op.cards, dex, 1);
+    for (const m of s2.player.party) m.currentHp = 0;
+    useGameStore.setState({ collection: g().partyCards() }); // 보관함 = 파티만 남기기
+    g().settleBattle({ ...s2, result: 'lose' }, op);
+    expect(g().gameOver).toBe(true);
+  });
+
+  it('랜덤 스타터: 같은 시드면 같은 포켓몬', () => {
+    const pick = () => {
+      useGameStore.setState(initial, true);
+      g().newGame({ slot: 1, difficulty: 'normal', challenges: { nuzlocke: false, randomStarter: true }, seed: 7 });
+      g().openStarterPack();
+      const uid = g().chooseRandomStarter();
+      return dex.species[g().collection.find((c) => c.uid === uid)!.speciesId].name;
+    };
+    expect(pick()).toBe(pick());
+    expect(g().collection).toHaveLength(1);
   });
 });

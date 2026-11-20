@@ -1,14 +1,16 @@
 // src/store/gameStore.ts
 // 진행 상태: 보관함·파티·골드·챕터·지도 위치·HP·가방. 규칙은 모두 core 함수가 처리하고 여기서는 상태만 바꾼다.
-// 저장(localStorage, 세이브 파일)은 로드맵 7단계에서 saveRepository로 붙인다.
+// 세이브 형식으로 바꾸기(toSave)·되돌리기(loadSave)를 여기서 하고, 저장소 접근은 saveRepository가 한다.
 import { create } from 'zustand';
 import { MAX_PARTY, sellCard, setParty as checkParty } from '../core/collection';
-import { battleGold, type Opponent, type StarterType } from '../core/encounter';
+import { adjustGold, DIFFICULTY, goldAfterLoss, levelCap } from '../core/difficulty';
+import { battleGold, type BattleKind, type Opponent, type StarterType } from '../core/encounter';
 import { addToCollection, CARDS_PER_PACK, createRng, openPack, type AddResult } from '../core/gacha';
 import { HEAL_ITEMS, hpOf, maxHp, restParty, teachTm, useHealItem, type HpMap, type ShopItem } from '../core/items';
 import { generateMap, reachableNodes, type ChapterMap } from '../core/map';
 import { addLevels, distributeExp, evolve, evolveWithItem, gainExp, type LevelUpResult } from '../core/progress';
-import type { BattleState, Card, ChapterData, Difficulty, ElementType, Rarity } from '../core/types';
+import { SAVE_VERSION } from '../core/save';
+import type { BattleState, Card, ChapterData, Difficulty, ElementType, Rarity, SaveData } from '../core/types';
 import { chapters, dex, tmData } from '../lib/dex';
 
 /** 강화 노드에서 오르는 레벨 (spec §12 기본값) */
@@ -30,7 +32,19 @@ export interface BattleSettlement {
   growth: { exp: number; result: LevelUpResult }[];
 }
 
+export type Challenges = SaveData['challenges'];
+
+export interface NewGameOptions {
+  slot: number;
+  difficulty: Difficulty;
+  challenges: Challenges;
+  seed: number;
+}
+
 interface GameStore {
+  /** 지금 플레이 중인 세이브 슬롯 (1~3). 타이틀 화면이면 null */
+  slot: number | null;
+  createdAt: string;
   /** 세이브 고정 시드: 지도와 노드 상대를 정한다 */
   runSeed: number;
   /** 굴릴 때마다 바뀌는 시드: 팩·전투 난수 */
@@ -38,6 +52,7 @@ interface GameStore {
   chapter: number;
   /** 시작할 때 고르고 바꿀 수 없다 (spec §5.3) */
   difficulty: Difficulty;
+  challenges: Challenges;
   /** 준비된 챕터(1~2장)를 모두 끝냄 */
   finished: boolean;
   gold: number;
@@ -50,28 +65,52 @@ interface GameStore {
   /** 지금 서 있는 노드. 챕터를 막 시작했으면 null */
   mapNodeId: string | null;
   visitedNodes: string[];
+  /** 지금 노드를 끝냈는지. 끝내기 전에 닫으면 노드에 들어가기 전 상태로 저장된다 */
+  nodeDone: boolean;
   /** 현재 HP (없는 카드는 가득) */
   hp: HpMap;
   bag: Record<string, number>;
   /** 보유 기술머신 (move id) */
   tms: string[];
+  /** 이기고 아직 열지 않은 보상 팩 */
+  pendingReward: BattleKind | null;
+  /** 관장을 이기고 아직 다음 챕터로 넘어가지 않음 */
+  pendingClear: boolean;
+  playTimeSec: number;
+  /** 너즐록: 방금 전투에서 잃은 포켓몬 이름 */
+  lastLost: string[];
+  /** 너즐록: 카드가 하나도 남지 않음 */
+  gameOver: boolean;
 
   chapterData: () => ChapterData;
   map: () => ChapterMap;
   partyCards: () => Card[];
+
+  newGame: (opts: NewGameOptions) => void;
+  loadSave: (save: SaveData, slot: number) => void;
+  toSave: () => SaveData;
+  leaveToTitle: () => void;
+  tick: (sec: number) => void;
+
   openStarterPack: () => void;
   chooseStarter: (uid: string) => void;
+  /** 랜덤 스타터 챌린지: 5장 중 하나를 시드로 고른다 */
+  chooseRandomStarter: () => string | null;
   openTypePack: (type: ElementType, minRarity?: Rarity) => PackOpening;
   updateCard: (card: Card) => void;
   sell: (uid: string) => 'not-found' | 'in-party' | number;
   setParty: (uids: string[]) => boolean;
 
   moveTo: (nodeId: string) => boolean;
+  /** 보상 없이 노드를 끝냄 (도망, 상점에서 나감) */
+  finishNode: () => void;
   nextSeed: () => number;
-  /** 전투가 끝난 뒤: HP를 이어받고, 이겼으면 골드·경험치 정산 */
+  /** 전투가 끝난 뒤: HP를 이어받고, 너즐록이면 쓰러진 카드를 잃고, 이겼으면 골드·경험치 정산 */
   settleBattle: (state: BattleState, opponent: Opponent) => BattleSettlement | null;
+  /** 보상 팩을 열었음. 관장이었으면 클리어 대기로 */
+  claimReward: () => void;
   evolveCard: (uid: string, to: string) => boolean;
-  /** 패배: 챕터 처음부터, 카드 유지, 전원 회복 (spec §1) */
+  /** 패배: 챕터 처음부터, 카드 유지, 전원 회복, 난이도에 따라 골드를 잃음 (spec §1, §5.3) */
   restartChapter: () => void;
   /** 관장 승리: 배지·기술머신을 받고 다음 챕터로 */
   completeChapter: () => void;
@@ -110,8 +149,37 @@ const TEACH_ERROR: Record<string, string> = {
   'already-known': '이미 배운 기술이다.',
 };
 
+/** 새 게임을 시작하기 전의 빈 진행 상태 */
+function blankRun(seed: number) {
+  return {
+    createdAt: new Date().toISOString(),
+    runSeed: seed,
+    seed,
+    chapter: 1,
+    difficulty: 'normal' as Difficulty,
+    challenges: { nuzlocke: false, randomStarter: false },
+    finished: false,
+    gold: 0,
+    badges: [] as string[],
+    collection: [] as Card[],
+    party: [] as string[],
+    starterType: 'fire' as StarterType,
+    starterChoices: null as Card[] | null,
+    mapNodeId: null as string | null,
+    visitedNodes: [] as string[],
+    nodeDone: true,
+    hp: {} as HpMap,
+    bag: {} as Record<string, number>,
+    tms: [] as string[],
+    pendingReward: null as BattleKind | null,
+    pendingClear: false,
+    playTimeSec: 0,
+    lastLost: [] as string[],
+    gameOver: false,
+  };
+}
+
 let mapCache: { key: string; map: ChapterMap } | null = null;
-const initialSeed = Date.now() >>> 0; // 시드만 시각에서 얻고, 난수는 모두 createRng로 (새 게임 화면이 생기면 SaveData.seed)
 
 export const useGameStore = create<GameStore>((set, get) => {
   const replaceCard = (after: Card) => {
@@ -121,23 +189,25 @@ export const useGameStore = create<GameStore>((set, get) => {
   };
   const fullHeal = (): HpMap => ({});
 
+  /** 너즐록: 쓰러진 파티 포켓몬을 보관함에서 영구 삭제 (spec §5.3) */
+  const applyNuzlocke = () => {
+    if (!get().challenges.nuzlocke) return set({ lastLost: [] });
+    const fainted = get().partyCards().filter((c) => (get().hp[c.uid] ?? 1) <= 0);
+    const gone = new Set(fainted.map((c) => c.uid));
+    const collection = get().collection.filter((c) => !gone.has(c.uid));
+    set({
+      collection,
+      party: get().party.filter((u) => !gone.has(u)),
+      lastLost: fainted.map((c) => dex.species[c.speciesId].name),
+      gameOver: collection.length === 0,
+    });
+    // 파티가 비었는데 보관함에 카드가 남아 있으면 앞에서부터 채운다
+    if (!get().party.length && collection.length) set({ party: collection.slice(0, MAX_PARTY).map((c) => c.uid) });
+  };
+
   return {
-    runSeed: initialSeed,
-    seed: initialSeed,
-    chapter: 1,
-    difficulty: 'normal',
-    finished: false,
-    gold: 0,
-    badges: [],
-    collection: [],
-    party: [],
-    starterType: 'fire',
-    starterChoices: null,
-    mapNodeId: null,
-    visitedNodes: [],
-    hp: {},
-    bag: {},
-    tms: [],
+    slot: null,
+    ...blankRun(Date.now() >>> 0),
 
     chapterData: () => chapters.find((c) => c.chapter === get().chapter) ?? chapters[chapters.length - 1],
 
@@ -153,6 +223,55 @@ export const useGameStore = create<GameStore>((set, get) => {
       return get().party.map((u) => byUid.get(u)).filter((c): c is Card => !!c);
     },
 
+    // ── 세이브 ───────────────────────────────
+    newGame: ({ slot, difficulty, challenges, seed }) => set({ ...blankRun(seed), slot, difficulty, challenges }),
+
+    loadSave: (save, slot) =>
+      set({
+        ...blankRun(save.runSeed),
+        ...save,
+        slot,
+        nodeDone: true,
+        lastLost: [],
+        gameOver: false,
+      }),
+
+    toSave: () => {
+      const s = get();
+      // 진행 중이던 노드는 저장하지 않는다: 다시 불러오면 그 노드에 들어가기 전으로
+      const visited = s.nodeDone ? s.visitedNodes : s.visitedNodes.slice(0, -1);
+      return {
+        version: SAVE_VERSION,
+        createdAt: s.createdAt,
+        updatedAt: new Date().toISOString(),
+        difficulty: s.difficulty,
+        challenges: s.challenges,
+        runSeed: s.runSeed,
+        seed: s.seed,
+        chapter: s.chapter,
+        finished: s.finished,
+        mapNodeId: visited.at(-1) ?? null,
+        visitedNodes: visited,
+        gold: s.gold,
+        badges: s.badges,
+        collection: s.collection,
+        party: s.party,
+        starterType: s.starterType,
+        starterChoices: s.starterChoices,
+        hp: s.hp,
+        bag: s.bag,
+        tms: s.tms,
+        pendingReward: s.pendingReward,
+        pendingClear: s.pendingClear,
+        playTimeSec: Math.floor(s.playTimeSec),
+      };
+    },
+
+    leaveToTitle: () => set({ slot: null }),
+
+    tick: (sec) => set({ playTimeSec: get().playTimeSec + sec }),
+
+    // ── 카드 ────────────────────────────────
     openStarterPack: () => {
       const level = get().chapterData().packLevel;
       const [cards, seed] = roll(get().seed, (rng) => openPack({ kind: 'starter', cardsPerPack: CARDS_PER_PACK, level }, dex, rng));
@@ -166,6 +285,15 @@ export const useGameStore = create<GameStore>((set, get) => {
       const types = dex.species[card.speciesId].types;
       const starterType = STARTER_TYPES.find((t) => types.includes(t)) ?? 'fire';
       set({ collection, party: [...get().party, card.uid].slice(0, MAX_PARTY), starterChoices: null, starterType });
+    },
+
+    chooseRandomStarter: () => {
+      const choices = get().starterChoices;
+      if (!choices) return null;
+      const [card, seed] = roll(get().seed, (rng) => choices[Math.floor(rng() * choices.length)]);
+      set({ seed });
+      get().chooseStarter(card.uid);
+      return card.uid;
     },
 
     openTypePack: (type, minRarity) => {
@@ -197,11 +325,14 @@ export const useGameStore = create<GameStore>((set, get) => {
       return true;
     },
 
+    // ── 지도 진행 ────────────────────────────
     moveTo: (nodeId) => {
       if (!reachableNodes(get().map(), get().mapNodeId).includes(nodeId)) return false;
-      set({ mapNodeId: nodeId, visitedNodes: [...get().visitedNodes, nodeId] });
+      set({ mapNodeId: nodeId, visitedNodes: [...get().visitedNodes, nodeId], nodeDone: false });
       return true;
     },
+
+    finishNode: () => set({ nodeDone: true }),
 
     nextSeed: () => {
       const [value, seed] = roll(get().seed, (rng) => Math.floor(rng() * 2 ** 32));
@@ -213,21 +344,26 @@ export const useGameStore = create<GameStore>((set, get) => {
       const hp = { ...get().hp };
       for (const m of state.player.party) hp[m.card.uid] = m.currentHp;
       set({ hp });
+      applyNuzlocke();
       if (state.result !== 'win') return null;
 
+      const cap = levelCap(get().chapterData(), get().difficulty);
       const gained = distributeExp(state, opponent.kind !== 'wild', dex.species);
       const growth: BattleSettlement['growth'] = [];
       for (const [uid, exp] of Object.entries(gained)) {
         const card = get().collection.find((c) => c.uid === uid);
-        if (!card) continue;
-        const result = gainExp(card, exp, dex);
+        if (!card) continue; // 너즐록으로 잃은 카드
+        const result = gainExp(card, exp, dex, cap);
         replaceCard(result.card);
         growth.push({ exp, result });
       }
-      const gold = battleGold(opponent);
-      set({ gold: get().gold + gold });
+      const gold = adjustGold(battleGold(opponent), get().difficulty);
+      // 승리로 노드는 끝났다. 보상 팩은 열 때까지 남겨 둔다 (닫았다 열어도 팩부터)
+      set({ gold: get().gold + gold, nodeDone: true, pendingReward: opponent.kind });
       return { gold, growth };
     },
+
+    claimReward: () => set({ pendingClear: get().pendingReward === 'leader', pendingReward: null }),
 
     evolveCard: (uid, to) => {
       const card = get().collection.find((c) => c.uid === uid);
@@ -237,29 +373,33 @@ export const useGameStore = create<GameStore>((set, get) => {
       return true;
     },
 
-    restartChapter: () => set({ mapNodeId: null, visitedNodes: [], hp: fullHeal() }),
+    restartChapter: () =>
+      set({ mapNodeId: null, visitedNodes: [], nodeDone: true, hp: fullHeal(), gold: goldAfterLoss(get().gold, get().difficulty) }),
 
     completeChapter: () => {
       const ch = get().chapterData();
       const hasNext = chapters.some((c) => c.chapter === ch.chapter + 1);
       set({
-        badges: [...get().badges, ch.leader.key],
+        badges: get().badges.includes(ch.leader.key) ? get().badges : [...get().badges, ch.leader.key],
         tms: get().tms.includes(ch.rewardTm.moveId) ? get().tms : [...get().tms, ch.rewardTm.moveId],
         chapter: hasNext ? ch.chapter + 1 : ch.chapter,
         finished: !hasNext,
         mapNodeId: null,
         visitedNodes: [],
+        nodeDone: true,
+        pendingClear: false,
         hp: fullHeal(),
       });
     },
 
-    restHeal: () => set({ hp: restParty(get().partyCards(), get().hp, dex) }),
+    restHeal: () => set({ hp: restParty(get().partyCards(), get().hp, dex, DIFFICULTY[get().difficulty].restHeal), nodeDone: true }),
 
     restTrain: (uid) => {
       const card = get().collection.find((c) => c.uid === uid);
       if (!card) return null;
       const result = addLevels(card, REST_LEVELS, dex);
       replaceCard(result.card);
+      set({ nodeDone: true });
       return result;
     },
 
