@@ -29,7 +29,9 @@ export const DIFFICULTY: Record<Difficulty, DifficultyRule> = {
   easy: { label: '쉬움', levelOffset: -2, ivs: [0, 15], randomAi: true, leaderParty: 'story', levelCap: 'none', goldRate: 1.5, restHeal: 1, leaderItems: true, lossGold: 0 },
   normal: { label: '보통', levelOffset: 0, ivs: 'original', randomAi: false, leaderParty: 'story', levelCap: 'none', goldRate: 1, restHeal: 1, leaderItems: true, lossGold: 0 },
   hard: { label: '어려움', levelOffset: 3, ivs: [20, 31], randomAi: false, leaderParty: 'story+1', levelCap: 'leader-ace', goldRate: 0.8, restHeal: 0.5, leaderItems: true, lossGold: 0.5 },
-  extreme: { label: '익스트림', levelOffset: 5, ivs: [31, 31], randomAi: false, leaderParty: 'rematch', levelCap: 'leader-ace-2', goldRate: 0.6, restHeal: 0.3, leaderItems: false, lossGold: 1 },
+  // 익스트림: spec 초안은 Lv+5·캡 에이스−2였지만, 재대결 6마리 관장(개체값 31)과 겹쳐 사실상 클리어할 수 없었다
+  // (밸런스 봇 30판 0클리어). 사용자 결정으로 레벨 보정과 캡을 풀고 관장 파티·개체값으로 어렵게 한다.
+  extreme: { label: '익스트림', levelOffset: 0, ivs: [31, 31], randomAi: false, leaderParty: 'rematch', levelCap: 'none', goldRate: 0.6, restHeal: 0.3, leaderItems: false, lossGold: 1 },
 };
 
 export const DIFFICULTIES: Difficulty[] = ['easy', 'normal', 'hard', 'extreme'];

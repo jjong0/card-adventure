@@ -17,12 +17,12 @@ const card = (level: number): Card => ({
 });
 
 describe('상대 보정', () => {
-  it('레벨: 쉬움 −2, 보통 그대로, 어려움 +3, 익스트림 +5 (최소 Lv1)', () => {
+  it('레벨: 쉬움 −2, 보통 그대로, 어려움 +3, 익스트림 그대로 (최소 Lv1)', () => {
     const rng = createRng(1);
     expect(adjustOpponent([card(10)], 'easy', rng)[0].level).toBe(8);
     expect(adjustOpponent([card(10)], 'normal', rng)[0].level).toBe(10);
     expect(adjustOpponent([card(10)], 'hard', rng)[0].level).toBe(13);
-    expect(adjustOpponent([card(10)], 'extreme', rng)[0].level).toBe(15);
+    expect(adjustOpponent([card(10)], 'extreme', rng)[0].level).toBe(10);
     expect(adjustOpponent([card(2)], 'easy', rng)[0].level).toBe(1);
   });
 
@@ -64,10 +64,10 @@ describe('관장 파티', () => {
 });
 
 describe('진행 보정', () => {
-  it('레벨 캡: 쉬움·보통 없음(100), 어려움 관장 에이스, 익스트림 에이스 −2', () => {
+  it('레벨 캡: 어려움만 관장 에이스, 나머지는 없음(100)', () => {
     expect(levelCap(chapters[0], 'normal')).toBe(100);
     expect(levelCap(chapters[0], 'hard')).toBe(13);
-    expect(levelCap(chapters[0], 'extreme')).toBe(11);
+    expect(levelCap(chapters[0], 'extreme')).toBe(100);
   });
 
   it('골드: 배율 ×1.5 / ×1 / ×0.8 / ×0.6, 패배하면 어려움 절반·익스트림 전부 잃음', () => {

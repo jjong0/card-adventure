@@ -120,9 +120,9 @@ describe('지도 노드의 상대', () => {
     expect(opp(node('trainer'), 1, 'fire', 'easy').randomAi).toBe(true);
     expect(opp(node('trainer'), 1, 'fire', 'normal').randomAi).toBe(false);
     const wN = opp(node('wild'), 1, 'fire', 'normal').cards[0];
-    const wE = opp(node('wild'), 1, 'fire', 'extreme').cards[0];
+    const wE = opp(node('wild'), 1, 'fire', 'hard').cards[0];
     expect(wE.speciesId).toBe(wN.speciesId);
-    expect(wE.level).toBe(wN.level + 5);
+    expect(wE.level).toBe(wN.level + 3);
     expect(wE.ivBase).toEqual(wN.ivBase); // 야생 개체값은 난이도와 무관
   });
 
