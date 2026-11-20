@@ -158,8 +158,10 @@ export interface BattleSide {
 export interface BattleState {
   turn: number;
   seed: number;
-  /** 야생전: 상대가 기술을 무작위로 고르고, 경험치 배율이 1 */
+  /** 야생전: 등장 문구가 다르고, 경험치 배율이 1 */
   wild: boolean;
+  /** 상대가 기술을 무작위로 고른다 (야생, 쉬움 난이도) */
+  randomAi: boolean;
   player: BattleSide;
   enemy: BattleSide;
   log: string[];

@@ -137,8 +137,10 @@ function markFaced(state: BattleState) {
 export interface BattleOptions {
   /** 전투 시작 HP (Card.uid → HP). 없는 카드는 가득. 지도에서는 전투가 끝나도 HP가 이어진다 */
   playerHp?: Record<string, number>;
-  /** 야생 포켓몬: 기술을 무작위로 고른다 (spec §5.3) */
+  /** 야생전: 등장 문구가 다르다. 야생 포켓몬은 늘 기술을 무작위로 고른다 (spec §5.3) */
   wild?: boolean;
+  /** 상대가 기술을 무작위로 고른다 (야생, 쉬움 난이도 트레이너) */
+  randomAi?: boolean;
 }
 
 export function createBattle(playerCards: Card[], enemyCards: Card[], dex: Dex, seed: number, opts: BattleOptions = {}): BattleState {
@@ -156,6 +158,7 @@ export function createBattle(playerCards: Card[], enemyCards: Card[], dex: Dex, 
     turn: 1,
     seed,
     wild: !!opts.wild,
+    randomAi: !!(opts.randomAi || opts.wild),
     player: { party: player, activeIdx: lead },
     enemy: { party: enemy, activeIdx: 0 },
     log: [],
@@ -785,7 +788,7 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
 
   const order: Resolved[] = [
     { side: 'player', action },
-    { side: 'enemy', action: state.wild ? randomEnemyAction(state, dex, rng) : chooseEnemyAction(state, dex) },
+    { side: 'enemy', action: state.randomAi ? randomEnemyAction(state, dex, rng) : chooseEnemyAction(state, dex) },
   ];
   order.sort((a, b) => {
     const p = priorityOf(b, dex) - priorityOf(a, dex);
@@ -827,7 +830,7 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
 // 상대 AI: 기대 데미지가 가장 높은 기술 (상대를 쓰러뜨릴 수 있으면 우선)
 // ════════════════════════════════════════════
 
-/** 야생 포켓몬: PP가 남은 기술 중 무작위 (spec §5.3) */
+/** 무작위 AI (야생, 쉬움): PP가 남은 기술 중 무작위 (spec §5.3) */
 function randomEnemyAction(state: BattleState, dex: Dex, rng: Rng): BattleAction {
   const me = active(state.enemy);
   const usable = me.card.moves.filter((id) => (me.pp[id] ?? 0) > 0 && dex.moves[id]);
