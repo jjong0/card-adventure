@@ -30,7 +30,7 @@ interface Props {
 }
 
 export function PackScreen({ reward }: Props) {
-  const { openTypePack, chapterData, gold } = useGameStore();
+  const { openTypePack, packLevel, gold } = useGameStore();
   const [type, setType] = useState<ElementType>('fire');
   const [freeMin, setMin] = useState<Rarity | undefined>(undefined);
   const min = reward ? reward.minRarity : freeMin;
@@ -53,7 +53,7 @@ export function PackScreen({ reward }: Props) {
         <div>
           <h2 className="font-title text-[24px] leading-tight">{reward ? (reward.minRarity ? `보상 팩 (${reward.minRarity} 이상 확정)` : '보상 팩') : '속성 팩'}</h2>
           <p className="font-pixel text-[13px] text-text-dim">
-            고른 속성의 포켓몬 5장을 모두 받는다. 카드 레벨 Lv{chapterData().packLevel} · 보유 {gold.toLocaleString()}G
+            고른 속성의 포켓몬 5장을 모두 받는다. 카드 레벨 Lv{packLevel()} · 보유 {gold.toLocaleString()}G
           </p>
         </div>
         <div className="grid grid-cols-3 gap-1.5" role="radiogroup" aria-label="속성">

@@ -2,7 +2,7 @@
 // 전투 상대 생성: 지도 노드 → 야생·트레이너·엘리트·관장 상대와 보상 (docs/spec.md §3.2~3.4)
 // 난이도 보정(레벨·개체값·관장 파티, §5.3)은 difficulty.ts 규칙을 쓴다.
 import { defaultEquip, learnableUpTo } from './card';
-import { adjustOpponent, DIFFICULTY, leaderTrainer } from './difficulty';
+import { adjustOpponent, DIFFICULTY, leaderTrainer, levelCap } from './difficulty';
 import { createCard, createRng, lineRootOf, type Rng } from './gacha';
 import type { MapNode } from './map';
 import type { Card, ChapterData, Difficulty, Learnsets, Move, Rarity, Species, Stats, Trainer } from './types';
@@ -162,4 +162,18 @@ export function battleGold(op: Opponent): number {
 /** 승리 보상 팩의 최소 등급: 엘리트 R 이상, 관장 SR 이상 (spec §3.2) */
 export function rewardMinRarity(kind: BattleKind): Rarity | undefined {
   return kind === 'elite' ? 'R' : kind === 'leader' ? 'SR' : undefined;
+}
+
+/** 보상 팩 카드가 상대보다 이만큼 낮게 나온다 */
+const REWARD_LEVEL_GAP = 2;
+
+/**
+ * 보상 팩 카드 레벨 (spec §12 "팩 카드 레벨"): 쓰러뜨린 상대의 최고 레벨 − 2.
+ * 챕터 야생 최고 레벨보다 낮지 않고, 레벨 캡(어려움 이상)을 넘지 않는다.
+ * 강한 상대를 이길수록 바로 쓸 만한 카드가 들어온다 (경험치는 전투에 나간 포켓몬만 받아서,
+ * 고정 레벨이면 챕터 후반의 새 카드가 쓸모없었다).
+ */
+export function rewardPackLevel(op: Opponent, chapter: ChapterData, difficulty: Difficulty): number {
+  const top = Math.max(...op.cards.map((c) => c.level));
+  return Math.min(levelCap(chapter, difficulty), Math.max(chapter.packLevel, top - REWARD_LEVEL_GAP));
 }

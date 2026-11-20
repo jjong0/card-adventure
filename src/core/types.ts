@@ -281,6 +281,8 @@ export interface SaveData {
   tms: string[];                    // 보유 기술머신 (move id)
   /** 이기고 아직 열지 않은 보상 팩 (불러오면 팩 화면부터) */
   pendingReward: 'wild' | 'trainer' | 'elite' | 'leader' | null;
+  /** 열지 않은 보상 팩의 카드 레벨 (없으면 챕터 기본값) */
+  pendingRewardLevel?: number | null;
   /** 관장을 이기고 아직 다음 챕터로 넘어가지 않음 (불러오면 클리어 화면부터) */
   pendingClear: boolean;
   playTimeSec: number;

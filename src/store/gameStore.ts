@@ -4,7 +4,7 @@
 import { create } from 'zustand';
 import { MAX_PARTY, sellCard, setParty as checkParty } from '../core/collection';
 import { adjustGold, DIFFICULTY, goldAfterLoss, levelCap } from '../core/difficulty';
-import { battleGold, type BattleKind, type Opponent, type StarterType } from '../core/encounter';
+import { battleGold, rewardPackLevel, type BattleKind, type Opponent, type StarterType } from '../core/encounter';
 import { addToCollection, CARDS_PER_PACK, createRng, openPack, type AddResult } from '../core/gacha';
 import { HEAL_ITEMS, hpOf, maxHp, restParty, teachTm, useHealItem, type HpMap, type ShopItem } from '../core/items';
 import { generateMap, reachableNodes, type ChapterMap } from '../core/map';
@@ -74,6 +74,8 @@ interface GameStore {
   tms: string[];
   /** 이기고 아직 열지 않은 보상 팩 */
   pendingReward: BattleKind | null;
+  /** 그 보상 팩의 카드 레벨 */
+  pendingRewardLevel: number | null;
   /** 관장을 이기고 아직 다음 챕터로 넘어가지 않음 */
   pendingClear: boolean;
   playTimeSec: number;
@@ -83,6 +85,8 @@ interface GameStore {
   gameOver: boolean;
 
   chapterData: () => ChapterData;
+  /** 지금 팩을 열면 나오는 카드 레벨 (보상 팩이 대기 중이면 그 레벨) */
+  packLevel: () => number;
   map: () => ChapterMap;
   partyCards: () => Card[];
 
@@ -172,6 +176,7 @@ function blankRun(seed: number) {
     bag: {} as Record<string, number>,
     tms: [] as string[],
     pendingReward: null as BattleKind | null,
+    pendingRewardLevel: null as number | null,
     pendingClear: false,
     playTimeSec: 0,
     lastLost: [] as string[],
@@ -210,6 +215,8 @@ export const useGameStore = create<GameStore>((set, get) => {
     ...blankRun(Date.now() >>> 0),
 
     chapterData: () => chapters.find((c) => c.chapter === get().chapter) ?? chapters[chapters.length - 1],
+
+    packLevel: () => (get().pendingReward ? get().pendingRewardLevel : null) ?? get().chapterData().packLevel,
 
     map: () => {
       const { runSeed, chapter } = get();
@@ -262,6 +269,7 @@ export const useGameStore = create<GameStore>((set, get) => {
         bag: s.bag,
         tms: s.tms,
         pendingReward: s.pendingReward,
+        pendingRewardLevel: s.pendingRewardLevel,
         pendingClear: s.pendingClear,
         playTimeSec: Math.floor(s.playTimeSec),
       };
@@ -297,7 +305,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     },
 
     openTypePack: (type, minRarity) => {
-      const level = get().chapterData().packLevel;
+      const level = get().packLevel();
       const [cards, seed] = roll(get().seed, (rng) =>
         openPack({ kind: 'type', cardsPerPack: CARDS_PER_PACK, typeFilter: type, minRarity, level }, dex, rng),
       );
@@ -359,11 +367,12 @@ export const useGameStore = create<GameStore>((set, get) => {
       }
       const gold = adjustGold(battleGold(opponent), get().difficulty);
       // 승리로 노드는 끝났다. 보상 팩은 열 때까지 남겨 둔다 (닫았다 열어도 팩부터)
-      set({ gold: get().gold + gold, nodeDone: true, pendingReward: opponent.kind });
+      const rewardLevel = rewardPackLevel(opponent, get().chapterData(), get().difficulty);
+      set({ gold: get().gold + gold, nodeDone: true, pendingReward: opponent.kind, pendingRewardLevel: rewardLevel });
       return { gold, growth };
     },
 
-    claimReward: () => set({ pendingClear: get().pendingReward === 'leader', pendingReward: null }),
+    claimReward: () => set({ pendingClear: get().pendingReward === 'leader', pendingReward: null, pendingRewardLevel: null }),
 
     evolveCard: (uid, to) => {
       const card = get().collection.find((c) => c.uid === uid);

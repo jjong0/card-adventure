@@ -79,6 +79,7 @@ export function parseSave(input: string | unknown): SaveData | LoadError {
     isNumRecord(s.bag) &&
     isStrArr(s.tms) &&
     (s.pendingReward === null || ['wild', 'trainer', 'elite', 'leader'].includes(s.pendingReward as string)) &&
+    (s.pendingRewardLevel === undefined || s.pendingRewardLevel === null || isNum(s.pendingRewardLevel)) &&
     typeof s.pendingClear === 'boolean' &&
     isNum(s.playTimeSec);
   if (!ok) return 'broken';

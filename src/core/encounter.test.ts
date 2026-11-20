@@ -6,7 +6,7 @@ import learnsets from '../data/learnsets.json';
 import trainers from '../data/trainers.json';
 import { learnableUpTo, defaultEquip } from './card';
 import chaptersJson from '../data/chapters.json';
-import { battleGold, nodeOpponent, nodeSeed, rewardMinRarity, trainerCards, wildCard, type EncounterDex } from './encounter';
+import { battleGold, nodeOpponent, nodeSeed, rewardMinRarity, rewardPackLevel, trainerCards, wildCard, type EncounterDex } from './encounter';
 import { createRng } from './gacha';
 import type { MapNode } from './map';
 import type { ChapterData, Difficulty, Learnsets, Move, Species, Trainer } from './types';
@@ -124,5 +124,14 @@ describe('지도 노드의 상대', () => {
     expect(wE.speciesId).toBe(wN.speciesId);
     expect(wE.level).toBe(wN.level + 5);
     expect(wE.ivBase).toEqual(wN.ivBase); // 야생 개체값은 난이도와 무관
+  });
+
+  it('보상 팩 카드 레벨: 상대 최고 레벨 − 2, 챕터 야생 최고 레벨 이상, 레벨 캡 이하', () => {
+    const leader = opp(node('leader', 10)); // 비상 에이스 Lv13
+    expect(rewardPackLevel(leader, ch1, 'normal')).toBe(11);
+    const wild = opp(node('wild', 1));
+    expect(rewardPackLevel(wild, ch1, 'normal')).toBe(ch1.packLevel); // 야생 Lv2~4 → 야생 최고 Lv6
+    const hardLeader = opp(node('leader', 10), 1, 'fire', 'hard'); // 에이스 Lv16
+    expect(rewardPackLevel(hardLeader, ch1, 'hard')).toBe(13); // 16 − 2 = 14지만 레벨 캡 13
   });
 });
