@@ -119,7 +119,10 @@ interface GameStore {
   /** 관장 승리: 배지·기술머신을 받고 다음 챕터로 */
   completeChapter: () => void;
   restHeal: () => void;
+  /** 카드 1장 레벨 +3 (레벨 캡까지). 캡에 닿은 카드면 null */
   restTrain: (uid: string) => LevelUpResult | null;
+  /** 지금 챕터의 레벨 캡 (없으면 100) */
+  levelCap: () => number;
   buy: (item: ShopItem) => 'no-gold' | 'owned' | 'ok';
   /** 회복약·진화의돌 사용. 실패하면 이유 */
   applyItem: (itemId: string, uid: string) => string | null;
@@ -401,12 +404,15 @@ export const useGameStore = create<GameStore>((set, get) => {
       });
     },
 
+    levelCap: () => levelCap(get().chapterData(), get().difficulty),
+
     restHeal: () => set({ hp: restParty(get().partyCards(), get().hp, dex, DIFFICULTY[get().difficulty].restHeal), nodeDone: true }),
 
     restTrain: (uid) => {
       const card = get().collection.find((c) => c.uid === uid);
-      if (!card) return null;
-      const result = addLevels(card, REST_LEVELS, dex);
+      const cap = levelCap(get().chapterData(), get().difficulty);
+      if (!card || card.level >= cap) return null;
+      const result = addLevels(card, REST_LEVELS, dex, cap);
       replaceCard(result.card);
       set({ nodeDone: true });
       return result;

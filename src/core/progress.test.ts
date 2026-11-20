@@ -80,6 +80,11 @@ describe('레벨업과 기술 습득', () => {
     expect(gainExp(fresh('4', 5), 10 ** 9, dex).card.level).toBe(MAX_LEVEL);
   });
 
+  it('강화 노드도 레벨 캡까지만, 이미 캡 이상이면 그대로', () => {
+    expect(addLevels(fresh('4', 11), 3, dex, 13).toLevel).toBe(13);
+    expect(addLevels(fresh('4', 15), 3, dex, 13).toLevel).toBe(15);
+  });
+
   it('강화 노드: 레벨 +3, 그 사이 기술도 배움', () => {
     const r = addLevels(fresh('4', 6), 3, dex);
     expect(r.toLevel).toBe(9);

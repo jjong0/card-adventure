@@ -8,7 +8,8 @@ import { currentHp, REST_LEVELS, useGameStore } from '../../store/gameStore';
 import { EvolutionPrompt } from '../result/EvolutionPrompt';
 
 export function RestScreen({ onDone }: { onDone: () => void }) {
-  const { partyCards, hp, restHeal, restTrain } = useGameStore();
+  const { partyCards, hp, restHeal, restTrain, levelCap } = useGameStore();
+  const cap = levelCap();
   const party = partyCards();
   const [mode, setMode] = useState<'choose' | 'train'>('choose');
   const [done, setDone] = useState<'heal' | LevelUpResult | null>(null);
@@ -48,7 +49,8 @@ export function RestScreen({ onDone }: { onDone: () => void }) {
                 <li key={c.uid}>
                   <button
                     type="button"
-                    disabled={mode !== 'train'}
+                    disabled={mode !== 'train' || c.level >= cap}
+                    title={c.level >= cap ? `레벨 캡 Lv${cap}에 닿아 더 강화할 수 없다` : undefined}
                     onClick={() => setDone(restTrain(c.uid))}
                     className={`flex w-full items-center gap-3 rounded-xl border bg-surface px-3 py-2 text-left font-pixel disabled:cursor-default ${mode === 'train' ? 'border-accent hover:bg-surface-2' : 'border-line'}`}
                   >
@@ -57,7 +59,7 @@ export function RestScreen({ onDone }: { onDone: () => void }) {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex justify-between text-[13px]">
-                        <span className="font-bold">{sp.name} <span className="font-normal text-text-dim">Lv{c.level}{mode === 'train' ? ` → Lv${Math.min(100, c.level + REST_LEVELS)}` : ''}</span></span>
+                        <span className="font-bold">{sp.name} <span className="font-normal text-text-dim">Lv{c.level}{mode === 'train' ? (c.level >= cap ? ' · 레벨 캡' : ` → Lv${Math.min(100, cap, c.level + REST_LEVELS)}`) : ''}</span></span>
                         <span className="tabular-nums text-text-dim">
                           {now}{mode === 'choose' && now < max ? <span className="text-[#5CC98B]"> → {max}</span> : ''} / {max}
                         </span>

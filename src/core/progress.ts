@@ -111,10 +111,13 @@ export function gainExp(card: Card, amount: number, dex: ProgressDex, levelCap =
   return applyExp(card, exp, dex);
 }
 
-/** 레벨을 n 올린다 (휴식·강화 노드, spec §3.2). 레벨 캡과 무관 */
-export function addLevels(card: Card, n: number, dex: ProgressDex): LevelUpResult {
+/**
+ * 레벨을 n 올린다 (휴식·강화 노드, spec §3.2). 레벨 캡(어려움 이상)까지만 오른다:
+ * 캡은 관장보다 지나치게 키우지 못하게 하는 규칙이라, 강화로 넘을 수 있으면 의미가 없다.
+ */
+export function addLevels(card: Card, n: number, dex: ProgressDex, levelCap = MAX_LEVEL): LevelUpResult {
   const growth = dex.species[card.speciesId].growthRate;
-  const target = Math.min(MAX_LEVEL, card.level + n);
+  const target = Math.max(card.level, Math.min(MAX_LEVEL, levelCap, card.level + n));
   return applyExp(card, Math.max(baseExp(card, dex), expForLevel(dex.expTable, growth, target)), dex);
 }
 
