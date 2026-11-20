@@ -251,21 +251,37 @@ export interface TmData {
 // ── 진행 · 저장 ─────────────────────────────
 export type Difficulty = 'easy' | 'normal' | 'hard' | 'extreme';
 
-/** 세이브 슬롯 1개 = JSON 1개 (localStorage + 파일 내보내기/불러오기) */
+/** 세이브 슬롯 1개 = JSON 1개 (localStorage + 파일 내보내기/불러오기). 검사·마이그레이션은 core/save.ts */
 export interface SaveData {
   version: number;
   createdAt: string;
+  updatedAt: string;
   difficulty: Difficulty;           // 시작 시 고정
   challenges: { nuzlocke: boolean; randomStarter: boolean };
+  /** 세이브 고정 시드: 지도와 노드 상대를 정한다 */
+  runSeed: number;
+  /** 굴릴 때마다 바뀌는 시드: 팩·전투 난수 */
   seed: number;
   chapter: number;                  // 1~22
-  mapNodeId: string | null;         // 현재 지도 위치
+  /** 준비된 챕터를 모두 끝냄 */
+  finished: boolean;
+  /** 마지막으로 끝낸 노드. 진행 중이던 노드는 저장하지 않는다(다시 들어가게) */
+  mapNodeId: string | null;
   visitedNodes: string[];
   gold: number;
   badges: string[];
   collection: Card[];               // 보관함 (계열당 1장)
   party: string[];                  // Card.uid 최대 6
+  starterType: 'grass' | 'fire' | 'water';
+  /** 스타터 팩에서 고를 5장 (고르기 전에 닫아도 같은 5장) */
+  starterChoices: Card[] | null;
+  /** 현재 HP (Card.uid → HP, 없는 카드는 가득) */
+  hp: Record<string, number>;
   bag: Record<string, number>;      // 아이템 slug → 개수
   tms: string[];                    // 보유 기술머신 (move id)
+  /** 이기고 아직 열지 않은 보상 팩 (불러오면 팩 화면부터) */
+  pendingReward: 'wild' | 'trainer' | 'elite' | 'leader' | null;
+  /** 관장을 이기고 아직 다음 챕터로 넘어가지 않음 (불러오면 클리어 화면부터) */
+  pendingClear: boolean;
   playTimeSec: number;
 }
