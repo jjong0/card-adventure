@@ -145,6 +145,30 @@ describe('상점과 아이템', () => {
     expect(g().restTrain(uid)!.toLevel).toBe(lv + 3);
     expect(g().collection[0].level).toBe(lv + 3);
   });
+  it('지닌 도구: 지니면 가방에서 빠지고, 전투에서 먹은 열매는 사라진다', () => {
+    const uid = g().party[0];
+    useGameStore.setState({ bag: { 'sitrus-berry': 1, potion: 1 } });
+    expect(g().equipItem(uid, 'potion')).toBe('지닐 수 없는 도구다.');
+    expect(g().equipItem(uid, 'sitrus-berry')).toBeNull();
+    expect(g().bag).toEqual({ potion: 1 });
+    // 열매를 먹은 전투
+    const op = enterFirst('wild');
+    let state = createBattle(g().partyCards(), op.cards, dex, 1, { wild: true });
+    state.player.party[0].currentHp = 1;
+    state = battle(state, { kind: 'move', moveId: state.player.party[0].card.moves[0] }, dex);
+    expect(state.player.party[0].item).toBeNull();
+    g().settleBattle(state, op);
+    expect(g().collection.find((c) => c.uid === uid)!.heldItem).toBeNull();
+  });
+
+  it('지닌 도구: 카드를 골드로 바꾸면 도구는 가방으로 돌아온다', () => {
+    useGameStore.setState({ bag: { leftovers: 1 } });
+    const spare = { ...g().collection[0], uid: 'spare', lineId: 'spare-line' };
+    useGameStore.setState({ collection: [...g().collection, spare] });
+    expect(g().equipItem('spare', 'leftovers')).toBeNull();
+    expect(typeof g().sell('spare')).toBe('number');
+    expect(g().bag).toEqual({ leftovers: 1 });
+  });
 });
 
 describe('저장과 불러오기', () => {

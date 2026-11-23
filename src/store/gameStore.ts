@@ -6,12 +6,13 @@ import { MAX_PARTY, sellCard, setParty as checkParty } from '../core/collection'
 import { adjustGold, DIFFICULTY, goldAfterLoss, levelCap } from '../core/difficulty';
 import { battleGold, rewardPackLevel, type BattleKind, type Opponent, type StarterType } from '../core/encounter';
 import { addToCollection, CARDS_PER_PACK, createRng, openPack, type AddResult } from '../core/gacha';
+import { consumedHeldItems, equipHeldItem, returnHeldItems } from '../core/heldItems';
 import { HEAL_ITEMS, hpOf, maxHp, restParty, teachTm, useHealItem, type HpMap, type ShopItem } from '../core/items';
 import { generateMap, reachableNodes, type ChapterMap } from '../core/map';
 import { addLevels, distributeExp, evolve, evolveWithItem, gainExp, type LevelUpResult } from '../core/progress';
 import { SAVE_VERSION } from '../core/save';
 import type { BattleState, Card, ChapterData, Difficulty, ElementType, Rarity, SaveData } from '../core/types';
-import { chapters, dex, tmData } from '../lib/dex';
+import { chapters, dex, heldItems, tmData } from '../lib/dex';
 
 /** 강화 노드에서 오르는 레벨 (spec §12 기본값) */
 export const REST_LEVELS = 3;
@@ -127,7 +128,11 @@ interface GameStore {
   /** 회복약·진화의돌 사용. 실패하면 이유 */
   applyItem: (itemId: string, uid: string) => string | null;
   teach: (uid: string, moveId: string) => string | null;
+  /** 지닌 도구 바꾸기 (null이면 빼기). 실패하면 이유 */
+  equipItem: (uid: string, slug: string | null) => string | null;
 }
+
+const HELD_ITEM_SLUGS: ReadonlySet<string> = new Set(heldItems.map((i) => i.slug));
 
 /** 시드로 난수를 만들어 쓰고, 다음 시드를 돌려준다 */
 function roll<T>(seed: number, f: (rng: () => number) => T): [T, number] {
@@ -205,6 +210,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     const collection = get().collection.filter((c) => !gone.has(c.uid));
     set({
       collection,
+      bag: returnHeldItems(fainted, get().bag),
       party: get().party.filter((u) => !gone.has(u)),
       lastLost: fainted.map((c) => dex.species[c.speciesId].name),
       gameOver: collection.length === 0,
@@ -323,9 +329,10 @@ export const useGameStore = create<GameStore>((set, get) => {
     updateCard: replaceCard,
 
     sell: (uid) => {
+      const card = get().collection.find((c) => c.uid === uid);
       const r = sellCard(get().collection, get().party, uid, dex);
       if (typeof r === 'string') return r;
-      set({ collection: r.collection, gold: get().gold + r.gold });
+      set({ collection: r.collection, gold: get().gold + r.gold, bag: returnHeldItems(card ? [card] : [], get().bag) });
       return r.gold;
     },
 
@@ -354,7 +361,9 @@ export const useGameStore = create<GameStore>((set, get) => {
     settleBattle: (state, opponent) => {
       const hp = { ...get().hp };
       for (const m of state.player.party) hp[m.card.uid] = m.currentHp;
-      set({ hp });
+      // 전투에서 먹은 열매·쓴 기합의띠는 사라진다
+      const used = new Set(consumedHeldItems(state));
+      set({ hp, collection: get().collection.map((c) => (used.has(c.uid) ? { ...c, heldItem: null } : c)) });
       applyNuzlocke();
       if (state.result !== 'win') return null;
 
@@ -453,6 +462,15 @@ export const useGameStore = create<GameStore>((set, get) => {
       const r = teachTm(card, moveId, tmData);
       if (typeof r === 'string') return TEACH_ERROR[r];
       replaceCard(r);
+      return null;
+    },
+
+    equipItem: (uid, slug) => {
+      const r = equipHeldItem(get().collection, get().bag, uid, slug, HELD_ITEM_SLUGS);
+      if (r === 'not-found') return '카드를 찾을 수 없다.';
+      if (r === 'no-item') return '가방에 없는 도구다.';
+      if (r === 'not-held-item') return '지닐 수 없는 도구다.';
+      set(r);
       return null;
     },
   };
