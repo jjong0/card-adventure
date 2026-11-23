@@ -2,7 +2,7 @@
 // 지닌 도구 효과 표 (docs/spec.md §6). 배틀 엔진(battle.ts)이 여기 값을 보고 효과를 낸다.
 // 수치는 원작 기준(대부분 4세대, 4세대에 없는 도구는 처음 나온 세대). 출처: 각 도구의 게임 내 설명과 Bulbapedia 항목.
 // 목록·이름은 src/data/heldItems.json(스크립트 생성)이고, 여기에 없는 도구(원작 트레이너가 지닌 하양허브 등)는 효과가 없다.
-import type { Ailment, BattleMon, ElementType, HeldItemTier, Move, MoveCategory } from './types';
+import type { Ailment, BattleMon, BattleState, Card, ElementType, HeldItemTier, Move, MoveCategory } from './types';
 
 /** 지닌 도구 데이터 (heldItems.json 한 줄) */
 export interface HeldItemData {
@@ -118,4 +118,42 @@ export function usableMoves(mon: BattleMon, moves: Record<string, Move>): string
     if (mon.item === 'assault-vest' && moves[id].category === 'status') return false;
     return true;
   });
+}
+
+// ════════════════════════════════════════════
+// 지니기·빼기 (도구는 가방 개수로 갖고, 지니게 하면 가방에서 빠진다. 카드 1장에 1개)
+// ════════════════════════════════════════════
+
+export type EquipError = 'not-found' | 'no-item' | 'not-held-item';
+
+/**
+ * 카드에 도구를 지니게 한다(slug = null이면 뺀다). 원래 지닌 도구는 가방으로 돌아간다.
+ * heldItemSlugs: 지닐 수 있는 도구 목록 (회복약·진화의돌은 지닐 수 없다)
+ */
+export function equipHeldItem(
+  collection: Card[], bag: Record<string, number>, uid: string, slug: string | null, heldItemSlugs: ReadonlySet<string>,
+): { collection: Card[]; bag: Record<string, number> } | EquipError {
+  const card = collection.find((c) => c.uid === uid);
+  if (!card) return 'not-found';
+  if (slug !== null && !heldItemSlugs.has(slug)) return 'not-held-item';
+  if (slug !== null && (bag[slug] ?? 0) <= 0) return 'no-item';
+  const next = { ...bag };
+  if (card.heldItem) next[card.heldItem] = (next[card.heldItem] ?? 0) + 1;
+  if (slug !== null) next[slug] -= 1;
+  for (const k of Object.keys(next)) if (next[k] <= 0) delete next[k];
+  return { collection: collection.map((c) => (c.uid === uid ? { ...c, heldItem: slug } : c)), bag: next };
+}
+
+/** 카드들이 지닌 도구를 가방으로 돌려받는다 (카드를 골드로 바꾸거나 너즐록으로 잃을 때) */
+export function returnHeldItems(cards: Card[], bag: Record<string, number>): Record<string, number> {
+  const next = { ...bag };
+  for (const c of cards) if (c.heldItem) next[c.heldItem] = (next[c.heldItem] ?? 0) + 1;
+  return next;
+}
+
+/** 전투에서 써서 사라진 도구(열매·기합의띠)를 지닌 아군 카드 uid */
+export function consumedHeldItems(state: BattleState): string[] {
+  return state.player.party
+    .filter((m) => m.card.heldItem && m.item === null && isConsumable(m.card.heldItem))
+    .map((m) => m.card.uid);
 }

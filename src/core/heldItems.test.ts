@@ -6,7 +6,7 @@ import typeChart from '../data/typeChart.json';
 import evolutions from '../data/evolutions.json';
 import heldItems from '../data/heldItems.json';
 import { battle, chooseEnemyAction, createBattle } from './battle';
-import { CURE_BERRY, RESIST_BERRY, TYPE_BOOST, usableMoves } from './heldItems';
+import { consumedHeldItems, CURE_BERRY, equipHeldItem, RESIST_BERRY, returnHeldItems, TYPE_BOOST, usableMoves } from './heldItems';
 import type { BattleState, Card, Dex, Evolutions, Move, Species, TypeChart } from './types';
 
 const dex: Dex = {
@@ -186,5 +186,45 @@ describe('선제공격손톱', () => {
     }
     expect(first).toBeGreaterThan(20);
     expect(first).toBeLessThan(70);
+  });
+});
+
+describe('지니기·빼기', () => {
+  const HELD = new Set(heldItems.map((i) => i.slug));
+  const a = card('6', 50, ['flamethrower']);
+  const b = { ...card('143', 50, ['tackle']), heldItem: 'leftovers' };
+
+  it('가방에서 꺼내 지니고, 원래 도구는 가방으로 돌아간다', () => {
+    const r = equipHeldItem([a, b], { 'life-orb': 1 }, b.uid, 'life-orb', HELD);
+    if (typeof r === 'string') throw new Error(r);
+    expect(r.collection.find((c) => c.uid === b.uid)!.heldItem).toBe('life-orb');
+    expect(r.bag).toEqual({ leftovers: 1 });
+  });
+
+  it('빼면 가방으로', () => {
+    const r = equipHeldItem([b], {}, b.uid, null, HELD);
+    if (typeof r === 'string') throw new Error(r);
+    expect(r.collection[0].heldItem).toBeNull();
+    expect(r.bag).toEqual({ leftovers: 1 });
+  });
+
+  it('가방에 없거나 지닐 수 없는 도구는 거절', () => {
+    expect(equipHeldItem([a], {}, a.uid, 'life-orb', HELD)).toBe('no-item');
+    expect(equipHeldItem([a], { potion: 1 }, a.uid, 'potion', HELD)).toBe('not-held-item');
+    expect(equipHeldItem([a], {}, 'nope', null, HELD)).toBe('not-found');
+  });
+
+  it('카드를 잃으면 지닌 도구는 가방으로', () => {
+    expect(returnHeldItems([a, b], { leftovers: 2 })).toEqual({ leftovers: 3 });
+  });
+
+  it('전투에서 먹은 열매만 사라진 것으로 본다', () => {
+    let s = createBattle(
+      [card('143', 50, ['splash'], 'sitrus-berry'), card('6', 50, ['splash'], 'oran-berry')],
+      [card('6', 50, ['splash'])], dex, 1,
+    );
+    s.player.party[0].currentHp = 10;
+    s = use(s, 'splash');
+    expect(consumedHeldItems(s)).toEqual([s.player.party[0].card.uid]);
   });
 });
