@@ -15,7 +15,7 @@ import type { HeldItemData } from '../core/heldItems';
 import type { ProgressDex } from '../core/progress';
 import type { ChapterData, Dex, Evolutions, Learnsets, Move, Species, TmData, Trainer, TypeChart } from '../core/types';
 
-export const dex: Dex & EncounterDex & ProgressDex = {
+export const dex: Dex & EncounterDex & ProgressDex & { items: Record<string, HeldItemData> } = {
   species: Object.fromEntries((speciesList as Species[]).map((s) => [s.id, s])),
   moves: moves as unknown as Record<string, Move>,
   typeChart: typeChart as TypeChart,

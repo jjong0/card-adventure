@@ -1,4 +1,4 @@
-// 가방: 회복약·진화의돌·기술머신을 골라 파티 포켓몬에게 쓴다 (지도 화면 위에 뜨는 창)
+// 가방: 회복약·진화의돌·기술머신을 골라 파티 포켓몬에게 쓰고, 지닌 도구를 지니게 한다 (지도 화면 위에 뜨는 창)
 import { useState } from 'react';
 import { HpBar } from '../../components/HpBar';
 import { Sprite } from '../../components/Sprite';
@@ -10,6 +10,7 @@ import { currentHp, useGameStore } from '../../store/gameStore';
 type Pick = { kind: 'item'; id: string; name: string } | { kind: 'tm'; moveId: string; name: string };
 
 function itemName(id: string): string {
+  if (dex.items[id]) return dex.items[id].name;
   const heal = HEAL_ITEMS.find((i) => i.id === id);
   if (heal) return heal.name;
   for (const list of Object.values(dex.evolutions)) for (const e of list) if (e.method === 'item' && e.item === id) return e.itemName;
@@ -17,7 +18,7 @@ function itemName(id: string): string {
 }
 
 export function BagPanel({ onClose }: { onClose: () => void }) {
-  const { bag, tms, partyCards, hp, applyItem, teach } = useGameStore();
+  const { bag, tms, partyCards, hp, applyItem, teach, equipItem } = useGameStore();
   const [pick, setPick] = useState<Pick | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const items = Object.entries(bag).filter(([, n]) => n > 0);
@@ -25,8 +26,10 @@ export function BagPanel({ onClose }: { onClose: () => void }) {
 
   const apply = (uid: string, name: string) => {
     if (!pick) return;
-    const error = pick.kind === 'item' ? applyItem(pick.id, uid) : teach(uid, pick.moveId);
-    setNotice(error ?? fixJosa(pick.kind === 'item' ? `${name}에게 ${pick.name}을(를) 썼다.` : `${name}은(는) ${pick.name}을(를) 배웠다!`));
+    const held = pick.kind === 'item' && !!dex.items[pick.id];
+    const error = pick.kind === 'tm' ? teach(uid, pick.moveId) : held ? equipItem(uid, pick.id) : applyItem(pick.id, uid);
+    const done = pick.kind === 'tm' ? `${name}은(는) ${pick.name}을(를) 배웠다!` : held ? `${name}에게 ${pick.name}을(를) 지니게 했다.` : `${name}에게 ${pick.name}을(를) 썼다.`;
+    setNotice(error ?? fixJosa(done));
     if (pick.kind === 'item' && (useGameStore.getState().bag[pick.id] ?? 0) <= 0) setPick(null);
   };
 
@@ -34,6 +37,7 @@ export function BagPanel({ onClose }: { onClose: () => void }) {
   const hint = (speciesId: string, learned: string[]) => {
     if (!pick) return '';
     if (pick.kind === 'tm') return learned.includes(pick.moveId) ? '이미 배움' : tmData.compat[speciesId]?.includes(pick.moveId) ? '배울 수 있다' : '배울 수 없다';
+    if (dex.items[pick.id]) return '';
     if (HEAL_ITEMS.some((i) => i.id === pick.id)) return '';
     return (dex.evolutions[speciesId] ?? []).some((e) => e.method === 'item' && e.item === pick.id) ? '진화할 수 있다' : '효과 없음';
   };
@@ -67,9 +71,12 @@ export function BagPanel({ onClose }: { onClose: () => void }) {
 
         <div className="flex min-h-0 flex-col gap-2">
           <div className="flex items-center justify-between">
-            <p className="text-[14px] text-text-dim">{pick ? fixJosa(`${pick.name}을(를) 쓸 포켓몬을 고르세요`) : '왼쪽에서 도구를 고르세요'}</p>
+            <p className="text-[14px] text-text-dim">
+              {pick ? fixJosa(`${pick.name}을(를) ${pick.kind === 'item' && dex.items[pick.id] ? '지니게 할' : '쓸'} 포켓몬을 고르세요`) : '왼쪽에서 도구를 고르세요'}
+            </p>
             <button type="button" onClick={onClose} className="rounded-md px-2 text-[14px] text-text-dim hover:text-text">닫기 ✕</button>
           </div>
+          {pick?.kind === 'item' && dex.items[pick.id] && <p className="rounded-lg bg-surface-2 px-3 py-2 text-[13px] leading-snug">{dex.items[pick.id].description}</p>}
           <ul className="min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-1">
             {party.map((c) => {
               const sp = dex.species[c.speciesId];
@@ -87,6 +94,7 @@ export function BagPanel({ onClose }: { onClose: () => void }) {
                         <span className="text-[12px] text-text-dim">{hint(c.speciesId, c.learnedMoves) || `${now}/${max}`}</span>
                       </div>
                       <HpBar hp={now} max={max} className="mt-1 h-1.5" />
+                      <p className="mt-0.5 truncate text-[11px] text-text-dim">지닌 도구: {c.heldItem ? itemName(c.heldItem) : '없음'}</p>
                     </div>
                   </button>
                 </li>

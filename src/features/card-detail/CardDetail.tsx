@@ -26,7 +26,7 @@ function evolutionText(e: Evolution) {
 }
 
 export function CardDetail({ uid, onClose }: { uid: string; onClose: () => void }) {
-  const { collection, party, updateCard, setParty, sell } = useGameStore();
+  const { collection, party, updateCard, setParty, sell, equipItem } = useGameStore();
   const card = collection.find((c) => c.uid === uid)!;
   const [error, setError] = useState<string | null>(null);
   const [slot, setSlot] = useState<number | null>(null);
@@ -86,7 +86,14 @@ export function CardDetail({ uid, onClose }: { uid: string; onClose: () => void 
             </div>
             <div>
               <dt className="text-text-dim">지닌 도구</dt>
-              <dd>{card.heldItem ?? '없음'}</dd>
+              <dd className="flex items-center justify-between gap-2">
+                <span title={card.heldItem ? dex.items[card.heldItem]?.description : undefined}>{card.heldItem ? (dex.items[card.heldItem]?.name ?? card.heldItem) : '없음 · 가방에서 지니게 한다'}</span>
+                {card.heldItem && (
+                  <button type="button" onClick={() => equipItem(uid, null)} className="shrink-0 rounded-md px-1.5 text-[12px] text-text-dim ring-1 ring-line hover:text-text">
+                    빼기
+                  </button>
+                )}
+              </dd>
             </div>
           </dl>
           <div className="mt-auto flex flex-col gap-2">

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { HpBar } from '../../components/HpBar';
 import { Sprite } from '../../components/Sprite';
 import { typeEffectiveness } from '../../core/battle';
+import { usableMoves } from '../../core/heldItems';
 import type { BattleAction, BattleState } from '../../core/types';
 import { dex } from '../../lib/dex';
 import { CATEGORY_LABEL, effectivenessLabel, TYPE_COLOR, TYPE_LABEL } from '../../lib/labels';
@@ -40,7 +41,9 @@ export function CommandPanel({ state, shown, busy, onRun, onAct, onHover }: Prop
   const forcedSwitch = state.pendingSwitch && !busy;
   const view = forcedSwitch ? 'party' : mode;
   const me = state.player.party[shown.player.activeIdx];
-  const allOut = me.card.moves.every((id) => (me.pp[id] ?? 0) <= 0); // 전부 0이면 발버둥
+  // 고를 수 있는 기술: PP가 남았고 구애 고정·돌격조끼에 막히지 않은 것. 하나도 없으면 아무 버튼이나 발버둥
+  const usable = usableMoves(me, dex.moves);
+  const allOut = usable.length === 0;
 
   const act = (a: BattleAction) => {
     onHover(null);
@@ -63,7 +66,7 @@ export function CommandPanel({ state, shown, busy, onRun, onAct, onHover }: Prop
             <button
               key={id}
               type="button"
-              disabled={busy || (pp <= 0 && !allOut)}
+              disabled={busy || (!usable.includes(id) && !allOut)}
               onClick={() => act({ kind: 'move', moveId: id })}
               onMouseEnter={() => onHover(moveDetail(id, state, shown))}
               onFocus={() => onHover(moveDetail(id, state, shown))}
