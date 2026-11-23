@@ -1,0 +1,82 @@
+{
+  "_note": "지닌 도구 목록과 등급(수동). scripts/build-items.mjs가 PokeAPI 공식 한국어 이름·설명을 붙여 src/data/heldItems.json을 만든다. 효과는 src/core/heldItems.ts. 등급: common(일반) uncommon(고급) rare(희귀) — 보상 노드에서 나오는 확률이 다르다. names/descriptions는 PokeAPI에 한국어가 없을 때만 쓰는 직접 작성 문구(로셀열매 이름은 공식 표기 미확인).",
+  "tiers": {
+    "common": [
+      "charcoal",
+      "mystic-water",
+      "miracle-seed",
+      "magnet",
+      "never-melt-ice",
+      "black-belt",
+      "poison-barb",
+      "soft-sand",
+      "hard-stone",
+      "sharp-beak",
+      "twisted-spoon",
+      "silver-powder",
+      "spell-tag",
+      "dragon-fang",
+      "black-glasses",
+      "metal-coat",
+      "silk-scarf",
+      "fairy-feather",
+      "oran-berry",
+      "sitrus-berry",
+      "lum-berry",
+      "cheri-berry",
+      "chesto-berry",
+      "rawst-berry",
+      "pecha-berry",
+      "aspear-berry",
+      "persim-berry",
+      "occa-berry",
+      "passho-berry",
+      "wacan-berry",
+      "rindo-berry",
+      "yache-berry",
+      "chople-berry",
+      "kebia-berry",
+      "shuca-berry",
+      "coba-berry",
+      "payapa-berry",
+      "tanga-berry",
+      "charti-berry",
+      "kasib-berry",
+      "haban-berry",
+      "colbur-berry",
+      "babiri-berry",
+      "chilan-berry",
+      "roseli-berry"
+    ],
+    "uncommon": [
+      "muscle-band",
+      "wise-glasses",
+      "scope-lens",
+      "wide-lens",
+      "quick-claw",
+      "leftovers",
+      "black-sludge",
+      "shell-bell",
+      "big-root",
+      "focus-band",
+      "focus-sash",
+      "rocky-helmet"
+    ],
+    "rare": [
+      "life-orb",
+      "choice-band",
+      "choice-specs",
+      "choice-scarf",
+      "assault-vest",
+      "eviolite",
+      "expert-belt"
+    ]
+  },
+  "names": {
+    "roseli-berry": "로셀열매"
+  },
+  "descriptions": {
+    "fairy-feather": "지니게 하면 페어리타입 기술의 위력이 올라간다.",
+    "roseli-berry": "지니게 하면 효과가 굉장한 페어리타입 기술을 받았을 때 한 번 데미지를 줄여준다."
+  }
+}

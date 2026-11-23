@@ -19,6 +19,7 @@ node scripts/build-trainers.mjs   # 하트골드 원본 → trainers.json (build
 node scripts/build-evolutions.mjs # PokeAPI → evolutions.json (build-data 다음에 실행)
 node scripts/build-chapters.mjs   # overrides/chapters.json + 하트골드 야생 출현 → chapters.json (build-trainers 다음에 실행)
 node scripts/build-tm-compat.mjs  # 하트골드 기술머신 + 종별 호환 → tmCompat.json (build-data 다음에 실행)
+node scripts/build-items.mjs      # overrides/held-items.json + PokeAPI 한국어 → heldItems.json
 node scripts/build-move-fx.mjs    # 기술 → 연출 계열(물기·광선 등) → moveFx.json (build-data 다음에 실행)
 node scripts/verify-type-chart.mjs # 상성표 324칸 검증
 ```
