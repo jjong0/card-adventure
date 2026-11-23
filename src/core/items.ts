@@ -35,25 +35,85 @@ export const HEAL_ITEMS: HealItem[] = [
   { id: 'revive', name: '기력의조각', price: 1500, heal: 'revive' },
 ];
 
+// ── PP 회복약 (이름·효과는 원작. 상점에서는 팔지 않고 승리 보상으로만 나온다) ──
+export interface PpItem {
+  id: string;
+  name: string;
+  /** 회복량 (null = 전부) */
+  restore: number | null;
+  /** 기술 1개(true) / 장착한 기술 전부(false) */
+  single: boolean;
+}
+
+export const PP_ITEMS: PpItem[] = [
+  { id: 'ether', name: 'PP에이드', restore: 10, single: true },
+  { id: 'max-ether', name: 'PP회복', restore: null, single: true },
+  { id: 'elixir', name: 'PP에이더', restore: 10, single: false },
+  { id: 'max-elixir', name: 'PP맥스', restore: null, single: false },
+];
+
+/** 전투 사이에 이어지는 PP (Card.uid → 기술 id → 남은 PP). 기록이 없는 기술은 가득 찬 것으로 본다 */
+export type PpMap = Record<string, Record<string, number>>;
+
+export function ppOf(card: Card, moveId: string, pp: PpMap, dex: Pick<Dex, 'moves'>): number {
+  const max = dex.moves[moveId]?.pp ?? 0;
+  return Math.min(max, pp[card.uid]?.[moveId] ?? max);
+}
+
+export type PpError = 'unknown-item' | 'need-move' | 'full';
+
+/** PP 회복약 사용. 기술 1개용이면 moveId가 필요하다 (가방 차감은 호출하는 쪽에서) */
+export function usePpItem(itemId: string, card: Card, pp: PpMap, dex: Pick<Dex, 'moves'>, moveId?: string): PpMap | PpError {
+  const item = PP_ITEMS.find((i) => i.id === itemId);
+  if (!item) return 'unknown-item';
+  if (item.single && (!moveId || !card.moves.includes(moveId))) return 'need-move';
+  const targets = item.single ? [moveId!] : card.moves;
+  const next = { ...(pp[card.uid] ?? {}) };
+  let changed = false;
+  for (const id of targets) {
+    const max = dex.moves[id]?.pp ?? 0;
+    const now = ppOf(card, id, pp, dex);
+    if (now >= max) continue;
+    next[id] = item.restore === null ? max : Math.min(max, now + item.restore);
+    changed = true;
+  }
+  if (!changed) return 'full';
+  return { ...pp, [card.uid]: next };
+}
+
+/** 휴식·챕터 시작: 파티 PP를 모두 채운다 */
+export function restorePp(party: Card[], pp: PpMap): PpMap {
+  const next = { ...pp };
+  for (const c of party) delete next[c.uid];
+  return next;
+}
+
 /**
- * 전투 승리 보상 회복약 (spec §3.2). 노드가 강할수록 개수가 많고 좋은 약이 잘 나온다.
- * 가중치 순서: 상처약 / 좋은상처약 / 고급상처약 / 기력의조각 (spec §12 미정 → 기본값)
+ * 전투 승리 보상 약 (spec §3.2). 노드가 강할수록 개수가 많고 좋은 약이 잘 나온다.
+ * 회복약만 주면 가방에 회복약이 쌓여서 PP 회복약을 섞는다. (spec §12 미정 → 기본값)
+ * 가중치 순서: 상처약 / 좋은상처약 / 고급상처약 / 기력의조각 / PP에이드 / PP회복 / PP에이더 / PP맥스
  */
-const HEAL_REWARD: Record<BattleKind, { count: number; weights: [number, number, number, number] }> = {
-  wild: { count: 1, weights: [70, 25, 0, 5] },
-  trainer: { count: 1, weights: [50, 35, 5, 10] },
-  elite: { count: 2, weights: [20, 45, 15, 20] },
-  leader: { count: 2, weights: [0, 40, 35, 25] },
+const REWARD_ITEM_IDS = [...HEAL_ITEMS.map((i) => i.id), ...PP_ITEMS.map((i) => i.id)];
+const ITEM_REWARD: Record<BattleKind, { count: number; weights: number[] }> = {
+  wild: { count: 1, weights: [45, 15, 0, 5, 25, 5, 5, 0] },
+  trainer: { count: 1, weights: [30, 25, 5, 8, 20, 6, 6, 0] },
+  elite: { count: 2, weights: [10, 30, 12, 15, 13, 8, 8, 4] },
+  leader: { count: 2, weights: [0, 25, 25, 18, 0, 12, 12, 8] },
 };
 
-export function rewardHealItems(kind: BattleKind, rng: () => number): string[] {
-  const { count, weights } = HEAL_REWARD[kind];
+export function rewardItems(kind: BattleKind, rng: () => number): string[] {
+  const { count, weights } = ITEM_REWARD[kind];
   const total = weights.reduce((a, b) => a + b, 0);
   return Array.from({ length: count }, () => {
     let r = rng() * total;
     const i = weights.findIndex((w) => (r -= w) < 0);
-    return HEAL_ITEMS[i === -1 ? weights.length - 1 : i].id;
+    return REWARD_ITEM_IDS[i === -1 ? weights.length - 1 : i];
   });
+}
+
+/** 회복약·PP 회복약 이름 */
+export function bagItemName(id: string): string {
+  return HEAL_ITEMS.find((i) => i.id === id)?.name ?? PP_ITEMS.find((i) => i.id === id)?.name ?? id;
 }
 
 export type HealError = 'unknown-item' | 'fainted' | 'full' | 'not-fainted';

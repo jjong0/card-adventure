@@ -1,7 +1,7 @@
-// 전투 승리 정산: 골드, 회복약, 카드별 경험치·레벨업·새 기술, 진화 확인 (spec §4.4~4.6, §5.2-5)
+// 전투 승리 정산: 골드, 회복약·PP 회복약, 카드별 경험치·레벨업·새 기술, 진화 확인 (spec §4.4~4.6, §5.2-5)
 import { Sprite } from '../../components/Sprite';
 import type { Opponent } from '../../core/encounter';
-import { HEAL_ITEMS } from '../../core/items';
+import { bagItemName } from '../../core/items';
 import { dex } from '../../lib/dex';
 import type { BattleSettlement } from '../../store/gameStore';
 import { EvolutionPrompt } from './EvolutionPrompt';
@@ -16,7 +16,7 @@ interface Props {
 function itemSummary(ids: string[]) {
   const counts = new Map<string, number>();
   for (const id of ids) counts.set(id, (counts.get(id) ?? 0) + 1);
-  return [...counts].map(([id, n]) => `${HEAL_ITEMS.find((h) => h.id === id)?.name ?? id}${n > 1 ? ` ×${n}` : ''}`).join(' · ');
+  return [...counts].map(([id, n]) => `${bagItemName(id)}${n > 1 ? ` ×${n}` : ''}`).join(' · ');
 }
 
 export function BattleResultScreen({ opponent, settlement, onNext }: Props) {

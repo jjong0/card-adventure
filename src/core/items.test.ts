@@ -8,7 +8,7 @@ import evolutions from '../data/evolutions.json';
 import tmJson from '../data/tmCompat.json';
 import chaptersJson from '../data/chapters.json';
 import { createCard, createRng } from './gacha';
-import { HEAL_ITEMS, hpOf, maxHp, restParty, rewardHealItems, shopStock, shopTms, teachTm, useHealItem } from './items';
+import { HEAL_ITEMS, hpOf, maxHp, PP_ITEMS, ppOf, restorePp, restParty, rewardItems, shopStock, shopTms, teachTm, useHealItem, usePpItem, type PpMap } from './items';
 import type { ChapterData, Dex, Evolutions, Learnsets, Move, Species, TmData, TypeChart } from './types';
 
 const species = Object.fromEntries((speciesList as Species[]).map((s) => [s.id, s]));
@@ -77,20 +77,41 @@ describe('상점', () => {
   });
 });
 
-describe('승리 보상 회복약', () => {
-  it('야생·트레이너 1개, 엘리트·관장 2개. 야생은 고급상처약이 없고 관장은 상처약이 없다', () => {
+describe('승리 보상 약', () => {
+  it('야생·트레이너 1개, 엘리트·관장 2개. PP 회복약도 섞여 나오고, 관장은 상처약·PP에이드가 없다', () => {
     const rng = createRng(9);
     const seen = { wild: new Set<string>(), leader: new Set<string>() };
     for (let i = 0; i < 2000; i++) {
-      const w = rewardHealItems('wild', rng);
+      const w = rewardItems('wild', rng);
       expect(w).toHaveLength(1);
       seen.wild.add(w[0]);
-      expect(rewardHealItems('trainer', rng)).toHaveLength(1);
-      expect(rewardHealItems('elite', rng)).toHaveLength(2);
-      for (const id of rewardHealItems('leader', rng)) seen.leader.add(id);
+      expect(rewardItems('trainer', rng)).toHaveLength(1);
+      expect(rewardItems('elite', rng)).toHaveLength(2);
+      for (const id of rewardItems('leader', rng)) seen.leader.add(id);
     }
     expect(seen.wild.has('hyper-potion')).toBe(false);
+    expect(seen.wild.has('ether')).toBe(true);
     expect(seen.leader.has('potion')).toBe(false);
-    for (const id of [...seen.wild, ...seen.leader]) expect(HEAL_ITEMS.some((h) => h.id === id)).toBe(true);
+    expect(seen.leader.has('ether')).toBe(false);
+    const known = new Set([...HEAL_ITEMS, ...PP_ITEMS].map((i) => i.id));
+    for (const id of [...seen.wild, ...seen.leader]) expect(known.has(id)).toBe(true);
+  });
+});
+
+describe('PP', () => {
+  const card = { ...make('25'), moves: ['84', '98'] }; // 전기쇼크(30), 전광석화(30)
+  it('기록이 없으면 가득, PP에이드는 기술 1개 +10, PP맥스는 전부 가득', () => {
+    expect(ppOf(card, '84', {}, dex)).toBe(30);
+    const pp = { [card.uid]: { '84': 5, '98': 0 } };
+    expect(usePpItem('ether', card, pp, dex)).toBe('need-move');
+    const one = usePpItem('ether', card, pp, dex, '84') as PpMap;
+    expect(one[card.uid]).toEqual({ '84': 15, '98': 0 });
+    const all = usePpItem('max-elixir', card, pp, dex) as PpMap;
+    expect(ppOf(card, '84', all, dex)).toBe(30);
+    expect(ppOf(card, '98', all, dex)).toBe(30);
+    expect(usePpItem('elixir', card, {}, dex)).toBe('full');
+  });
+  it('휴식하면 파티 PP가 가득 찬다', () => {
+    expect(restorePp([card], { [card.uid]: { '84': 1 }, other: { '1': 2 } })).toEqual({ other: { '1': 2 } });
   });
 });

@@ -8,7 +8,7 @@ import { battleGold, nodeSeed, rewardPackLevel, type BattleKind, type Opponent, 
 import { choiceCost, eventForNode, resolveChoice, type MapEvent } from '../core/events';
 import { addToCollection, CARDS_PER_PACK, createRng, openPack, type AddResult } from '../core/gacha';
 import { consumedHeldItems, equipHeldItem, ownedHeldItems, rollHeldItem, returnHeldItems, treasureChoices } from '../core/heldItems';
-import { HEAL_ITEMS, hpOf, maxHp, restParty, rewardHealItems, teachTm, useHealItem, type HpMap, type ShopItem } from '../core/items';
+import { HEAL_ITEMS, hpOf, maxHp, restParty, rewardItems, teachTm, useHealItem, type HpMap, type ShopItem } from '../core/items';
 import { findNode, generateMap, reachableNodes, type ChapterMap } from '../core/map';
 import { addLevels, distributeExp, evolve, evolveWithItem, gainExp, type LevelUpResult } from '../core/progress';
 import { SAVE_VERSION } from '../core/save';
@@ -399,7 +399,7 @@ export const useGameStore = create<GameStore>((set, get) => {
       const gold = adjustGold(battleGold(opponent), get().difficulty);
       // 승리로 노드는 끝났다. 보상 팩은 열 때까지 남겨 둔다 (닫았다 열어도 팩부터)
       const rewardLevel = rewardPackLevel(opponent, get().chapterData(), get().difficulty);
-      const [items, seed] = roll(get().seed, (rng) => rewardHealItems(opponent.kind, rng));
+      const [items, seed] = roll(get().seed, (rng) => rewardItems(opponent.kind, rng));
       const bag = { ...get().bag };
       for (const id of items) bag[id] = (bag[id] ?? 0) + 1;
       set({ gold: get().gold + gold, bag, seed, nodeDone: true, pendingReward: opponent.kind, pendingRewardLevel: rewardLevel });
