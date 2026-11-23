@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "sim": "SIM=1 vitest run src/sim"
+    "sim": "SIM=1 vitest run src/sim --reporter=verbose"
   },
   "dependencies": {
     "framer-motion": "^14.13.0",
