@@ -76,6 +76,7 @@ export function parseSave(input: string | unknown): SaveData | LoadError {
     ['grass', 'fire', 'water'].includes(s.starterType as string) &&
     (s.starterChoices === null || (Array.isArray(s.starterChoices) && s.starterChoices.every(isCard))) &&
     isNumRecord(s.hp) &&
+    (s.pp === undefined || (isObj(s.pp) && Object.values(s.pp).every(isNumRecord))) &&
     isNumRecord(s.bag) &&
     isStrArr(s.tms) &&
     (s.pendingReward === null || ['wild', 'trainer', 'elite', 'leader'].includes(s.pendingReward as string)) &&

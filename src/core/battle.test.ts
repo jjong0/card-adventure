@@ -346,6 +346,14 @@ describe('전투 옵션 (지도 진행용)', () => {
     expect(() => createBattle([a], [card('16', 5, ['tackle'])], dex, 1, { playerHp: { [a.uid]: 0 } })).toThrow();
   });
 
+  it('시작 PP를 이어받는다. 기록이 없는 기술은 가득, 최대보다 큰 값은 최대로', () => {
+    const a = card('25', 20, ['thunder-shock', 'quick-attack']);
+    const [shock, quick] = a.moves;
+    const s = createBattle([a], [card('16', 5, ['tackle'])], dex, 1, { playerPp: { [a.uid]: { [shock]: 3, [quick]: 999 } } });
+    expect(s.player.party[0].pp).toEqual({ [shock]: 3, [quick]: 30 });
+    expect(createBattle([a], [card('16', 5, ['tackle'])], dex, 1).player.party[0].pp[shock]).toBe(30);
+  });
+
   it('야생: 등장 문구가 다르고, 여러 기술을 섞어 쓴다 (트레이너는 가장 센 기술만)', () => {
     const used = (wild: boolean) => {
       const seen = new Set<string>();

@@ -288,6 +288,8 @@ export interface SaveData {
   starterChoices: Card[] | null;
   /** 현재 HP (Card.uid → HP, 없는 카드는 가득) */
   hp: Record<string, number>;
+  /** 남은 PP (Card.uid → 기술 id → PP, 없으면 가득). 이 필드가 생기기 전 세이브에는 없다 */
+  pp?: Record<string, Record<string, number>>;
   bag: Record<string, number>;      // 아이템 slug → 개수
   tms: string[];                    // 보유 기술머신 (move id)
   /** 이기고 아직 열지 않은 보상 팩 (불러오면 팩 화면부터) */

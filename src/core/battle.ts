@@ -144,6 +144,8 @@ function markFaced(state: BattleState) {
 export interface BattleOptions {
   /** 전투 시작 HP (Card.uid → HP). 없는 카드는 가득. 지도에서는 전투가 끝나도 HP가 이어진다 */
   playerHp?: Record<string, number>;
+  /** 전투 시작 PP (Card.uid → 기술 id → PP). 없는 기술은 가득. HP처럼 전투 사이에 이어진다 */
+  playerPp?: Record<string, Record<string, number>>;
   /** 야생전: 등장 문구가 다르다. 야생 포켓몬은 늘 기술을 무작위로 고른다 (spec §5.3) */
   wild?: boolean;
   /** 상대가 기술을 무작위로 고른다 (야생, 쉬움 난이도 트레이너) */
@@ -155,6 +157,8 @@ export function createBattle(playerCards: Card[], enemyCards: Card[], dex: Dex, 
     const mon = createBattleMon(c, dex);
     const hp = opts.playerHp?.[c.uid];
     if (hp !== undefined) mon.currentHp = Math.max(0, Math.min(mon.stats.hp, hp));
+    const pp = opts.playerPp?.[c.uid];
+    if (pp) for (const id of Object.keys(mon.pp)) if (pp[id] !== undefined) mon.pp[id] = Math.max(0, Math.min(mon.pp[id], pp[id]));
     return mon;
   });
   const enemy = enemyCards.map((c) => createBattleMon(c, dex));
