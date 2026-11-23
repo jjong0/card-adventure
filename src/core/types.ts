@@ -77,6 +77,8 @@ export interface Move {
   priority: number;
   target: string;
   effectId: number | null;
+  /** 접촉 기술 (울퉁불퉁멧 반동 판정) */
+  contact: boolean;
   effectChance: number | null;
   meta: MoveMeta | null;
   description: string;

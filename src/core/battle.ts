@@ -472,7 +472,7 @@ function canAct(mon: BattleMon, move: Move, rng: Rng, rec: Recorder): boolean {
 const STRUGGLE: Move = {
   id: 'struggle', name: '발버둥', slug: 'struggle', type: 'normal', category: 'physical',
   power: 50, variablePower: false, accuracy: null, pp: 1, priority: 0, target: 'selected-pokemon',
-  effectId: null, effectChance: null, meta: null, description: '', descriptionLang: 'ko',
+  effectId: null, contact: true, effectChance: null, meta: null, description: '', descriptionLang: 'ko',
 };
 
 const SELF_TARGETS = new Set(['user', 'users-field', 'user-or-ally', 'user-and-allies', 'all-allies']);

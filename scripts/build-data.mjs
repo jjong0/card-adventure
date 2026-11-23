@@ -36,10 +36,12 @@ const T = Object.fromEntries(
     [
       'pokemon_species', 'pokemon', 'pokemon_stats', 'pokemon_types', 'types', 'pokemon_species_names',
       'type_efficacy', 'moves', 'move_names', 'move_meta', 'move_meta_stat_changes', 'move_meta_ailments',
-      'move_flavor_text', 'pokemon_moves', 'growth_rates', 'experience',
+      'move_flavor_text', 'move_flag_map', 'pokemon_moves', 'growth_rates', 'experience',
     ].map(async (n) => [n, await csv(n)]),
   ),
 );
+
+const contactMoves = new Set();
 
 // ── 타입 ────────────────────────────────────
 const typeName = {};
@@ -146,6 +148,7 @@ function buildMove(m) {
     priority: Number(m.priority),
     target: TARGET[m.target_id] ?? 'selected-pokemon',
     effectId: num(m.effect_id),
+    contact: contactMoves.has(m.id),
     effectChance: num(m.effect_chance),
     meta: meta && {
       category: META_CATEGORY[meta.meta_category_id] ?? 'unique',
@@ -176,6 +179,9 @@ function buildMove(m) {
           : null,
   };
 }
+
+// move_flags.csv: 1 = contact (울퉁불퉁멧 등 접촉 판정)
+for (const f of T.move_flag_map) if (f.move_flag_id === '1') contactMoves.add(f.move_id);
 
 const allMoves = Object.fromEntries(
   T.moves.filter((m) => Number(m.id) < 10000).map((m) => [m.id, buildMove(m)]),
