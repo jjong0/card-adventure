@@ -29,7 +29,9 @@
     "trainer": "/assets/nodes/trainer.png",
     "elite": "/assets/nodes/elite.png",
     "rest": "/assets/nodes/center.png",
-    "shop": "/assets/nodes/mart.png"
+    "shop": "/assets/nodes/mart.png",
+    "event": "/assets/nodes/event.png",
+    "treasure": "/assets/nodes/treasure.png"
   },
   "badges": {
     "falkner": "/assets/badges/zephyr-badge.png",

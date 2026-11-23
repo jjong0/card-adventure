@@ -50,6 +50,19 @@ describe('노드 배치', () => {
     });
   });
 
+  it('보상은 3층 이상 1개, 사건은 2층 이상 2~3개 (사천왕 구간은 사건 1개)', () => {
+    each(1, (m) => {
+      const all = m.floors.flat();
+      const treasures = all.filter((x) => x.kind === 'treasure');
+      expect(treasures).toHaveLength(1);
+      expect(treasures[0].floor).toBeGreaterThanOrEqual(3);
+      const events = all.filter((x) => x.kind === 'event');
+      expect(events.length >= 2 && events.length <= 3).toBe(true);
+      for (const n of events) expect(n.floor).toBeGreaterThanOrEqual(2);
+    });
+    each(9, (m) => expect(m.floors.flat().filter((n) => n.kind === 'event')).toHaveLength(1));
+  });
+
   it('라이벌전이 있는 챕터는 엘리트 노드 하나가 라이벌', () => {
     each(1, (m) => expect(m.floors.flat().filter((n) => n.rival).length).toBe(1), true);
     each(1, (m) => expect(m.floors.flat().filter((n) => n.rival).length).toBe(0), false);

@@ -3,9 +3,10 @@
 //   - 일반 챕터 10층, 사천왕 구간(9~12장)은 5층에 상점 없음
 //   - 1층 2~3개, 중간층 2~4개, 관장 전 층은 전부 휴식, 마지막 층은 관장 하나
 //   - 각 노드는 다음 층 1~2개와 연결, 선은 교차하지 않음
+//   - 보상(지닌 도구 3개 중 1개) 1개 3층 이상, 사건(?) 2~3개 2층 이상 (사천왕 구간은 사건 1개)
 import { createRng, type Rng } from './gacha';
 
-export type NodeKind = 'wild' | 'trainer' | 'elite' | 'shop' | 'rest' | 'leader';
+export type NodeKind = 'wild' | 'trainer' | 'elite' | 'shop' | 'rest' | 'leader' | 'event' | 'treasure';
 
 export interface MapNode {
   id: string;        // `${floor}-${index}`
@@ -26,6 +27,8 @@ export interface ChapterMap {
 export const ELITE_FOUR_CHAPTERS = [9, 10, 11, 12];
 const ELITE_MIN_FLOOR = 4;
 const SHOP_MIN_FLOOR = 3;
+const TREASURE_MIN_FLOOR = 3;
+const EVENT_MIN_FLOOR = 2;
 
 const pick = <T>(rng: Rng, list: T[]): T => list[Math.floor(rng() * list.length)];
 const intBetween = (rng: Rng, min: number, max: number) => min + Math.floor(rng() * (max - min + 1));
@@ -112,6 +115,10 @@ export function generateMap(seed: number, chapter: number, opts: { hasRival?: bo
   for (let i = 0; i < shops; i++) assign('shop', SHOP_MIN_FLOOR, lastFree);
   // 중간 휴식 0~1개. 관장 전 휴식 층 바로 아래는 피해 휴식이 연달아 나오지 않게 한다
   if (!short && rng() < 0.5) assign('rest', ELITE_MIN_FLOOR, lastFree - 1);
+  // 보상·사건은 나중에 추가해서 맨 뒤에 배정한다 (앞의 배치에 쓰는 난수 순서를 바꾸지 않는다)
+  assign('treasure', TREASURE_MIN_FLOOR, lastFree);
+  const events = short ? 1 : intBetween(rng, 2, 3);
+  for (let i = 0; i < events; i++) assign('event', EVENT_MIN_FLOOR, lastFree);
 
   return { chapter, floors };
 }
