@@ -117,8 +117,6 @@ export function TitleScreen({ onContinue, onNewGame }: Props) {
 
       <p className="max-w-[760px] text-center font-pixel text-[12px] leading-5 text-text-dim">
         세이브는 이 브라우저에만 저장된다. 브라우저 데이터를 지우거나 오래 방문하지 않으면(Safari) 사라질 수 있으니 가끔 내보내 두자.
-        <br />
-        비공식 팬 프로젝트이며 닌텐도·게임프리크·주식회사 포켓몬과 무관하다.
       </p>
     </div>
   );
