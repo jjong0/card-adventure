@@ -4,7 +4,7 @@
 import { battle, chooseEnemyAction, createBattle } from '../core/battle';
 import { allocateIv, STAT_KEYS } from '../core/card';
 import { nodeOpponent, type Opponent } from '../core/encounter';
-import { HEAL_ITEMS, hpOf, maxHp } from '../core/items';
+import { HEAL_ITEMS, hpOf, maxHp, PP_ITEMS, ppOf } from '../core/items';
 import { reachableNodes, type MapNode } from '../core/map';
 import { levelEvolutions } from '../core/progress';
 import type { BattleAction, BattleState, Card, Difficulty, ElementType } from '../core/types';
@@ -95,6 +95,31 @@ function equipHeldItems() {
   for (const [i, c] of bare.entries()) if (items[i]) g().equipItem(c.uid, items[i]);
 }
 
+/** 파티 장착 기술의 남은 PP 비율 */
+function ppRatio(): number {
+  let now = 0;
+  let max = 0;
+  for (const c of g().partyCards()) for (const id of c.moves) {
+    now += ppOf(c, id, g().pp, dex);
+    max += dex.moves[id]?.pp ?? 0;
+  }
+  return max ? now / max : 1;
+}
+
+/** 전투 전: 공격기 PP가 바닥난 포켓몬에게 PP 회복약 (기술 1개용은 가장 적게 남은 공격기에) */
+function usePpItems() {
+  for (const c of g().partyCards()) {
+    const attacks = c.moves.filter((id) => dex.moves[id]?.category !== 'status');
+    const low = attacks.filter((id) => ppOf(c, id, g().pp, dex) <= 2);
+    if (!low.length) continue;
+    for (const item of PP_ITEMS) {
+      if ((g().bag[item.id] ?? 0) <= 0) continue;
+      const target = [...attacks].sort((a, b) => ppOf(c, a, g().pp, dex) - ppOf(c, b, g().pp, dex))[0];
+      if (!g().applyItem(item.id, c.uid, item.single ? target : undefined)) break;
+    }
+  }
+}
+
 function openRewardPack(kindOrType: Opponent['kind'] | null, typeIdx: number) {
   const types = advantageTypes(g().chapterData().type);
   const type = types[typeIdx % types.length];
@@ -110,7 +135,7 @@ function openRewardPack(kindOrType: Opponent['kind'] | null, typeIdx: number) {
 function pickNode(nodes: MapNode[], shopVisited: boolean, preview: (n: MapNode) => Opponent | null, lostAt: Set<string>): MapNode {
   const ratio = hpRatio();
   const by = (k: MapNode['kind']) => nodes.find((n) => n.kind === k);
-  if (ratio < 0.6 && by('rest')) return by('rest')!;
+  if ((ratio < 0.6 || ppRatio() < 0.3) && by('rest')) return by('rest')!;
   if (!shopVisited && g().gold >= 1500 && by('shop')) return by('shop')!;
   if (by('leader')) return by('leader')!;
   if (by('treasure')) return by('treasure')!;
@@ -195,7 +220,7 @@ export function playthrough(difficulty: Difficulty, seed: number, maxRestarts = 
       }
 
       if (node.kind === 'rest') {
-        if (hpRatio() < 0.95) g().restHeal();
+        if (hpRatio() < 0.95 || ppRatio() < 0.7) g().restHeal();
         else g().restTrain([...g().partyCards()].sort((a, b) => b.level - a.level)[0].uid);
         evolveAll();
         continue;
@@ -211,11 +236,12 @@ export function playthrough(difficulty: Difficulty, seed: number, maxRestarts = 
       }
       if (!op) continue;
       usePotions();
+      usePpItems();
       if (node.kind === 'leader') {
         stat.topLevel = Math.max(...g().partyCards().map((c) => c.level));
         stat.partySize = g().party.length;
       }
-      const start = createBattle(g().partyCards(), op.cards, dex, g().nextSeed(), { playerHp: g().hp, wild: op.kind === 'wild', randomAi: op.randomAi });
+      const start = createBattle(g().partyCards(), op.cards, dex, g().nextSeed(), { playerHp: g().hp, playerPp: g().pp, wild: op.kind === 'wild', randomAi: op.randomAi });
       const end = fight(start);
       stat.battles++;
       const settled = g().settleBattle(end, op);
