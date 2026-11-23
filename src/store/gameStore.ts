@@ -8,7 +8,9 @@ import { battleGold, nodeSeed, rewardPackLevel, type BattleKind, type Opponent, 
 import { choiceCost, eventForNode, resolveChoice, type MapEvent } from '../core/events';
 import { addToCollection, CARDS_PER_PACK, createRng, openPack, type AddResult } from '../core/gacha';
 import { consumedHeldItems, equipHeldItem, ownedHeldItems, rollHeldItem, returnHeldItems, treasureChoices } from '../core/heldItems';
-import { HEAL_ITEMS, hpOf, maxHp, restParty, rewardItems, teachTm, useHealItem, type HpMap, type ShopItem } from '../core/items';
+import {
+  HEAL_ITEMS, hpOf, maxHp, PP_ITEMS, restorePp, restParty, rewardItems, teachTm, useHealItem, usePpItem, type HpMap, type PpMap, type ShopItem,
+} from '../core/items';
 import { findNode, generateMap, reachableNodes, type ChapterMap } from '../core/map';
 import { addLevels, distributeExp, evolve, evolveWithItem, gainExp, type LevelUpResult } from '../core/progress';
 import { SAVE_VERSION } from '../core/save';
@@ -73,6 +75,8 @@ interface GameStore {
   nodeDone: boolean;
   /** 현재 HP (없는 카드는 가득) */
   hp: HpMap;
+  /** 남은 PP (없는 기술은 가득). HP처럼 전투 사이에 이어지고 휴식·챕터 시작에 가득 찬다 */
+  pp: PpMap;
   bag: Record<string, number>;
   /** 보유 기술머신 (move id) */
   tms: string[];
@@ -128,8 +132,8 @@ interface GameStore {
   /** 지금 챕터의 레벨 캡 (없으면 100) */
   levelCap: () => number;
   buy: (item: ShopItem) => 'no-gold' | 'owned' | 'ok';
-  /** 회복약·진화의돌 사용. 실패하면 이유 */
-  applyItem: (itemId: string, uid: string) => string | null;
+  /** 회복약·PP 회복약·진화의돌 사용. 기술 1개용 PP 회복약은 moveId가 필요하다. 실패하면 이유 */
+  applyItem: (itemId: string, uid: string, moveId?: string) => string | null;
   teach: (uid: string, moveId: string) => string | null;
   /** 지닌 도구 바꾸기 (null이면 빼기). 실패하면 이유 */
   equipItem: (uid: string, slug: string | null) => string | null;
@@ -200,6 +204,7 @@ function blankRun(seed: number) {
     visitedNodes: [] as string[],
     nodeDone: true,
     hp: {} as HpMap,
+    pp: {} as PpMap,
     bag: {} as Record<string, number>,
     tms: [] as string[],
     pendingReward: null as BattleKind | null,
@@ -294,6 +299,7 @@ export const useGameStore = create<GameStore>((set, get) => {
         starterType: s.starterType,
         starterChoices: s.starterChoices,
         hp: s.hp,
+        pp: s.pp,
         bag: s.bag,
         tms: s.tms,
         pendingReward: s.pendingReward,
@@ -379,10 +385,14 @@ export const useGameStore = create<GameStore>((set, get) => {
 
     settleBattle: (state, opponent) => {
       const hp = { ...get().hp };
-      for (const m of state.player.party) hp[m.card.uid] = m.currentHp;
+      const pp = { ...get().pp };
+      for (const m of state.player.party) {
+        hp[m.card.uid] = m.currentHp;
+        pp[m.card.uid] = { ...pp[m.card.uid], ...m.pp };
+      }
       // 전투에서 먹은 열매·쓴 기합의띠는 사라진다
       const used = new Set(consumedHeldItems(state));
-      set({ hp, collection: get().collection.map((c) => (used.has(c.uid) ? { ...c, heldItem: null } : c)) });
+      set({ hp, pp, collection: get().collection.map((c) => (used.has(c.uid) ? { ...c, heldItem: null } : c)) });
       applyNuzlocke();
       if (state.result !== 'win') return null;
 
@@ -417,7 +427,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     },
 
     restartChapter: () =>
-      set({ mapNodeId: null, visitedNodes: [], nodeDone: true, hp: fullHeal(), gold: goldAfterLoss(get().gold, get().difficulty) }),
+      set({ mapNodeId: null, visitedNodes: [], nodeDone: true, hp: fullHeal(), pp: {}, gold: goldAfterLoss(get().gold, get().difficulty) }),
 
     completeChapter: () => {
       const ch = get().chapterData();
@@ -432,12 +442,15 @@ export const useGameStore = create<GameStore>((set, get) => {
         nodeDone: true,
         pendingClear: false,
         hp: fullHeal(),
+        pp: {},
       });
     },
 
     levelCap: () => levelCap(get().chapterData(), get().difficulty),
 
-    restHeal: () => set({ hp: restParty(get().partyCards(), get().hp, dex, DIFFICULTY[get().difficulty].restHeal), nodeDone: true }),
+    // 회복은 PP도 모두 채운다 (포켓몬센터처럼). HP 회복량만 난이도를 따른다
+    restHeal: () =>
+      set({ hp: restParty(get().partyCards(), get().hp, dex, DIFFICULTY[get().difficulty].restHeal), pp: restorePp(get().partyCards(), get().pp), nodeDone: true }),
 
     restTrain: (uid) => {
       const card = get().collection.find((c) => c.uid === uid);
@@ -460,7 +473,7 @@ export const useGameStore = create<GameStore>((set, get) => {
       return 'ok';
     },
 
-    applyItem: (itemId, uid) => {
+    applyItem: (itemId, uid, moveId) => {
       const card = get().collection.find((c) => c.uid === uid);
       if (!card || (get().bag[itemId] ?? 0) <= 0) return '가방에 없는 도구다.';
       const spend = () => set({ bag: { ...get().bag, [itemId]: get().bag[itemId] - 1 } });
@@ -468,6 +481,15 @@ export const useGameStore = create<GameStore>((set, get) => {
         const r = useHealItem(itemId, card, get().hp, dex);
         if (typeof r === 'string') return HEAL_ERROR[r];
         set({ hp: r });
+        spend();
+        return null;
+      }
+      if (PP_ITEMS.some((i) => i.id === itemId)) {
+        const r = usePpItem(itemId, card, get().pp, dex, moveId);
+        if (r === 'need-move') return 'PP를 회복할 기술을 골라야 한다.';
+        if (r === 'full') return 'PP가 가득 차 있다.';
+        if (r === 'unknown-item') return HEAL_ERROR[r];
+        set({ pp: r });
         spend();
         return null;
       }

@@ -139,6 +139,30 @@ describe('상점과 아이템', () => {
     expect(g().applyItem('revive', uid)).toBe('가방에 없는 도구다.');
   });
 
+  it('PP: 전투가 끝나도 이어지고, PP 회복약으로 채우고, 휴식·패배 재시작이면 가득 찬다', () => {
+    const op = enterFirst('wild');
+    const uid = g().party[0];
+    const moveId = g().collection[0].moves[0];
+    let state = createBattle(g().partyCards(), op.cards, dex, 1, { wild: true });
+    state = battle(state, { kind: 'move', moveId }, dex);
+    const left = state.player.party[0].pp[moveId];
+    g().settleBattle({ ...state, result: 'lose' }, op);
+    expect(g().pp[uid][moveId]).toBe(left);
+    // 다음 전투는 줄어든 PP로 시작
+    expect(createBattle(g().partyCards(), op.cards, dex, 2, { playerPp: g().pp, wild: true }).player.party[0].pp[moveId]).toBe(left);
+    useGameStore.setState({ bag: { ether: 1 } });
+    expect(g().applyItem('ether', uid)).toBe('PP를 회복할 기술을 골라야 한다.');
+    expect(g().applyItem('ether', uid, moveId)).toBeNull();
+    expect(g().pp[uid][moveId]).toBe(Math.min(dex.moves[moveId].pp, left + 10));
+    expect(g().bag.ether ?? 0).toBe(0);
+    useGameStore.setState({ pp: { [uid]: { [moveId]: 0 } } });
+    g().restHeal();
+    expect(g().pp[uid]).toBeUndefined();
+    useGameStore.setState({ pp: { [uid]: { [moveId]: 0 } } });
+    g().restartChapter();
+    expect(g().pp).toEqual({});
+  });
+
   it('휴식: 회복은 전원 가득, 강화는 레벨 +3', () => {
     const uid = g().party[0];
     useGameStore.setState({ hp: { [uid]: 0 } });

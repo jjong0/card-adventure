@@ -80,7 +80,7 @@ export function Game() {
   if (!game.collection.length) return <StarterScreen />;
 
   const fightOpponent = (opponent: Opponent) => {
-    startBattle(game.partyCards(), opponent.cards, game.nextSeed(), { playerHp: game.hp, wild: opponent.kind === 'wild', randomAi: opponent.randomAi });
+    startBattle(game.partyCards(), opponent.cards, game.nextSeed(), { playerHp: game.hp, playerPp: game.pp, wild: opponent.kind === 'wild', randomAi: opponent.randomAi });
     setPhase({ name: 'battle', opponent });
   };
 
