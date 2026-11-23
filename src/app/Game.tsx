@@ -1,21 +1,23 @@
-// 게임 진행 흐름: 스타터 → 지도 ↔ (전투 → 정산 → 보상 팩) / 휴식 / 상점 / 보관함 → 관장 → 다음 챕터
+// 게임 진행 흐름: 스타터 → 지도 ↔ (전투 → 정산 → 보상 팩) / 휴식 / 상점 / 보상 / 사건 / 보관함 → 관장 → 다음 챕터
 // 진행 상태는 자동 저장되고(store/autosave), 불러오면 열지 않은 보상 팩·관장 클리어 화면부터 이어진다.
 import { useEffect, useState } from 'react';
 import { fixJosa } from '../core/battle';
 import { DIFFICULTY } from '../core/difficulty';
-import { rewardMinRarity, type BattleKind, type Opponent } from '../core/encounter';
+import { nodeOpponent, rewardMinRarity, type BattleKind, type Opponent } from '../core/encounter';
 import type { MapNode } from '../core/map';
 import type { BattleState } from '../core/types';
 import { BagPanel } from '../features/bag/BagPanel';
 import { BattleScreen } from '../features/battle/BattleScreen';
 import { BoxScreen } from '../features/box/BoxScreen';
+import { EventScreen } from '../features/event/EventScreen';
 import { MapScreen } from '../features/map/MapScreen';
 import { PackScreen } from '../features/pack/PackScreen';
 import { StarterScreen } from '../features/pack/StarterScreen';
 import { RestScreen } from '../features/rest/RestScreen';
 import { BattleResultScreen } from '../features/result/BattleResultScreen';
 import { ShopScreen } from '../features/shop/ShopScreen';
-import { dex } from '../lib/dex';
+import { TreasureScreen } from '../features/treasure/TreasureScreen';
+import { dex, trainers } from '../lib/dex';
 import { useBattleStore } from '../store/battleStore';
 import { saveNow } from '../store/autosave';
 import { useGameStore, type BattleSettlement } from '../store/gameStore';
@@ -28,6 +30,8 @@ type Phase =
   | { name: 'clear' }
   | { name: 'rest' }
   | { name: 'shop' }
+  | { name: 'treasure' }
+  | { name: 'event'; node: MapNode }
   | { name: 'box' };
 
 export function Game() {
@@ -75,13 +79,26 @@ export function Game() {
 
   if (!game.collection.length) return <StarterScreen />;
 
+  const fightOpponent = (opponent: Opponent) => {
+    startBattle(game.partyCards(), opponent.cards, game.nextSeed(), { playerHp: game.hp, wild: opponent.kind === 'wild', randomAi: opponent.randomAi });
+    setPhase({ name: 'battle', opponent });
+  };
+
   const enter = (node: MapNode, opponent: Opponent | null) => {
-    if (opponent) {
-      startBattle(game.partyCards(), opponent.cards, game.nextSeed(), { playerHp: game.hp, wild: opponent.kind === 'wild', randomAi: opponent.randomAi });
-      setPhase({ name: 'battle', opponent });
-    } else {
-      setPhase(node.kind === 'shop' ? { name: 'shop' } : { name: 'rest' });
-    }
+    if (opponent) return fightOpponent(opponent);
+    if (node.kind === 'shop') setPhase({ name: 'shop' });
+    else if (node.kind === 'treasure') setPhase({ name: 'treasure' });
+    else if (node.kind === 'event') setPhase({ name: 'event', node });
+    else setPhase({ name: 'rest' });
+  };
+
+  /** 사건에서 벌어진 승부: 그 노드 자리에 야생·트레이너 노드가 있는 것처럼 상대를 만든다 */
+  const eventBattle = (node: MapNode, kind: 'wild' | 'trainer') => {
+    const map = game.map();
+    const ctx = { totalFloors: map.floors.length, chapter: game.chapterData(), trainers, starterType: game.starterType, difficulty: game.difficulty, seed: game.runSeed };
+    const opponent = nodeOpponent({ ...node, kind }, ctx, dex);
+    if (opponent) fightOpponent(opponent);
+    else { game.finishNode(); toMap(); }
   };
 
   /** 너즐록으로 잃은 포켓몬 안내 */
@@ -164,6 +181,10 @@ export function Game() {
       return <RestScreen onDone={() => toMap()} />;
     case 'shop':
       return <ShopScreen onDone={() => { game.finishNode(); toMap(); }} />;
+    case 'treasure':
+      return <TreasureScreen onDone={() => toMap()} />;
+    case 'event':
+      return <EventScreen onDone={() => toMap()} onBattle={(kind) => eventBattle(phase.node, kind)} />;
     case 'box':
       return (
         <div className="flex h-full flex-col">
