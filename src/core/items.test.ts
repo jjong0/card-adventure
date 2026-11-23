@@ -8,7 +8,7 @@ import evolutions from '../data/evolutions.json';
 import tmJson from '../data/tmCompat.json';
 import chaptersJson from '../data/chapters.json';
 import { createCard, createRng } from './gacha';
-import { hpOf, maxHp, restParty, shopStock, shopTms, teachTm, useHealItem } from './items';
+import { HEAL_ITEMS, hpOf, maxHp, restParty, rewardHealItems, shopStock, shopTms, teachTm, useHealItem } from './items';
 import type { ChapterData, Dex, Evolutions, Learnsets, Move, Species, TmData, TypeChart } from './types';
 
 const species = Object.fromEntries((speciesList as Species[]).map((s) => [s.id, s]));
@@ -74,5 +74,23 @@ describe('상점', () => {
     expect(stock.filter((i) => i.category === 'stone').map((i) => i.name)).toEqual(['불꽃의돌', '물의돌', '천둥의돌', '리프의돌', '달의돌', '태양의돌']);
     expect(stock.filter((i) => i.category === 'stone').every((i) => i.price === 2100)).toBe(true);
     expect(stock.filter((i) => i.category === 'tm').every((i) => i.price === 3000 && i.moveId)).toBe(true);
+  });
+});
+
+describe('승리 보상 회복약', () => {
+  it('야생·트레이너 1개, 엘리트·관장 2개. 야생은 고급상처약이 없고 관장은 상처약이 없다', () => {
+    const rng = createRng(9);
+    const seen = { wild: new Set<string>(), leader: new Set<string>() };
+    for (let i = 0; i < 2000; i++) {
+      const w = rewardHealItems('wild', rng);
+      expect(w).toHaveLength(1);
+      seen.wild.add(w[0]);
+      expect(rewardHealItems('trainer', rng)).toHaveLength(1);
+      expect(rewardHealItems('elite', rng)).toHaveLength(2);
+      for (const id of rewardHealItems('leader', rng)) seen.leader.add(id);
+    }
+    expect(seen.wild.has('hyper-potion')).toBe(false);
+    expect(seen.leader.has('potion')).toBe(false);
+    for (const id of [...seen.wild, ...seen.leader]) expect(HEAL_ITEMS.some((h) => h.id === id)).toBe(true);
   });
 });

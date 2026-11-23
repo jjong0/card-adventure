@@ -1,9 +1,10 @@
 // src/core/items.ts
 // 가방 아이템과 상점 (docs/spec.md §6): 회복약, 진화의돌, 기술머신, 그리고 HP 회복 규칙
-// 지닌 도구는 전투 효과가 구현되면(spec §5.2-3) 추가한다.
+// 지닌 도구는 heldItems.ts.
 import { calcStats, typeEffectiveness } from './battle';
 import { effectiveIvs } from './card';
 import { learnMoves } from './progress';
+import type { BattleKind } from './encounter';
 import type { Card, ChapterData, Dex, Evolutions, TmData } from './types';
 
 /** 현재 HP 기록 (Card.uid → HP). 없는 카드는 가득 찬 것으로 본다 */
@@ -33,6 +34,27 @@ export const HEAL_ITEMS: HealItem[] = [
   { id: 'hyper-potion', name: '고급상처약', price: 1200, heal: 200 },
   { id: 'revive', name: '기력의조각', price: 1500, heal: 'revive' },
 ];
+
+/**
+ * 전투 승리 보상 회복약 (spec §3.2). 노드가 강할수록 개수가 많고 좋은 약이 잘 나온다.
+ * 가중치 순서: 상처약 / 좋은상처약 / 고급상처약 / 기력의조각 (spec §12 미정 → 기본값)
+ */
+const HEAL_REWARD: Record<BattleKind, { count: number; weights: [number, number, number, number] }> = {
+  wild: { count: 1, weights: [70, 25, 0, 5] },
+  trainer: { count: 1, weights: [50, 35, 5, 10] },
+  elite: { count: 2, weights: [20, 45, 15, 20] },
+  leader: { count: 2, weights: [0, 40, 35, 25] },
+};
+
+export function rewardHealItems(kind: BattleKind, rng: () => number): string[] {
+  const { count, weights } = HEAL_REWARD[kind];
+  const total = weights.reduce((a, b) => a + b, 0);
+  return Array.from({ length: count }, () => {
+    let r = rng() * total;
+    const i = weights.findIndex((w) => (r -= w) < 0);
+    return HEAL_ITEMS[i === -1 ? weights.length - 1 : i].id;
+  });
+}
 
 export type HealError = 'unknown-item' | 'fainted' | 'full' | 'not-fainted';
 
