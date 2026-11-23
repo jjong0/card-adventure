@@ -75,6 +75,14 @@ describe('전투 정산', () => {
     expect(g().hp[before.uid]).toBe(Math.min(maxHp(g().collection[0], dex), end.player.party[0].currentHp + grew));
   });
 
+  it('반동으로 파티 전원이 쓰러진 채 이기면 맨 앞 포켓몬이 HP 1로 남는다', () => {
+    const op = enterFirst('wild');
+    const won = { ...createBattle(g().partyCards(), op.cards, dex, 1, { wild: true }), result: 'win' as const };
+    won.player.party[0].currentHp = 0;
+    expect(g().settleBattle(won, op)).not.toBeNull();
+    expect(g().hp[g().party[0]]).toBe(1);
+  });
+
   it('패배: 정산이 없고, 챕터를 다시 시작하면 전원 회복 + 출발점 + 카드 유지', () => {
     const op = enterFirst();
     const lost = { ...createBattle(g().partyCards(), op.cards, dex, 7), result: 'lose' as const };

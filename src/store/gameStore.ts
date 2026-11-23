@@ -395,6 +395,10 @@ export const useGameStore = create<GameStore>((set, get) => {
       set({ hp, pp, collection: get().collection.map((c) => (used.has(c.uid) ? { ...c, heldItem: null } : c)) });
       applyNuzlocke();
       if (state.result !== 'win') return null;
+      // 반동(생명의구슬·울퉁불퉁멧 등)으로 마지막 포켓몬이 쓰러지면서 이기면 파티 전원이 쓰러진 채 남는다.
+      // 그대로 두면 다음 전투를 시작할 수 없으니 맨 앞 포켓몬이 HP 1로 버틴 것으로 한다
+      const party = get().partyCards();
+      if (party.length && party.every((c) => hpOf(c, get().hp, dex) <= 0)) set({ hp: { ...get().hp, [party[0].uid]: 1 } });
 
       const cap = levelCap(get().chapterData(), get().difficulty);
       const gained = distributeExp(state, opponent.kind !== 'wild', dex.species);
