@@ -1,8 +1,13 @@
 // src/core/battle.ts
 // 순수 전투 엔진: battle(state, action, dex) → 새 state
-// 데미지 공식·랭크·급소·상태이상은 5세대 이후 원작 기준 (날씨·특성·도구·필드는 미구현)
+// 데미지 공식·랭크·급소·상태이상은 5세대 이후 원작 기준 (날씨·특성·필드는 미구현)
+// 지닌 도구 효과 수치는 heldItems.ts
 import { effectiveIvs } from './card';
 import { createRng } from './gacha';
+import {
+  accuracyMultiplier, attackMultiplier, CHOICE_ITEMS, critBonus, CURE_BERRY, defenseMultiplier, finalMultiplier,
+  hpBerryAmount, powerMultiplier, resistBerryTriggers, speedMultiplier, usableMoves,
+} from './heldItems';
 import type {
   BattleAction, BattleEvent, BattleMon, BattleSide, BattleStat, BattleState, Card, Dex,
   ElementType, Move, MoveCategory, Side, Stats,
@@ -122,6 +127,8 @@ export function createBattleMon(card: Card, dex: Dex): BattleMon {
     stages: { ...ZERO_STAGES },
     lastHit: null,
     facedBy: [],
+    item: card.heldItem,
+    choiceLock: null,
   };
 }
 
@@ -182,7 +189,7 @@ function stageMult(stage: number, base = 2) {
 }
 
 function effectiveSpeed(mon: BattleMon) {
-  let spd = Math.floor(mon.stats.spd * stageMult(mon.stages.spd));
+  let spd = Math.floor(mon.stats.spd * stageMult(mon.stages.spd) * speedMultiplier(mon.item));
   if (mon.ailment === 'paralysis') spd = Math.floor(spd / 2); // 7세대~: 1/2
   return spd;
 }
@@ -210,6 +217,8 @@ export interface DamageInput {
   crit: boolean;
   burned: boolean;     // 화상 + 물리기
   randomRoll: number;  // 85~100
+  /** 최종 보정 (생명의구슬·달인의띠·반감 열매 등을 곱한 값, 없으면 1) */
+  modifier?: number;
 }
 
 /**
@@ -224,6 +233,7 @@ export function calcDamage(i: DamageInput): number {
   if (i.stab) d = pokeRound(d * 1.5);
   d = Math.floor(d * i.effectiveness);
   if (i.burned) d = pokeRound(d * 0.5);
+  if (i.modifier !== undefined && i.modifier !== 1) d = pokeRound(d * i.modifier);
   return Math.max(1, d);
 }
 
@@ -465,6 +475,87 @@ function canAct(mon: BattleMon, move: Move, rng: Rng, rec: Recorder): boolean {
 }
 
 // ════════════════════════════════════════════
+// 지닌 도구 (수치는 heldItems.ts)
+// ════════════════════════════════════════════
+
+function itemName(dex: Dex, slug: string) {
+  return dex.items?.[slug]?.name ?? slug;
+}
+
+function canEvolve(mon: BattleMon, dex: Dex) {
+  return (dex.evolutions?.[mon.card.speciesId]?.length ?? 0) > 0;
+}
+
+/**
+ * 기합의띠(HP가 가득일 때, 한 번)·기합의머리띠(10%): 쓰러질 데미지를 HP 1을 남기고 버틴다.
+ * 버틴 도구 slug를 돌려준다. 띠를 지니지 않았으면 난수를 쓰지 않는다 (도구 없는 전투의 시드 결과가 그대로).
+ */
+function endure(target: BattleMon, dmg: number, rng: Rng): { dmg: number; item: string | null } {
+  const item = target.item;
+  if (!item || dmg < target.currentHp || target.currentHp <= 1) return { dmg, item: null };
+  if (item === 'focus-sash' && target.currentHp === target.stats.hp) {
+    target.item = null;
+    return { dmg: target.currentHp - 1, item };
+  }
+  if (item === 'focus-band' && rng() < 0.1) return { dmg: target.currentHp - 1, item };
+  return { dmg, item: null };
+}
+
+/** endure를 거쳐 공격 데미지를 준다 */
+function hurtByAttack(rec: Recorder, dex: Dex, rng: Rng, target: BattleMon, amount: number, effectiveness = 1, crit = false) {
+  const r = endure(target, amount, rng);
+  const dealt = hurt(rec, target, r.dmg, effectiveness, crit);
+  if (r.item) rec.say(`${target.name}은(는) ${itemName(dex, r.item)}(으)로 버텼다!`);
+  return dealt;
+}
+
+/**
+ * 열매 먹기: 상태이상·혼란 회복 열매는 걸리면 바로, HP 회복 열매는 HP가 절반 이하가 되면.
+ * 행동이 하나 끝날 때와 턴 끝에 확인한다 (연속기 도중에는 확인하지 않는다).
+ */
+function checkBerries(mon: BattleMon, dex: Dex, rec: Recorder) {
+  const item = mon.item;
+  if (!item || mon.currentHp <= 0) return;
+  const cures = CURE_BERRY[item];
+  if (cures) {
+    const ailment = mon.ailment !== 'none' && cures.includes(mon.ailment);
+    const confusion = mon.confusedTurns > 0 && cures.includes('confusion');
+    if (!ailment && !confusion) return;
+    mon.item = null;
+    if (ailment) {
+      mon.ailment = 'none';
+      mon.sleepTurns = 0;
+      mon.toxicCounter = 0;
+      rec.emit({ type: 'status', side: rec.sideOf(mon), ailment: 'none' });
+    }
+    if (confusion) mon.confusedTurns = 0;
+    rec.say(`${mon.name}은(는) ${itemName(dex, item)}을(를) 먹고 ${ailment ? '상태이상' : '혼란'}이(가) 나았다!`);
+    return;
+  }
+  const amount = hpBerryAmount(item, mon.stats.hp);
+  if (amount && mon.currentHp <= Math.floor(mon.stats.hp / 2)) {
+    mon.item = null;
+    heal(rec, mon, amount);
+    rec.say(`${mon.name}은(는) ${itemName(dex, item)}을(를) 먹고 체력을 회복했다!`);
+  }
+}
+
+/** 턴 끝 도구: 먹다남은음식 1/16 회복, 검은오물 독 타입 1/16 회복·그 외 1/8 데미지 */
+function endOfTurnItem(mon: BattleMon, dex: Dex, rec: Recorder) {
+  const item = mon.item;
+  if (!item || mon.currentHp <= 0) return;
+  const max = mon.stats.hp;
+  const healing = item === 'leftovers' || (item === 'black-sludge' && mon.types.includes('poison'));
+  if (healing && mon.currentHp < max) {
+    heal(rec, mon, Math.max(1, Math.floor(max / 16)));
+    rec.say(`${mon.name}은(는) ${itemName(dex, item)}(으)로 체력을 조금 회복했다!`);
+  } else if (item === 'black-sludge' && !mon.types.includes('poison')) {
+    hurt(rec, mon, Math.max(1, Math.floor(max / 8)));
+    rec.say(`${mon.name}은(는) ${itemName(dex, item)}(으)로 데미지를 입었다!`);
+  }
+}
+
+// ════════════════════════════════════════════
 // 기술 실행
 // ════════════════════════════════════════════
 
@@ -490,7 +581,7 @@ function accuracyCheck(move: Move, user: BattleMon, target: BattleMon, rng: Rng)
     return rng() * 100 < move.accuracy + (user.card.level - target.card.level);
   }
   const stage = Math.max(-6, Math.min(6, user.stages.accuracy - target.stages.evasion));
-  return rng() * 100 < move.accuracy * stageMult(stage, 3);
+  return rng() * 100 < move.accuracy * stageMult(stage, 3) * accuracyMultiplier(user.item);
 }
 
 function applyMoveAilment(move: Move, target: BattleMon, rng: Rng, rec: Recorder, fromDamage: boolean) {
@@ -524,16 +615,23 @@ function useMove(state: BattleState, side: Side, moveId: string, dex: Dex, rng: 
   const user = userSide.party[userSide.activeIdx];
   const target = targetSide.party[targetSide.activeIdx];
 
-  const hasPp = Object.values(user.pp).some((p) => p > 0);
+  // 고를 수 있는 기술이 하나도 없으면(PP 소진, 구애 고정 기술 PP 소진 등) 발버둥
+  const usable = usableMoves(user, dex.moves);
+  const hasPp = usable.length > 0;
   const move = hasPp ? dex.moves[moveId] : STRUGGLE;
   if (!move) return;
   if (hasPp && (user.pp[moveId] ?? 0) <= 0) {
     rec.say(`${move.name}의 PP가 없다!`);
     return;
   }
+  if (hasPp && !usable.includes(moveId)) {
+    rec.say(`${itemName(dex, user.item ?? '')} 때문에 ${move.name}을(를) 쓸 수 없다!`);
+    return;
+  }
 
   if (!canAct(user, move, rng, rec)) return;
   if (hasPp) user.pp[moveId]--;
+  if (hasPp && user.item && CHOICE_ITEMS.has(user.item) && !user.choiceLock) user.choiceLock = moveId;
   if (!hasPp) rec.say(`${user.name}은(는) 쓸 수 있는 기술이 없다!`);
   // 메시지가 먼저, 기술 연출이 뒤따른다 ("○○의 △△!" → 이펙트)
   rec.say(`${user.name}의 ${move.name}!`);
@@ -581,9 +679,11 @@ function useMove(state: BattleState, side: Side, moveId: string, dex: Dex, rng: 
 
   // 일격필살
   if (move.meta?.category === 'ohko') {
-    target.lastHit = { damage: target.currentHp, category: move.category };
-    hurt(rec, target, target.currentHp, effectiveness);
+    const r = endure(target, target.currentHp, rng);
+    target.lastHit = { damage: r.dmg, category: move.category };
+    hurt(rec, target, r.dmg, effectiveness);
     rec.say('일격필살!');
+    if (r.item) rec.say(`${target.name}은(는) ${itemName(dex, r.item)}(으)로 버텼다!`);
     return;
   }
 
@@ -596,7 +696,7 @@ function useMove(state: BattleState, side: Side, moveId: string, dex: Dex, rng: 
       return void rec.say(`${target.name}의 체력이 회복되었다!`);
     }
     if (r.kind === 'fixed') {
-      const dmg = hurt(rec, target, r.damage);
+      const dmg = hurtByAttack(rec, dex, rng, target, r.damage);
       target.lastHit = { damage: dmg, category: move.category };
       if (move.effectId === EFFECT.FINAL_GAMBIT) hurt(rec, user, user.currentHp);
       return;
@@ -604,6 +704,7 @@ function useMove(state: BattleState, side: Side, moveId: string, dex: Dex, rng: 
     if (r.message) rec.say(r.message);
     power = r.power;
   }
+  if (!isStruggle) power = Math.floor(power * powerMultiplier(user.item, move));
 
   // 연속기 횟수: 2~5회는 35/35/15/15%
   const meta = move.meta;
@@ -620,29 +721,44 @@ function useMove(state: BattleState, side: Side, moveId: string, dex: Dex, rng: 
   const physical = move.category === 'physical';
   const atkKey = physical ? 'atk' : 'spAtk';
   const defKey = physical ? 'def' : 'spDef';
-  const critStage = Math.min(3, meta?.critRate ?? 0);
+  const critStage = Math.min(3, (meta?.critRate ?? 0) + critBonus(user.item));
+  const atkMult = attackMultiplier(user.item, move.category);
+  const defMult = defenseMultiplier(target.item, move.category, canEvolve(target, dex));
 
   let total = 0;
   let landed = 0;
-  for (let h = 0; h < hits && target.currentHp > 0; h++) {
+  for (let h = 0; h < hits && target.currentHp > 0 && user.currentHp > 0; h++) {
     const crit = rng() < CRIT_CHANCE[critStage];
+    let modifier = isStruggle ? 1 : finalMultiplier(user.item, effectiveness);
+    const berry = !isStruggle && resistBerryTriggers(target.item, move.type, effectiveness) ? target.item : null;
+    if (berry) {
+      modifier *= 0.5;
+      target.item = null;
+    }
     // 급소: 공격 측 하락 랭크, 방어 측 상승 랭크 무시
     const aStage = crit ? Math.max(0, user.stages[atkKey]) : user.stages[atkKey];
     const dStage = crit ? Math.min(0, target.stages[defKey]) : target.stages[defKey];
     const dmg = calcDamage({
       level: user.card.level,
       power,
-      attack: Math.floor(user.stats[atkKey] * stageMult(aStage)),
-      defense: Math.floor(target.stats[defKey] * stageMult(dStage)),
+      attack: Math.floor(user.stats[atkKey] * stageMult(aStage) * atkMult),
+      defense: Math.floor(target.stats[defKey] * stageMult(dStage) * defMult),
       stab: !isStruggle && user.types.includes(move.type),
       effectiveness: isStruggle ? 1 : effectiveness,
       crit,
       burned: physical && user.ailment === 'burn',
       randomRoll: 85 + Math.floor(rng() * 16),
+      modifier,
     });
-    total += hurt(rec, target, dmg, isStruggle ? 1 : effectiveness, crit);
+    if (berry) rec.say(`${target.name}은(는) ${itemName(dex, berry)}을(를) 먹고 데미지를 줄였다!`);
+    total += hurtByAttack(rec, dex, rng, target, dmg, isStruggle ? 1 : effectiveness, crit);
     landed++;
     if (crit) rec.say('급소에 맞았다!');
+    // 울퉁불퉁멧: 접촉 기술로 때린 쪽이 최대 HP 1/6 데미지 (5세대, 연속기는 맞을 때마다)
+    if (move.contact && target.item === 'rocky-helmet' && user.currentHp > 0) {
+      hurt(rec, user, Math.max(1, Math.floor(user.stats.hp / 6)));
+      rec.say(`${user.name}은(는) ${itemName(dex, 'rocky-helmet')}(으)로 데미지를 입었다!`);
+    }
   }
   target.lastHit = { damage: total, category: move.category };
 
@@ -657,8 +773,9 @@ function useMove(state: BattleState, side: Side, moveId: string, dex: Dex, rng: 
     hurt(rec, user, Math.max(1, Math.floor(user.stats.hp / 4)));
     rec.say(`${user.name}은(는) 반동으로 데미지를 입었다!`);
   } else if (meta?.drain) {
-    const amount = Math.max(1, Math.floor((total * Math.abs(meta.drain)) / 100));
+    let amount = Math.max(1, Math.floor((total * Math.abs(meta.drain)) / 100));
     if (meta.drain > 0) {
+      if (user.item === 'big-root') amount = Math.floor(amount * 1.3); // 큰뿌리: 흡수량 ×1.3 (4세대)
       heal(rec, user, amount);
       rec.say(`${target.name}(으)로부터 체력을 흡수했다!`);
     } else {
@@ -674,6 +791,18 @@ function useMove(state: BattleState, side: Side, moveId: string, dex: Dex, rng: 
     if (meta.flinchChance && target.currentHp > 0 && rng() * 100 < meta.flinchChance) target.flinched = true;
     if (meta.category === 'damage-heal' && meta.healing) {
       heal(rec, user, Math.floor((user.stats.hp * meta.healing) / 100));
+    }
+  }
+
+  // 공격한 쪽 도구: 조개껍질방울 준 데미지 1/8 회복, 생명의구슬 최대 HP 1/10 반동 (4세대)
+  if (!isStruggle && total > 0 && user.currentHp > 0) {
+    if (user.item === 'shell-bell' && user.currentHp < user.stats.hp) {
+      heal(rec, user, Math.max(1, Math.floor(total / 8)));
+      rec.say(`${user.name}은(는) ${itemName(dex, 'shell-bell')}(으)로 체력을 조금 회복했다!`);
+    }
+    if (user.item === 'life-orb') {
+      hurt(rec, user, Math.max(1, Math.floor(user.stats.hp / 10)));
+      rec.say(`${user.name}은(는) 생명이 조금 깎였다!`);
     }
   }
 }
@@ -696,6 +825,7 @@ function switchIn(side: BattleSide, idx: number, who: Side, rec: Recorder) {
   out.stages = { ...ZERO_STAGES };
   out.confusedTurns = 0;
   out.toxicCounter = 0;
+  out.choiceLock = null;
   side.activeIdx = idx;
   rec.emit({ type: 'switchIn', side: who, idx });
   const name = side.party[idx].name;
@@ -779,6 +909,11 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
   if (action.kind === 'switch') {
     const t = state.player.party[action.toIdx];
     if (!t || t.currentHp <= 0 || action.toIdx === state.player.activeIdx) return prev;
+  } else {
+    // 구애 고정·돌격조끼로 막힌 기술 (UI에서 비활성화한다)
+    const me = active(state.player);
+    const usable = usableMoves(me, dex.moves);
+    if ((me.pp[action.moveId] ?? 0) > 0 && usable.length && !usable.includes(action.moveId)) return prev;
   }
 
   for (const m of [active(state.player), active(state.enemy)]) {
@@ -790,9 +925,16 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
     { side: 'player', action },
     { side: 'enemy', action: state.randomAi ? randomEnemyAction(state, dex, rng) : chooseEnemyAction(state, dex) },
   ];
+  // 선제공격손톱: 20%로 같은 우선도 안에서 먼저 움직인다 (지닌 경우에만 난수를 쓴다)
+  const quick = new Set<Side>();
+  for (const o of order) {
+    if (o.action.kind === 'move' && active(state[o.side]).item === 'quick-claw' && rng() < 0.2) quick.add(o.side);
+  }
   order.sort((a, b) => {
     const p = priorityOf(b, dex) - priorityOf(a, dex);
     if (p) return p;
+    const q = Number(quick.has(b.side)) - Number(quick.has(a.side));
+    if (q) return q;
     const s = effectiveSpeed(active(state[b.side])) - effectiveSpeed(active(state[a.side]));
     return s || (rng() < 0.5 ? -1 : 1); // 동속은 랜덤
   });
@@ -801,12 +943,18 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
   const actors = order.map((o) => active(state[o.side]));
 
   rec.say(`── ${state.turn}턴 ──`);
+  for (const side of quick) {
+    const mon = active(state[side]);
+    rec.say(`${mon.name}은(는) ${itemName(dex, 'quick-claw')}(으)로 행동이 빨라졌다!`);
+  }
   for (const [i, { side, action: act }] of order.entries()) {
     if (state.result !== 'ongoing') break;
     const me = active(state[side]);
     if (me !== actors[i] || me.currentHp <= 0) continue;
     if (act.kind === 'switch') switchIn(state[side], act.toIdx, side, rec);
     else useMove(state, side, act.moveId, dex, rng, rec);
+    checkBerries(active(state.player), dex, rec);
+    checkBerries(active(state.enemy), dex, rec);
     markFaced(state);
     // 행동 중 쓰러진 쪽 확인 (상대 쓰러지면 남은 행동 생략)
     if (active(state.player).currentHp <= 0 || active(state.enemy).currentHp <= 0) {
@@ -816,8 +964,11 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
   }
 
   if (state.result === 'ongoing') {
-    endOfTurnDamage(active(state.player), rec);
-    endOfTurnDamage(active(state.enemy), rec);
+    for (const mon of [active(state.player), active(state.enemy)]) {
+      endOfTurnDamage(mon, rec);
+      endOfTurnItem(mon, dex, rec);
+      checkBerries(mon, dex, rec);
+    }
     resolveFaints(state, rec);
   }
 
@@ -833,7 +984,7 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
 /** 무작위 AI (야생, 쉬움): PP가 남은 기술 중 무작위 (spec §5.3) */
 function randomEnemyAction(state: BattleState, dex: Dex, rng: Rng): BattleAction {
   const me = active(state.enemy);
-  const usable = me.card.moves.filter((id) => (me.pp[id] ?? 0) > 0 && dex.moves[id]);
+  const usable = usableMoves(me, dex.moves);
   if (!usable.length) return { kind: 'move', moveId: me.card.moves[0] ?? 'struggle' };
   return { kind: 'move', moveId: usable[Math.floor(rng() * usable.length)] };
 }
@@ -841,7 +992,7 @@ function randomEnemyAction(state: BattleState, dex: Dex, rng: Rng): BattleAction
 export function chooseEnemyAction(state: BattleState, dex: Dex): BattleAction {
   const me = active(state.enemy);
   const foe = active(state.player);
-  const usable = me.card.moves.filter((id) => (me.pp[id] ?? 0) > 0 && dex.moves[id]);
+  const usable = usableMoves(me, dex.moves);
   if (!usable.length) return { kind: 'move', moveId: me.card.moves[0] ?? 'struggle' };
 
   // 보통·어려움은 "기대 데미지 최대" (spec §5.3). 변화기는 공격기가 없을 때만 쓴다

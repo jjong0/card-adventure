@@ -148,6 +148,8 @@ export interface BattleMon {
   stages: Record<BattleStat, number>;         // 랭크 -6~+6
   lastHit: { damage: number; category: MoveCategory } | null; // 이번 턴 받은 공격 (카운터류)
   facedBy: number[];                          // 이 포켓몬과 마주한 상대 파티 idx (경험치 분배용)
+  item: string | null;                        // 지금 지닌 도구 (열매·기합의띠는 쓰면 null)
+  choiceLock: string | null;                  // 구애 도구로 고정된 기술 (교체하면 풀림)
 }
 
 export type Side = 'player' | 'enemy';
@@ -196,7 +198,14 @@ export interface Dex {
   species: Record<string, Species>;
   moves: Record<string, Move>;
   typeChart: TypeChart;
+  /** 진화의휘석 판정용 (없으면 진화 전으로 보지 않음) */
+  evolutions?: Evolutions;
+  /** 지닌 도구 이름 (전투 문구용, 없으면 slug) */
+  items?: Record<string, { name: string }>;
 }
+
+/** 지닌 도구 등급: 보상 노드에서 나오는 확률이 다르다 */
+export type HeldItemTier = 'common' | 'uncommon' | 'rare';
 
 export type BattleAction =
   | { kind: 'move'; moveId: string }
