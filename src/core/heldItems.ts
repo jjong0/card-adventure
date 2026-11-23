@@ -157,3 +157,53 @@ export function consumedHeldItems(state: BattleState): string[] {
     .filter((m) => m.card.heldItem && m.item === null && isConsumable(m.card.heldItem))
     .map((m) => m.card.uid);
 }
+
+// ════════════════════════════════════════════
+// 뽑기 (보상 노드·사건)
+// ════════════════════════════════════════════
+
+/**
+ * 등급 확률. 뒤 챕터일수록 희귀가 잘 나온다: 희귀 8% + 챕터마다 2%p (최대 30%), 고급 32%, 나머지 일반.
+ * (spec §12 미정 → 기본값)
+ */
+export function tierWeights(chapter: number): Record<HeldItemTier, number> {
+  const rare = Math.min(0.3, 0.08 + 0.02 * (chapter - 1));
+  const uncommon = 0.32;
+  return { common: 1 - rare - uncommon, uncommon, rare };
+}
+
+export function rollTier(chapter: number, rng: () => number): HeldItemTier {
+  const w = tierWeights(chapter);
+  const r = rng();
+  return r < w.rare ? 'rare' : r < w.rare + w.uncommon ? 'uncommon' : 'common';
+}
+
+/**
+ * 도구 하나 뽑기. exclude(이미 가진 도구 등)는 피하고, 그 등급에 남은 게 없으면 다른 등급에서.
+ * 열매·기합의띠(소모품)는 이미 갖고 있어도 다시 나온다.
+ */
+export function rollHeldItem(items: HeldItemData[], tier: HeldItemTier, exclude: ReadonlySet<string>, rng: () => number): string {
+  const ok = (i: HeldItemData) => !exclude.has(i.slug) || isConsumable(i.slug);
+  const sameTier = items.filter((i) => i.tier === tier && ok(i));
+  const list = sameTier.length ? sameTier : items.filter(ok);
+  const pool = list.length ? list : items;
+  return pool[Math.floor(rng() * pool.length)].slug;
+}
+
+/** 보상 노드: 서로 다른 도구 3개 (등급은 하나씩 따로 굴린다) */
+export function treasureChoices(items: HeldItemData[], chapter: number, owned: ReadonlySet<string>, rng: () => number, count = 3): string[] {
+  const picked: string[] = [];
+  for (let i = 0; i < count; i++) {
+    const exclude = new Set([...owned, ...picked]);
+    const tier = rollTier(chapter, rng);
+    // 소모품도 같은 보상 안에서는 겹치지 않게
+    const pool = items.filter((x) => !picked.includes(x.slug));
+    picked.push(rollHeldItem(pool, tier, exclude, rng));
+  }
+  return picked;
+}
+
+/** 가방과 카드에 이미 있는 지닌 도구 */
+export function ownedHeldItems(collection: Card[], bag: Record<string, number>): Set<string> {
+  return new Set([...Object.keys(bag).filter((k) => bag[k] > 0), ...collection.flatMap((c) => (c.heldItem ? [c.heldItem] : []))]);
+}

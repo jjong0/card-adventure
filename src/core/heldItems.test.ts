@@ -6,7 +6,11 @@ import typeChart from '../data/typeChart.json';
 import evolutions from '../data/evolutions.json';
 import heldItems from '../data/heldItems.json';
 import { battle, chooseEnemyAction, createBattle } from './battle';
-import { consumedHeldItems, CURE_BERRY, equipHeldItem, RESIST_BERRY, returnHeldItems, TYPE_BOOST, usableMoves } from './heldItems';
+import { createRng } from './gacha';
+import {
+  consumedHeldItems, CURE_BERRY, equipHeldItem, ownedHeldItems, RESIST_BERRY, returnHeldItems, rollTier, tierWeights,
+  treasureChoices, TYPE_BOOST, usableMoves, type HeldItemData,
+} from './heldItems';
 import type { BattleState, Card, Dex, Evolutions, Move, Species, TypeChart } from './types';
 
 const dex: Dex = {
@@ -226,5 +230,36 @@ describe('지니기·빼기', () => {
     s.player.party[0].currentHp = 10;
     s = use(s, 'splash');
     expect(consumedHeldItems(s)).toEqual([s.player.party[0].card.uid]);
+  });
+});
+
+describe('도구 뽑기', () => {
+  const items = heldItems as HeldItemData[];
+
+  it('등급 확률: 1장 희귀 8%, 뒤 챕터일수록 오르고 최대 30%', () => {
+    expect(tierWeights(1).rare).toBeCloseTo(0.08);
+    expect(tierWeights(5).rare).toBeCloseTo(0.16);
+    expect(tierWeights(22).rare).toBeCloseTo(0.3);
+    const rng = createRng(1);
+    const n = 20000;
+    let rare = 0;
+    for (let i = 0; i < n; i++) if (rollTier(1, rng) === 'rare') rare++;
+    expect(rare / n).toBeGreaterThan(0.07);
+    expect(rare / n).toBeLessThan(0.09);
+  });
+
+  it('보상 3개는 서로 다르고, 이미 가진 소모품이 아닌 도구는 나오지 않는다. 같은 시드면 같다', () => {
+    const owned = new Set(['life-orb', 'leftovers', 'choice-band']);
+    for (let seed = 1; seed <= 300; seed++) {
+      const c = treasureChoices(items, 10, owned, createRng(seed));
+      expect(new Set(c).size).toBe(3);
+      for (const s of c) expect(owned.has(s)).toBe(false);
+    }
+    expect(treasureChoices(items, 1, owned, createRng(5))).toEqual(treasureChoices(items, 1, owned, createRng(5)));
+  });
+
+  it('가진 도구: 가방 + 카드가 지닌 것', () => {
+    const c = { ...card('6', 5, ['tackle']), heldItem: 'charcoal' };
+    expect(ownedHeldItems([c], { 'life-orb': 1, potion: 0 })).toEqual(new Set(['life-orb', 'charcoal']));
   });
 });
