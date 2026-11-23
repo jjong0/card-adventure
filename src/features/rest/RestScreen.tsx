@@ -1,19 +1,21 @@
-// 휴식·강화 (spec §8 화면 10): 파티 회복 또는 카드 1장 레벨 +3 중 하나. 회복 전후 HP 미리보기
+// 휴식·강화 (spec §8 화면 10): 파티 회복(HP·PP) 또는 카드 1장 레벨 +3 중 하나. 회복 전후 HP 미리보기
 import { useState } from 'react';
 import { HpBar } from '../../components/HpBar';
 import { Sprite } from '../../components/Sprite';
+import { ppOf } from '../../core/items';
 import type { LevelUpResult } from '../../core/progress';
 import { dex } from '../../lib/dex';
 import { currentHp, REST_LEVELS, useGameStore } from '../../store/gameStore';
 import { EvolutionPrompt } from '../result/EvolutionPrompt';
 
 export function RestScreen({ onDone }: { onDone: () => void }) {
-  const { partyCards, hp, restHeal, restTrain, levelCap } = useGameStore();
+  const { partyCards, hp, pp, restHeal, restTrain, levelCap } = useGameStore();
   const cap = levelCap();
   const party = partyCards();
   const [mode, setMode] = useState<'choose' | 'train'>('choose');
   const [done, setDone] = useState<'heal' | LevelUpResult | null>(null);
   const hurt = party.some((c) => currentHp(c, hp) < currentHp(c, {}));
+  const ppUsed = party.some((c) => c.moves.some((id) => ppOf(c, id, pp, dex) < (dex.moves[id]?.pp ?? 0)));
   const btn = 'rounded-lg px-5 py-2.5 font-pixel text-[16px] font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-40';
 
   return (
@@ -26,7 +28,7 @@ export function RestScreen({ onDone }: { onDone: () => void }) {
       {done ? (
         <div className="w-[560px] space-y-3 rounded-xl border border-line bg-surface p-5 text-center font-pixel">
           {done === 'heal' ? (
-            <p className="text-[16px]">파티가 모두 회복되었다!</p>
+            <p className="text-[16px]">파티의 HP와 PP가 회복되었다!</p>
           ) : (
             <>
               <p className="text-[16px]">
@@ -74,7 +76,7 @@ export function RestScreen({ onDone }: { onDone: () => void }) {
           {mode === 'choose' ? (
             <div className="flex gap-3">
               <button type="button" onClick={() => { restHeal(); setDone('heal'); }} className={`${btn} bg-[#4FD1C5] text-bg`}>
-                회복한다{hurt ? '' : ' (모두 가득 참)'}
+                회복한다{hurt || ppUsed ? '' : ' (모두 가득 참)'}
               </button>
               <button type="button" onClick={() => setMode('train')} className={`${btn} bg-surface ring-1 ring-line hover:ring-accent`}>
                 강화한다 (1장 레벨 +{REST_LEVELS})

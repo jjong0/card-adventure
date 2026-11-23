@@ -1,9 +1,10 @@
-// 가방: 회복약·진화의돌·기술머신을 골라 파티 포켓몬에게 쓰고, 지닌 도구를 지니게 한다 (지도 화면 위에 뜨는 창)
+// 가방: 회복약·PP 회복약·진화의돌·기술머신을 골라 파티 포켓몬에게 쓰고, 지닌 도구를 지니게 한다 (지도 화면 위에 뜨는 창)
 import { useState } from 'react';
 import { HpBar } from '../../components/HpBar';
 import { Sprite } from '../../components/Sprite';
 import { fixJosa } from '../../core/battle';
-import { HEAL_ITEMS } from '../../core/items';
+import { bagItemName, HEAL_ITEMS, PP_ITEMS, ppOf } from '../../core/items';
+import type { Card } from '../../core/types';
 import { dex, tmData } from '../../lib/dex';
 import { currentHp, useGameStore } from '../../store/gameStore';
 
@@ -11,23 +12,30 @@ type Pick = { kind: 'item'; id: string; name: string } | { kind: 'tm'; moveId: s
 
 function itemName(id: string): string {
   if (dex.items[id]) return dex.items[id].name;
-  const heal = HEAL_ITEMS.find((i) => i.id === id);
-  if (heal) return heal.name;
+  if (HEAL_ITEMS.some((i) => i.id === id) || PP_ITEMS.some((i) => i.id === id)) return bagItemName(id);
   for (const list of Object.values(dex.evolutions)) for (const e of list) if (e.method === 'item' && e.item === id) return e.itemName;
   return id;
 }
 
 export function BagPanel({ onClose }: { onClose: () => void }) {
-  const { bag, tms, partyCards, hp, applyItem, teach, equipItem } = useGameStore();
+  const { bag, tms, partyCards, hp, pp, applyItem, teach, equipItem } = useGameStore();
   const [pick, setPick] = useState<Pick | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const items = Object.entries(bag).filter(([, n]) => n > 0);
   const party = partyCards();
 
-  const apply = (uid: string, name: string) => {
+  const ppItem = pick?.kind === 'item' ? PP_ITEMS.find((i) => i.id === pick.id) : undefined;
+  /** 장착한 기술의 PP 합계 "남은/최대" */
+  const ppSummary = (c: Card) => {
+    const now = c.moves.reduce((a, id) => a + ppOf(c, id, pp, dex), 0);
+    const max = c.moves.reduce((a, id) => a + (dex.moves[id]?.pp ?? 0), 0);
+    return `PP ${now}/${max}`;
+  };
+
+  const apply = (uid: string, name: string, moveId?: string) => {
     if (!pick) return;
     const held = pick.kind === 'item' && !!dex.items[pick.id];
-    const error = pick.kind === 'tm' ? teach(uid, pick.moveId) : held ? equipItem(uid, pick.id) : applyItem(pick.id, uid);
+    const error = pick.kind === 'tm' ? teach(uid, pick.moveId) : held ? equipItem(uid, pick.id) : applyItem(pick.id, uid, moveId);
     const done = pick.kind === 'tm' ? `${name}은(는) ${pick.name}을(를) 배웠다!` : held ? `${name}에게 ${pick.name}을(를) 지니게 했다.` : `${name}에게 ${pick.name}을(를) 썼다.`;
     setNotice(error ?? fixJosa(done));
     if (pick.kind === 'item' && (useGameStore.getState().bag[pick.id] ?? 0) <= 0) setPick(null);
@@ -38,6 +46,7 @@ export function BagPanel({ onClose }: { onClose: () => void }) {
     if (!pick) return '';
     if (pick.kind === 'tm') return learned.includes(pick.moveId) ? '이미 배움' : tmData.compat[speciesId]?.includes(pick.moveId) ? '배울 수 있다' : '배울 수 없다';
     if (dex.items[pick.id]) return '';
+    if (ppItem) return '';
     if (HEAL_ITEMS.some((i) => i.id === pick.id)) return '';
     return (dex.evolutions[speciesId] ?? []).some((e) => e.method === 'item' && e.item === pick.id) ? '진화할 수 있다' : '효과 없음';
   };
@@ -72,7 +81,11 @@ export function BagPanel({ onClose }: { onClose: () => void }) {
         <div className="flex min-h-0 flex-col gap-2">
           <div className="flex items-center justify-between">
             <p className="text-[14px] text-text-dim">
-              {pick ? fixJosa(`${pick.name}을(를) ${pick.kind === 'item' && dex.items[pick.id] ? '지니게 할' : '쓸'} 포켓몬을 고르세요`) : '왼쪽에서 도구를 고르세요'}
+              {!pick
+                ? '왼쪽에서 도구를 고르세요'
+                : ppItem?.single
+                  ? 'PP를 회복할 기술을 고르세요'
+                  : fixJosa(`${pick.name}을(를) ${pick.kind === 'item' && dex.items[pick.id] ? '지니게 할' : '쓸'} 포켓몬을 고르세요`)}
             </p>
             <button type="button" onClick={onClose} className="rounded-md px-2 text-[14px] text-text-dim hover:text-text">닫기 ✕</button>
           </div>
@@ -84,19 +97,34 @@ export function BagPanel({ onClose }: { onClose: () => void }) {
               const now = currentHp(c, hp);
               return (
                 <li key={c.uid}>
-                  <button type="button" disabled={!pick} onClick={() => apply(c.uid, sp.name)} className="flex w-full items-center gap-2 rounded-lg border border-line bg-surface-2 px-2 py-1.5 text-left enabled:hover:border-accent disabled:cursor-default">
+                  <button type="button" disabled={!pick || !!ppItem?.single} onClick={() => apply(c.uid, sp.name)} className="flex w-full items-center gap-2 rounded-lg border border-line bg-surface-2 px-2 py-1.5 text-left enabled:hover:border-accent disabled:cursor-default">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden">
                       <Sprite speciesId={c.speciesId} name={sp.name} still scale={1} className="max-w-none shrink-0" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex justify-between text-[13px]">
                         <span className="font-bold">{sp.name} <span className="font-normal text-text-dim">Lv{c.level}</span></span>
-                        <span className="text-[12px] text-text-dim">{hint(c.speciesId, c.learnedMoves) || `${now}/${max}`}</span>
+                        <span className="text-[12px] text-text-dim">{hint(c.speciesId, c.learnedMoves) || (ppItem ? ppSummary(c) : `${now}/${max}`)}</span>
                       </div>
                       <HpBar hp={now} max={max} className="mt-1 h-1.5" />
                       <p className="mt-0.5 truncate text-[11px] text-text-dim">지닌 도구: {c.heldItem ? itemName(c.heldItem) : '없음'}</p>
                     </div>
                   </button>
+                  {/* 기술 1개용 PP 회복약: 기술을 골라서 쓴다 */}
+                  {ppItem?.single && (
+                    <div className="mt-1 grid grid-cols-2 gap-1 pl-12">
+                      {c.moves.map((id) => {
+                        const left = ppOf(c, id, pp, dex);
+                        const full = dex.moves[id]?.pp ?? 0;
+                        return (
+                          <button key={id} type="button" disabled={left >= full} onClick={() => apply(c.uid, sp.name, id)} className="flex justify-between rounded-md border border-line px-2 py-1 text-[12px] enabled:hover:border-accent disabled:opacity-40">
+                            <span>{dex.moves[id]?.name ?? id}</span>
+                            <span className={left === 0 ? 'text-[#F2795A]' : 'text-text-dim'}>{left}/{full}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </li>
               );
             })}
