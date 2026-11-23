@@ -85,6 +85,16 @@ function usePotions() {
   }
 }
 
+const TIER_RANK = { rare: 3, uncommon: 2, common: 1 } as const;
+
+/** 가방의 지닌 도구를 도구가 없는 파티 포켓몬에게 (등급 높은 도구를 레벨 높은 포켓몬부터) */
+function equipHeldItems() {
+  const items = Object.keys(g().bag).filter((k) => dex.items[k] && g().bag[k] > 0);
+  items.sort((a, b) => TIER_RANK[dex.items[b].tier] - TIER_RANK[dex.items[a].tier]);
+  const bare = g().partyCards().filter((c) => !c.heldItem).sort((a, b) => b.level - a.level);
+  for (const [i, c] of bare.entries()) if (items[i]) g().equipItem(c.uid, items[i]);
+}
+
 function openRewardPack(kindOrType: Opponent['kind'] | null, typeIdx: number) {
   const types = advantageTypes(g().chapterData().type);
   const type = types[typeIdx % types.length];
@@ -103,6 +113,7 @@ function pickNode(nodes: MapNode[], shopVisited: boolean, preview: (n: MapNode) 
   if (ratio < 0.6 && by('rest')) return by('rest')!;
   if (!shopVisited && g().gold >= 1500 && by('shop')) return by('shop')!;
   if (by('leader')) return by('leader')!;
+  if (by('treasure')) return by('treasure')!;
   const alive = g().partyCards().filter((c) => hpOf(c, g().hp, dex) > 0);
   const top = Math.max(...alive.map((c) => c.level));
   const myPower = alive.reduce((a, c) => a + c.level, 0);
@@ -121,7 +132,7 @@ function pickNode(nodes: MapNode[], shopVisited: boolean, preview: (n: MapNode) 
   const safe = battles.filter((b) => b.gap <= 1 && b.power <= 1.2 && !lostAt.has(b.n.id) && (b.op.kind !== 'elite' || ratio > 0.8));
   if (safe.length) return safe.sort((a, b) => reward[b.op.kind] - reward[a.op.kind] || a.gap - b.gap)[0].n;
   if (battles.length) return battles.sort((a, b) => Number(lostAt.has(a.n.id)) - Number(lostAt.has(b.n.id)) || a.power - b.power)[0].n;
-  return by('rest') ?? by('shop') ?? nodes[0];
+  return by('rest') ?? by('event') ?? by('shop') ?? nodes[0];
 }
 
 export interface ChapterStat {
@@ -163,7 +174,25 @@ export function playthrough(difficulty: Difficulty, seed: number, maxRestarts = 
       const preview = (n: MapNode) => nodeOpponent(n, ctx, dex);
       const node = pickNode(map.floors.flat().filter((n) => ids.includes(n.id)), shopVisited, preview, lostAt);
       g().moveTo(node.id);
-      const op = preview(node);
+      let op = preview(node);
+
+      if (node.kind === 'treasure') {
+        const best = [...g().treasureChoices()].sort((a, b) => TIER_RANK[dex.items[b].tier] - TIER_RANK[dex.items[a].tier])[0];
+        g().claimTreasure(best);
+        equipHeldItems();
+        continue;
+      }
+      if (node.kind === 'event') {
+        // 골드가 드는 선택지는 넉넉할 때만, 그 밖에는 첫 선택지 (사람은 대개 "해 본다"를 고른다)
+        const ev = g().currentEvent()!;
+        const idx = ev.choices.findIndex((c) => !c.goldPerChapter || g().gold >= c.goldPerChapter * chapter + 1000);
+        const r = g().chooseEvent(Math.max(0, idx));
+        if (typeof r === 'string') { g().finishNode(); continue; }
+        equipHeldItems();
+        evolveAll();
+        if (!r.battle) continue;
+        op = preview({ ...node, kind: r.battle });
+      }
 
       if (node.kind === 'rest') {
         if (hpRatio() < 0.95) g().restHeal();
