@@ -4,11 +4,12 @@
 import { create } from 'zustand';
 import { MAX_PARTY, sellCard, setParty as checkParty } from '../core/collection';
 import { adjustGold, DIFFICULTY, goldAfterLoss, levelCap } from '../core/difficulty';
-import { battleGold, rewardPackLevel, type BattleKind, type Opponent, type StarterType } from '../core/encounter';
+import { battleGold, nodeSeed, rewardPackLevel, type BattleKind, type Opponent, type StarterType } from '../core/encounter';
+import { choiceCost, eventForNode, resolveChoice, type MapEvent } from '../core/events';
 import { addToCollection, CARDS_PER_PACK, createRng, openPack, type AddResult } from '../core/gacha';
-import { consumedHeldItems, equipHeldItem, returnHeldItems } from '../core/heldItems';
+import { consumedHeldItems, equipHeldItem, ownedHeldItems, rollHeldItem, returnHeldItems, treasureChoices } from '../core/heldItems';
 import { HEAL_ITEMS, hpOf, maxHp, restParty, teachTm, useHealItem, type HpMap, type ShopItem } from '../core/items';
-import { generateMap, reachableNodes, type ChapterMap } from '../core/map';
+import { findNode, generateMap, reachableNodes, type ChapterMap } from '../core/map';
 import { addLevels, distributeExp, evolve, evolveWithItem, gainExp, type LevelUpResult } from '../core/progress';
 import { SAVE_VERSION } from '../core/save';
 import type { BattleState, Card, ChapterData, Difficulty, ElementType, Rarity, SaveData } from '../core/types';
@@ -130,6 +131,22 @@ interface GameStore {
   teach: (uid: string, moveId: string) => string | null;
   /** 지닌 도구 바꾸기 (null이면 빼기). 실패하면 이유 */
   equipItem: (uid: string, slug: string | null) => string | null;
+  /** 지금 서 있는 보상 노드의 도구 3개 (노드 시드로 정해져 다시 들어와도 같다) */
+  treasureChoices: () => string[];
+  /** 보상 노드에서 도구 하나를 가져간다 */
+  claimTreasure: (slug: string) => boolean;
+  /** 지금 서 있는 사건 노드의 사건 */
+  currentEvent: () => MapEvent | null;
+  /** 사건 선택지 고르기. 결과를 바로 적용한다. 실패하면 이유 */
+  chooseEvent: (choiceIdx: number) => EventResult | string;
+}
+
+export interface EventResult {
+  text: string;
+  /** 얻거나 잃은 것 ("자뭉열매를 얻었다." 등) */
+  gains: string[];
+  /** 승부가 벌어짐: 이 종류 노드처럼 싸운다 (노드는 전투가 끝나야 끝난다) */
+  battle: 'wild' | 'trainer' | null;
 }
 
 const HELD_ITEM_SLUGS: ReadonlySet<string> = new Set(heldItems.map((i) => i.slug));
@@ -463,6 +480,97 @@ export const useGameStore = create<GameStore>((set, get) => {
       if (typeof r === 'string') return TEACH_ERROR[r];
       replaceCard(r);
       return null;
+    },
+
+    treasureChoices: () => {
+      const node = get().mapNodeId ? findNode(get().map(), get().mapNodeId!) : undefined;
+      if (node?.kind !== 'treasure') return [];
+      const rng = createRng(nodeSeed(get().runSeed, get().chapter, node));
+      return treasureChoices(heldItems, get().chapter, ownedHeldItems(get().collection, get().bag), rng);
+    },
+
+    claimTreasure: (slug) => {
+      if (get().nodeDone || !get().treasureChoices().includes(slug)) return false;
+      set({ bag: { ...get().bag, [slug]: (get().bag[slug] ?? 0) + 1 }, nodeDone: true });
+      return true;
+    },
+
+    currentEvent: () => {
+      const node = get().mapNodeId ? findNode(get().map(), get().mapNodeId!) : undefined;
+      return node?.kind === 'event' ? eventForNode(get().map(), node, get().runSeed) : null;
+    },
+
+    chooseEvent: (choiceIdx) => {
+      const event = get().currentEvent();
+      const choice = event?.choices[choiceIdx];
+      if (!event || !choice || get().nodeDone) return '고를 수 없는 선택지다.';
+      const chapter = get().chapter;
+      const cost = choiceCost(choice, chapter);
+      if (get().gold < cost) return '골드가 모자란다.';
+      const gains: string[] = cost ? [`${cost.toLocaleString()}G를 냈다.`] : [];
+      let battle: EventResult['battle'] = null;
+      const [outcome, seed] = roll(get().seed, (rng) => {
+        const o = resolveChoice(choice, rng);
+        // 지닌 도구는 같은 난수로 미리 뽑아 둔다 (결과 적용은 아래에서)
+        const items = o.effects.map((fx) =>
+          fx.kind === 'heldItem' ? rollHeldItem(heldItems, fx.tier, ownedHeldItems(get().collection, get().bag), rng) : null,
+        );
+        return { o, items };
+      });
+      set({ seed, gold: get().gold - cost });
+      const party = get().partyCards();
+      const cap = levelCap(get().chapterData(), get().difficulty);
+      outcome.o.effects.forEach((fx, i) => {
+        switch (fx.kind) {
+          case 'gold': {
+            const g = adjustGold(fx.perChapter * chapter, get().difficulty);
+            set({ gold: get().gold + g });
+            gains.push(`${g.toLocaleString()}G를 받았다.`);
+            break;
+          }
+          case 'heal':
+            set({ hp: restParty(party, get().hp, dex, fx.ratio) });
+            gains.push('파티의 HP가 회복되었다.');
+            break;
+          case 'hurt': {
+            const hp = { ...get().hp };
+            for (const c of party) {
+              const now = hpOf(c, hp, dex);
+              if (now > 0) hp[c.uid] = Math.max(1, now - Math.ceil(maxHp(c, dex) * fx.ratio));
+            }
+            set({ hp });
+            gains.push('파티가 데미지를 입었다.');
+            break;
+          }
+          case 'heldItem': {
+            const slug = outcome.items[i]!;
+            set({ bag: { ...get().bag, [slug]: (get().bag[slug] ?? 0) + 1 } });
+            gains.push(`${dex.items[slug].name}을(를) 얻었다.`);
+            break;
+          }
+          case 'bagItem': {
+            set({ bag: { ...get().bag, [fx.id]: (get().bag[fx.id] ?? 0) + fx.count } });
+            gains.push(`${HEAL_ITEMS.find((h) => h.id === fx.id)?.name ?? fx.id} ${fx.count}개를 얻었다.`);
+            break;
+          }
+          case 'levels': {
+            let grown = 0;
+            for (const c of party) {
+              if (c.level >= cap) continue;
+              replaceCard(addLevels(c, fx.amount, dex, cap).card);
+              grown++;
+            }
+            gains.push(grown ? `파티의 레벨이 ${fx.amount} 올랐다.` : '레벨 캡에 닿아 더 강해지지 않았다.');
+            break;
+          }
+          case 'battle':
+            battle = fx.battle;
+            break;
+        }
+      });
+      // 승부가 벌어지면 전투가 끝나야 노드가 끝난다 (도중에 닫으면 사건 전으로 돌아간다)
+      if (!battle) set({ nodeDone: true });
+      return { text: outcome.o.text, gains, battle };
     },
 
     equipItem: (uid, slug) => {

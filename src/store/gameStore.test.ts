@@ -171,6 +171,57 @@ describe('상점과 아이템', () => {
   });
 });
 
+describe('보상·사건 노드', () => {
+  /** 그 종류 노드에 서 있는 상태로 만든다 (이동 경로는 건너뛴다) */
+  const standOn = (kind: string) => {
+    const node = g().map().floors.flat().find((n) => n.kind === kind)!;
+    useGameStore.setState({ mapNodeId: node.id, visitedNodes: [node.id], nodeDone: false });
+    return node;
+  };
+
+  it('보상: 서로 다른 도구 3개 중 하나를 가방에 넣고 노드가 끝난다. 다시는 못 가져간다', () => {
+    standOn('treasure');
+    const choices = g().treasureChoices();
+    expect(new Set(choices).size).toBe(3);
+    expect(g().treasureChoices()).toEqual(choices); // 다시 들어와도 같다
+    expect(g().claimTreasure('not-in-list')).toBe(false);
+    expect(g().claimTreasure(choices[1])).toBe(true);
+    expect(g().bag[choices[1]]).toBe(1);
+    expect(g().nodeDone).toBe(true);
+    expect(g().claimTreasure(choices[0])).toBe(false);
+  });
+
+  it('사건: 골드가 모자라면 못 고르고, 고르면 결과가 적용되고 노드가 끝난다', () => {
+    const node = standOn('event');
+    const event = g().currentEvent()!;
+    expect(event).not.toBeNull();
+    // 마지막 선택지는 어느 사건이든 골드가 들지 않는다
+    const last = event.choices.length - 1;
+    const r = g().chooseEvent(last);
+    expect(typeof r).toBe('object');
+    if (typeof r === 'object' && !r.battle) expect(g().nodeDone).toBe(true);
+    expect(g().chooseEvent(0)).toBe('고를 수 없는 선택지다.');
+    expect(g().mapNodeId).toBe(node.id);
+  });
+
+  it('사건 결과: 도구·골드·회복이 실제로 반영된다 (모든 사건의 첫 선택지를 시드 여러 개로)', () => {
+    for (let seed = 1; seed <= 40; seed++) {
+      start();
+      useGameStore.setState({ runSeed: seed, gold: 100000 });
+      standOn('event');
+      const before = { gold: g().gold, bag: { ...g().bag } };
+      const r = g().chooseEvent(0);
+      if (typeof r === 'string') throw new Error(r);
+      for (const line of r.gains) {
+        if (line.endsWith('을(를) 얻었다.') && !line.includes('개를')) expect(Object.keys(g().bag).length).toBeGreaterThan(Object.keys(before.bag).length);
+        if (line.endsWith('G를 받았다.')) expect(g().gold).toBeGreaterThan(before.gold);
+        if (line.endsWith('G를 냈다.')) expect(g().gold).toBeLessThan(before.gold);
+      }
+      expect(g().nodeDone).toBe(!r.battle);
+    }
+  });
+});
+
 describe('저장과 불러오기', () => {
   it('저장 → JSON → 검사 → 불러오기를 거쳐도 진행 상태가 같다', () => {
     g().openTypePack('water');
