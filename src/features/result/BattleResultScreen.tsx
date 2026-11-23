@@ -1,6 +1,7 @@
-// 전투 승리 정산: 골드, 카드별 경험치·레벨업·새 기술, 진화 확인 (spec §4.4~4.6, §5.2-5)
+// 전투 승리 정산: 골드, 회복약, 카드별 경험치·레벨업·새 기술, 진화 확인 (spec §4.4~4.6, §5.2-5)
 import { Sprite } from '../../components/Sprite';
 import type { Opponent } from '../../core/encounter';
+import { HEAL_ITEMS } from '../../core/items';
 import { dex } from '../../lib/dex';
 import type { BattleSettlement } from '../../store/gameStore';
 import { EvolutionPrompt } from './EvolutionPrompt';
@@ -11,6 +12,13 @@ interface Props {
   onNext: () => void;
 }
 
+/** ["potion", "potion", "revive"] → "상처약 ×2 · 기력의조각" */
+function itemSummary(ids: string[]) {
+  const counts = new Map<string, number>();
+  for (const id of ids) counts.set(id, (counts.get(id) ?? 0) + 1);
+  return [...counts].map(([id, n]) => `${HEAL_ITEMS.find((h) => h.id === id)?.name ?? id}${n > 1 ? ` ×${n}` : ''}`).join(' · ');
+}
+
 export function BattleResultScreen({ opponent, settlement, onNext }: Props) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-5 p-8">
@@ -19,6 +27,11 @@ export function BattleResultScreen({ opponent, settlement, onNext }: Props) {
         <p className="font-pixel text-[15px] text-text-dim">
           {opponent.name}에게 이겼다 · <span className="text-accent">+{settlement.gold.toLocaleString()}G</span>
         </p>
+        {settlement.items.length > 0 && (
+          <p className="mt-1 font-pixel text-[15px]">
+            <span className="text-text-dim">가방에 넣었다 </span><span className="text-[#5CC98B]">{itemSummary(settlement.items)}</span>
+          </p>
+        )}
       </div>
       <ul className="max-h-[400px] w-[640px] space-y-2 overflow-y-auto pr-1">
         {settlement.growth.map(({ exp, result }) => {

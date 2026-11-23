@@ -55,7 +55,7 @@ describe('지도 이동', () => {
 });
 
 describe('전투 정산', () => {
-  it('승리: HP를 이어받고 골드·경험치를 받는다', () => {
+  it('승리: HP를 이어받고 골드·경험치·회복약을 받는다', () => {
     const op = enterFirst('wild');
     // 이기는 전투 시드를 찾는다 (스타터 한 마리라 시드에 따라 질 수도 있다)
     let end = fight(createBattle(g().partyCards(), op.cards, dex, 1, { playerHp: g().hp, wild: true }));
@@ -67,6 +67,9 @@ describe('전투 정산', () => {
     expect(g().gold).toBe(s.gold);
     expect(s.growth).toHaveLength(1);
     expect(g().collection[0].exp).toBeGreaterThan(before.exp);
+    // 야생은 회복약 1개가 가방에 들어간다
+    expect(s.items).toHaveLength(1);
+    expect(g().bag[s.items[0]]).toBe(1);
     // 레벨이 올랐으면 늘어난 최대 HP만큼 현재 HP도 오른다
     const grew = maxHp(g().collection[0], dex) - maxHp(before, dex);
     expect(g().hp[before.uid]).toBe(Math.min(maxHp(g().collection[0], dex), end.player.party[0].currentHp + grew));
