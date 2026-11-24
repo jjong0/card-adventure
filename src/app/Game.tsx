@@ -7,6 +7,7 @@ import { nodeOpponent, rewardMinRarity, type BattleKind, type Opponent } from '.
 import type { MapNode } from '../core/map';
 import type { BattleState } from '../core/types';
 import { BagPanel } from '../features/bag/BagPanel';
+import { battleEnv } from '../features/battle/BattleBackdrop';
 import { BattleScreen } from '../features/battle/BattleScreen';
 import { BoxScreen } from '../features/box/BoxScreen';
 import { EventScreen } from '../features/event/EventScreen';
@@ -137,6 +138,7 @@ export function Game() {
           onEnd={endBattle(phase.opponent)}
           endLabel={{ win: '결과 보기', lose: '챕터 처음부터 다시' }}
           bag={game.bag}
+          env={battleEnv(game.chapter, phase.opponent.kind === 'leader')}
         />
       );
     case 'result':

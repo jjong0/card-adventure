@@ -18,9 +18,11 @@ interface Props {
   endLabel: { win: string; lose: string };
   /** 가방 (없으면 전투 중 가방을 쓸 수 없다) */
   bag?: Record<string, number>;
+  /** 배경 장소 (battleEnv). 없으면 풀밭 */
+  env?: string;
 }
 
-export function BattleScreen({ onRun, onEnd, endLabel, bag }: Props) {
+export function BattleScreen({ onRun, onEnd, endLabel, bag, env }: Props) {
   const { state, shown, queue, current, act, next, skip } = useBattleStore();
   const [detail, setDetail] = useState<string | null>(null);
   const busy = queue.length > 0;
@@ -38,7 +40,7 @@ export function BattleScreen({ onRun, onEnd, endLabel, bag }: Props) {
   return (
     <div className="relative h-full w-full select-none">
       <ShakeLayer effect={shown.effect}>
-        <Field state={state} shown={shown} />
+        <Field state={state} shown={shown} env={env} />
         <MoveEffect effect={shown.effect} />
       </ShakeLayer>
 
