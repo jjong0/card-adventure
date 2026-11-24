@@ -23,7 +23,7 @@ node scripts/build-items.mjs      # overrides/held-items.json + PokeAPI 한국�
 node scripts/build-move-fx.mjs    # 기술 → 연출 계열(물기·광선 등) → moveFx.json (build-data 다음에 실행)
 node scripts/verify-type-chart.mjs # 상성표 324칸 검증
 ```
-spec §11의 1~7단계는 끝났고, 8단계(MVP)는 밸런스·README·시연 GIF까지 끝났다(Vercel 배포만 남음). 밸런스를 바꾸면 `npm run sim`으로 난이도별 클리어율을 확인한다. 다음은 9단계(3~22챕터 데이터 등)다. 전투 연출 확인용 테스트 전투는 주소에 `?test=battle`(+ `&moves=기술slug,…`)을 붙여 연다.
+spec §11의 1~7단계는 끝났고, 8단계(MVP)는 Vercel 배포만 남았다. 9단계 중 3~22챕터 데이터와 지닌 도구는 끝났다(남은 것: 후반 챕터 밸런스, 미구현 변화기, 대사 등). 밸런스를 바꾸면 `npm run sim`으로 난이도별·챕터별 클리어율을 확인한다. 전투 연출 확인용 테스트 전투는 주소에 `?test=battle`(+ `&moves=기술slug,…`)을 붙여 연다.
 
 ## 구조 규칙
 - `src/core/`는 **순수 TypeScript**. React, 브라우저 API, Zustand를 import하지 않는다. 모든 규칙은 여기서 구현하고 Vitest로 테스트한다.
