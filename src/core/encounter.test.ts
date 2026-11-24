@@ -64,6 +64,16 @@ describe('지도 노드의 상대', () => {
     expect(seen.size).toBe(ch1.wild.length); // 확률이 낮은 종도 나온다
   });
 
+  it('1층 출발 노드의 야생은 고스트 타입이 아니다 (노말 기술만 가진 스타터도 이길 수 있게)', () => {
+    for (let seed = 1; seed <= 300; seed++) {
+      const c = opp(node('wild', 1), seed).cards[0];
+      expect(dex.species[c.speciesId].types).not.toContain('ghost');
+    }
+    // 2층부터는 고오스도 나온다
+    const seen = new Set(Array.from({ length: 300 }, (_, i) => opp(node('wild', 2), i + 1).cards[0].speciesId));
+    expect([...seen].some((id) => dex.species[id].types.includes('ghost'))).toBe(true);
+  });
+
   it('같은 노드는 다시 도전해도 같은 상대, 다른 노드는 다른 시드', () => {
     expect(opp(node('trainer'))).toEqual(opp(node('trainer')));
     expect(opp(node('wild'))).toEqual(opp(node('wild')));

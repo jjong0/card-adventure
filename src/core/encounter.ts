@@ -86,10 +86,12 @@ export function nodeSeed(seed: number, chapter: number, node: Pick<MapNode, 'flo
 const maxLevel = (t: Trainer) => Math.max(...t.party.map((p) => p.level));
 
 /** 야생 포켓몬 1마리: 챕터 출현표의 확률대로, 레벨은 출현 범위에서 (spec §3.3) */
-export function wildCard(chapter: ChapterData, dex: EncounterDex, rng: Rng): Card {
-  const total = chapter.wild.reduce((a, w) => a + w.weight, 0);
+export function wildCard(chapter: ChapterData, dex: EncounterDex, rng: Rng, opts: { noGhost?: boolean } = {}): Card {
+  const filtered = opts.noGhost ? chapter.wild.filter((w) => !dex.species[w.speciesId].types.includes('ghost')) : chapter.wild;
+  const table = filtered.length ? filtered : chapter.wild;
+  const total = table.reduce((a, w) => a + w.weight, 0);
   let x = rng() * total;
-  const entry = chapter.wild.find((w) => (x -= w.weight) < 0) ?? chapter.wild[chapter.wild.length - 1];
+  const entry = table.find((w) => (x -= w.weight) < 0) ?? table[table.length - 1];
   const level = entry.minLevel + Math.floor(rng() * (entry.maxLevel - entry.minLevel + 1));
   return createCard(dex.species[entry.speciesId], level, dex, rng);
 }
@@ -116,7 +118,8 @@ export function nodeOpponent(node: MapNode, ctx: EncounterContext, dex: Encounte
   switch (node.kind) {
     case 'wild': {
       // 야생은 레벨만 난이도를 따른다 (개체값은 원래 무작위, 기술 선택도 늘 무작위)
-      const base = wildCard(chapter, dex, rng);
+      // 1층(출발 노드)은 피할 수 없는 첫 전투라 고스트 타입을 뺀다: 노말 기술만 가진 스타터는 고오스에게 데미지를 줄 수 없다
+      const base = wildCard(chapter, dex, rng, { noGhost: node.floor === 1 });
       const [card] = adjustOpponent([base], difficulty, rng).map((c) => ({ ...c, ivBase: base.ivBase }));
       return { kind: 'wild', name: `야생 ${dex.species[card.speciesId].name}`, randomAi: true, cards: [card] };
     }
