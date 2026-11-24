@@ -75,6 +75,17 @@ describe('전투 정산', () => {
     expect(g().hp[before.uid]).toBe(Math.min(maxHp(g().collection[0], dex), end.player.party[0].currentHp + grew));
   });
 
+  it('전투 중에 쓴 약은 정산할 때 가방에서 빠진다 (져도)', () => {
+    const op = enterFirst('wild');
+    useGameStore.setState({ bag: { potion: 2 } });
+    let state = createBattle(g().partyCards(), op.cards, dex, 1, { wild: true });
+    state.player.party[0].currentHp = 1;
+    state = battle(state, { kind: 'item', itemId: 'potion', targetIdx: 0 }, dex);
+    expect(state.itemsUsed).toEqual(['potion']);
+    g().settleBattle({ ...state, result: 'lose' }, op);
+    expect(g().bag.potion).toBe(1);
+  });
+
   it('반동으로 파티 전원이 쓰러진 채 이기면 맨 앞 포켓몬이 HP 1로 남는다', () => {
     const op = enterFirst('wild');
     const won = { ...createBattle(g().partyCards(), op.cards, dex, 1, { wild: true }), result: 'win' as const };

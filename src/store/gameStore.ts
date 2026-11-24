@@ -390,9 +390,12 @@ export const useGameStore = create<GameStore>((set, get) => {
         hp[m.card.uid] = m.currentHp;
         pp[m.card.uid] = { ...pp[m.card.uid], ...m.pp };
       }
+      // 전투 중에 쓴 약은 가방에서 빠진다
+      const bag = { ...get().bag };
+      for (const id of state.itemsUsed) bag[id] = Math.max(0, (bag[id] ?? 0) - 1);
       // 전투에서 먹은 열매·쓴 기합의띠는 사라진다
       const used = new Set(consumedHeldItems(state));
-      set({ hp, pp, collection: get().collection.map((c) => (used.has(c.uid) ? { ...c, heldItem: null } : c)) });
+      set({ hp, pp, bag, collection: get().collection.map((c) => (used.has(c.uid) ? { ...c, heldItem: null } : c)) });
       applyNuzlocke();
       if (state.result !== 'win') return null;
       // 반동(생명의구슬·울퉁불퉁멧 등)으로 마지막 포켓몬이 쓰러지면서 이기면 파티 전원이 쓰러진 채 남는다.
@@ -414,9 +417,9 @@ export const useGameStore = create<GameStore>((set, get) => {
       // 승리로 노드는 끝났다. 보상 팩은 열 때까지 남겨 둔다 (닫았다 열어도 팩부터)
       const rewardLevel = rewardPackLevel(opponent, get().chapterData(), get().difficulty);
       const [items, seed] = roll(get().seed, (rng) => rewardItems(opponent.kind, rng));
-      const bag = { ...get().bag };
-      for (const id of items) bag[id] = (bag[id] ?? 0) + 1;
-      set({ gold: get().gold + gold, bag, seed, nodeDone: true, pendingReward: opponent.kind, pendingRewardLevel: rewardLevel });
+      const rewardBag = { ...get().bag };
+      for (const id of items) rewardBag[id] = (rewardBag[id] ?? 0) + 1;
+      set({ gold: get().gold + gold, bag: rewardBag, seed, nodeDone: true, pendingReward: opponent.kind, pendingRewardLevel: rewardLevel });
       return { gold, items, growth };
     },
 
