@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { HpBar } from '../../components/HpBar';
 import { Sprite } from '../../components/Sprite';
-import { typeEffectiveness } from '../../core/battle';
+import { bagItemProblem, fixJosa, typeEffectiveness } from '../../core/battle';
+import { HEAL_ITEMS, PP_ITEMS } from '../../core/bagItems';
 import { usableMoves } from '../../core/heldItems';
 import type { BattleAction, BattleState } from '../../core/types';
 import { dex } from '../../lib/dex';
@@ -24,7 +25,13 @@ interface Props {
   onRun?: () => void;
   onAct: (a: BattleAction) => void;
   onHover: (detail: string | null) => void;
+  /** 가방 (없으면 가방 버튼이 비활성, 테스트 전투 등) */
+  bag?: Record<string, number>;
 }
+
+/** 전투에서 쓸 수 있는 약: 회복약 + PP 회복약 */
+const BATTLE_ITEMS = [...HEAL_ITEMS.map((i) => ({ id: i.id, name: i.name, single: false })), ...PP_ITEMS.map((i) => ({ id: i.id, name: i.name, single: i.single }))];
+type BattleItem = (typeof BATTLE_ITEMS)[number];
 
 /** 기술에 커서를 올렸을 때 메시지 상자에 보여줄 정보 (spec §8 화면 5) */
 function moveDetail(moveId: string, state: BattleState, shown: Shown) {
@@ -36,8 +43,14 @@ function moveDetail(moveId: string, state: BattleState, shown: Shown) {
   return `${head}${eff}\n${mv.description}`;
 }
 
-export function CommandPanel({ state, shown, busy, onRun, onAct, onHover }: Props) {
-  const [mode, setMode] = useState<'menu' | 'fight' | 'party'>('menu');
+export function CommandPanel({ state, shown, busy, onRun, onAct, onHover, bag }: Props) {
+  const [mode, setMode] = useState<'menu' | 'fight' | 'party' | 'bag' | 'bagTarget' | 'bagMove'>('menu');
+  const [item, setItem] = useState<BattleItem | null>(null);
+  const [targetIdx, setTargetIdx] = useState(0);
+  // 남은 개수 = 가방 − 이번 전투에서 쓴 것 (가방은 전투가 끝나야 줄어든다)
+  const left = (id: string) => (bag?.[id] ?? 0) - state.itemsUsed.filter((x) => x === id).length;
+  const items = BATTLE_ITEMS.filter((i) => left(i.id) > 0);
+  const bagBlocked = !bag ? '테스트 전투에서는 가방을 쓸 수 없습니다' : !state.itemsAllowed ? '이 승부에서는 가방을 쓸 수 없다' : null;
   const forcedSwitch = state.pendingSwitch && !busy;
   const view = forcedSwitch ? 'party' : mode;
   const me = state.player.party[shown.player.activeIdx];
@@ -88,6 +101,96 @@ export function CommandPanel({ state, shown, busy, onRun, onAct, onHover }: Prop
     );
   }
 
+  if (view === 'bag' || view === 'bagTarget' || view === 'bagMove') {
+    const header = (text: string, onBack: () => void) => (
+      <div className="flex items-center justify-between font-pixel text-[14px] text-text-dim">
+        <span>{text}</span>
+        <button type="button" onClick={onBack} className={`${btn} rounded px-2 hover:text-text`}>취소</button>
+      </div>
+    );
+    if (view === 'bag') {
+      return (
+        <div className="flex h-full flex-col gap-2">
+          {header('쓸 약을 고르세요', back)}
+          <div className="grid flex-1 auto-rows-min grid-cols-2 gap-2 overflow-y-auto">
+            {items.map((i) => (
+              <button key={i.id} type="button" disabled={busy} onClick={() => { setItem(i); setMode('bagTarget'); }} className={`${btn} flex items-center justify-between rounded-lg border border-line bg-surface px-3 py-2 font-pixel text-[15px] hover:border-accent`}>
+                <span className="font-bold">{i.name}</span>
+                <span className="text-text-dim">× {left(i.id)}</span>
+              </button>
+            ))}
+            {!items.length && <p className="col-span-2 pt-6 text-center font-pixel text-[14px] text-text-dim">전투에서 쓸 수 있는 약이 없다.</p>}
+          </div>
+        </div>
+      );
+    }
+    const target = state.player.party[targetIdx];
+    if (view === 'bagMove' && item) {
+      return (
+        <div className="flex h-full flex-col gap-2">
+          {header(`${target.name}: PP를 회복할 기술을 고르세요`, () => setMode('bagTarget'))}
+          <div className="grid flex-1 grid-cols-2 gap-2">
+            {target.card.moves.map((id) => {
+              const max = dex.moves[id]?.pp ?? 0;
+              const now = target.pp[id] ?? 0;
+              return (
+                <button key={id} type="button" disabled={busy || now >= max} onClick={() => { act({ kind: 'item', itemId: item.id, targetIdx, moveId: id }); setItem(null); }} className={`${btn} flex items-center justify-between rounded-lg border border-line bg-surface px-3 font-pixel text-[15px] hover:border-accent`}>
+                  <span className="font-bold">{dex.moves[id]?.name ?? id}</span>
+                  <span className={now === 0 ? 'text-[#F2795A]' : 'text-text-dim'}>{now}/{max}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+    if (item) {
+      return (
+        <div className="flex h-full flex-col gap-2">
+          {header(fixJosa(`${item.name}을(를) 쓸 포켓몬을 고르세요`), () => setMode('bag'))}
+          <div className="grid flex-1 grid-cols-2 gap-2">
+            {state.player.party.map((m, i) => {
+              const hp = shown.player.mons[i].hp;
+              // 기술 1개용 PP 약은 기술을 고르기 전이라, 덜 찬 기술이 하나라도 있는지로 판단
+              const problem = item.single
+                ? m.card.moves.some((id) => !bagItemProblem(m, item.id, dex.moves, id)) ? null : 'PP가 가득 차 있다.'
+                : bagItemProblem(m, item.id, dex.moves);
+              return (
+                <button
+                  key={m.card.uid}
+                  type="button"
+                  disabled={busy || !!problem}
+                  title={problem ?? undefined}
+                  onClick={() => {
+                    if (item.single) {
+                      setTargetIdx(i);
+                      setMode('bagMove');
+                    } else {
+                      act({ kind: 'item', itemId: item.id, targetIdx: i });
+                      setItem(null);
+                    }
+                  }}
+                  className={`${btn} flex items-center gap-2 rounded-lg border border-line bg-surface px-2 text-left hover:border-accent`}
+                >
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden">
+                    <Sprite speciesId={m.card.speciesId} name={m.name} still scale={1.1} className="max-w-none shrink-0" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex justify-between font-pixel text-[13px]">
+                      <span className="truncate font-bold">{m.name}</span>
+                      <span className="text-text-dim">{problem ?? `${hp}/${m.stats.hp}`}</span>
+                    </div>
+                    <HpBar hp={hp} max={m.stats.hp} className="mt-1 h-1.5" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+  }
+
   if (view === 'party') {
     return (
       <div className="flex h-full flex-col gap-2">
@@ -133,15 +236,15 @@ export function CommandPanel({ state, shown, busy, onRun, onAct, onHover }: Prop
   return (
     <div className="grid h-full grid-cols-2 grid-rows-2 gap-2.5">
       {MENU.map((m) => {
-        const disabled = busy || m.key === 'bag' || (m.key === 'run' && !onRun);
-        const title = m.key === 'bag' ? '아이템은 아직 쓸 수 없습니다' : m.key === 'run' && !onRun ? '트레이너와의 승부에서는 도망칠 수 없습니다' : undefined;
+        const disabled = busy || (m.key === 'bag' && !!bagBlocked) || (m.key === 'run' && !onRun);
+        const title = m.key === 'bag' ? bagBlocked ?? undefined : m.key === 'run' && !onRun ? '트레이너와의 승부에서는 도망칠 수 없습니다' : undefined;
         return (
           <button
             key={m.key}
             type="button"
             disabled={disabled}
             title={title}
-            onClick={() => (m.key === 'fight' || m.key === 'party' ? setMode(m.key) : m.key === 'run' ? onRun?.() : undefined)}
+            onClick={() => (m.key === 'run' ? onRun?.() : setMode(m.key))}
             className={`${btn} rounded-xl font-pixel text-[26px] font-bold text-bg shadow-[inset_0_-5px_0_rgba(0,0,0,0.22)] enabled:hover:brightness-110`}
             style={{ backgroundColor: m.color }}
           >

@@ -16,9 +16,11 @@ interface Props {
   onEnd: (state: BattleState) => void;
   /** 결과 창 버튼 문구 (이겼을 때 / 졌을 때) */
   endLabel: { win: string; lose: string };
+  /** 가방 (없으면 전투 중 가방을 쓸 수 없다) */
+  bag?: Record<string, number>;
 }
 
-export function BattleScreen({ onRun, onEnd, endLabel }: Props) {
+export function BattleScreen({ onRun, onEnd, endLabel, bag }: Props) {
   const { state, shown, queue, current, act, next, skip } = useBattleStore();
   const [detail, setDetail] = useState<string | null>(null);
   const busy = queue.length > 0;
@@ -49,7 +51,7 @@ export function BattleScreen({ onRun, onEnd, endLabel }: Props) {
 
       <div className="absolute inset-x-0 bottom-0 grid h-[200px] grid-cols-[1fr_460px] gap-3 border-t-2 border-line bg-bg p-3">
         <MessageBox text={shown.message} detail={busy ? null : detail} busy={busy} onNext={next} onSkip={skip} />
-        <CommandPanel state={state} shown={shown} busy={busy || ended} onRun={onRun} onAct={act} onHover={setDetail} />
+        <CommandPanel state={state} shown={shown} busy={busy || ended} onRun={onRun} onAct={act} onHover={setDetail} bag={bag} />
       </div>
 
       {ended && (

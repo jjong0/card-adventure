@@ -80,7 +80,11 @@ export function Game() {
   if (!game.collection.length) return <StarterScreen />;
 
   const fightOpponent = (opponent: Opponent) => {
-    startBattle(game.partyCards(), opponent.cards, game.nextSeed(), { playerHp: game.hp, playerPp: game.pp, wild: opponent.kind === 'wild', randomAi: opponent.randomAi });
+    // 익스트림은 관장전에서 가방을 쓸 수 없다 (spec §5.3)
+    const itemsAllowed = opponent.kind !== 'leader' || DIFFICULTY[game.difficulty].leaderItems;
+    startBattle(game.partyCards(), opponent.cards, game.nextSeed(), {
+      playerHp: game.hp, playerPp: game.pp, wild: opponent.kind === 'wild', randomAi: opponent.randomAi, itemsAllowed,
+    });
     setPhase({ name: 'battle', opponent });
   };
 
@@ -132,6 +136,7 @@ export function Game() {
           onRun={phase.opponent.kind === 'wild' ? runAway(phase.opponent) : undefined}
           onEnd={endBattle(phase.opponent)}
           endLabel={{ win: '결과 보기', lose: '챕터 처음부터 다시' }}
+          bag={game.bag}
         />
       );
     case 'result':

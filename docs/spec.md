@@ -193,13 +193,13 @@
      | { type: 'switchIn'; side: Side; idx: number }
      | { type: 'move'; side: Side; moveId: string }
      | { type: 'damage'; side: Side; from: number; to: number; effectiveness: number; crit: boolean }
-     | { type: 'heal'; side: Side; from: number; to: number }
+     | { type: 'heal'; side: Side; from: number; to: number; idx?: number } // idx: 교체 대기 포켓몬(가방 약)
      | { type: 'status'; side: Side; ailment: Ailment }
      | { type: 'stage'; side: Side; stat: BattleStat; delta: number }
      | { type: 'faint'; side: Side }
      | { type: 'message'; text: string };
    ```
-2. **가방 아이템 사용**: 전투 행동 `{ kind: 'item'; itemId; targetIdx }`. 트레이너 AI는 원본 `bagItems`를 원작처럼 HP가 낮을 때 사용한다.
+2. **가방 아이템 사용**: 전투 행동 `{ kind: 'item'; itemId; targetIdx; moveId? }`. 플레이어는 회복약·기력의조각·PP 회복약을 쓸 수 있다(완료). 턴을 쓰고 교체처럼 기술보다 먼저, 교체 대기 중인 포켓몬에게도 쓸 수 있다. 쓴 약은 전투가 끝날 때 가방에서 뺀다. 익스트림 관장전은 쓸 수 없다. 트레이너 AI가 원본 `bagItems`를 HP가 낮을 때 쓰는 것은 아직.
 3. **지닌 도구** 효과(64종, §6.1). 완료.
 4. **난이도별 AI**(§5.3).
 5. **경험치 지급**과 레벨업, 기술 습득, 진화 체크는 전투 종료 후 처리한다(엔진 밖 `progress.ts`).
