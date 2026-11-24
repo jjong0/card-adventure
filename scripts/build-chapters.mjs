@@ -8,7 +8,8 @@
 //   trainerLevel  일반 트레이너 풀의 파티 최고 레벨 범위 (spec §3.4)
 //   trainers      그 범위의 일반 트레이너 (원본 번호)
 //   rivals        플레이어 스타터 타입별 라이벌전 (원본 번호)
-//   rewardTm      관장을 이기면 받는 기술머신 (tmCompat.json에서 기술 id를 찾음)
+//   rewardTm      관장을 이기면 받는 기술머신 (tmCompat.json에서 기술 id를 찾음, 없으면 null)
+//   levelBoost    야생 레벨 보정 (하트골드 관동은 야생이 관장보다 너무 낮다, overrides의 _note)
 import { readFile, writeFile } from 'node:fs/promises';
 import { csv } from './lib/pokeapi-csv.mjs';
 
@@ -108,6 +109,24 @@ function trainerLevelRange(chapter) {
 
 const inRange = (t, r) => maxLevel(t) > r.above && maxLevel(t) <= r.upTo;
 
+/**
+ * 트레이너 풀이 너무 작으면(관동 후반은 관장 에이스 사이가 1~2레벨이라 몇 명뿐) 같은 트레이너만 반복된다.
+ * MIN_POOL명이 될 때까지 바로 아래 레벨의 트레이너를 더한다.
+ */
+const MIN_POOL = 12;
+function trainerPool(range) {
+  const pool = trainers.filter((t) => t.role === 'trainer' && inRange(t, range));
+  if (pool.length >= MIN_POOL) return pool;
+  const below = trainers
+    .filter((t) => t.role === 'trainer' && maxLevel(t) <= range.above)
+    .sort((a, b) => maxLevel(b) - maxLevel(a) || a.index - b.index)
+    .slice(0, MIN_POOL - pool.length);
+  return [...pool, ...below].sort((a, b) => a.index - b.index);
+}
+
+// 한 라이벌전은 한 챕터에서만 (관장 에이스 범위가 겹치는 챕터에서 같은 라이벌이 다시 나오지 않게)
+const usedRivals = new Set();
+
 // ── 챕터 생성 ─────────────────────────────────
 const round = (x) => Math.round(x * 1000) / 10; // 0~1 → % (소수 첫째 자리)
 const out = config.chapters.map((c) => {
@@ -124,35 +143,42 @@ const out = config.chapters.map((c) => {
       m.maxLevel = Math.max(m.maxLevel, e.maxLevel);
     }
   }
+  const boost = c.levelBoost ?? 0;
   const wild = Object.values(merged)
-    .map((m) => ({ ...m, weight: round(m.weight) }))
+    .map((m) => ({ ...m, minLevel: Math.min(100, m.minLevel + boost), maxLevel: Math.min(100, m.maxLevel + boost), weight: round(m.weight) }))
     .sort((a, b) => b.weight - a.weight);
 
   // 관장 보상 기술머신 (tm 번호 → 기술 id)
-  const machine = tm.machines.find((m) => m.id === c.rewardTm);
-  if (!machine) throw new Error(`없는 기술머신: ${c.rewardTm}`);
-  const rewardTm = { id: machine.id, name: machine.name, moveId: machine.moveId };
+  // 사천왕·챔피언·레드는 원작에서 기술머신을 주지 않는다 (null)
+  let rewardTm = null;
+  if (c.rewardTm) {
+    const machine = tm.machines.find((m) => m.id === c.rewardTm);
+    if (!machine) throw new Error(`없는 기술머신: ${c.rewardTm}`);
+    rewardTm = { id: machine.id, name: machine.name, moveId: machine.moveId };
+  }
 
   const range = trainerLevelRange(c.chapter);
   const rivals = {};
+  const markRivals = () => Object.keys(rivals).length === 3 && Object.values(rivals).forEach((i) => usedRivals.add(i));
   for (const [playerType, line] of Object.entries(RIVAL_LINE_FOR_PLAYER)) {
     // 범위 안의 라이벌전 중 가장 레벨이 높은 것 (같은 시점의 전투가 레벨만 조금 다른 경우가 있음)
     const pick = trainers
-      .filter((t) => t.role === 'rival' && inRange(t, range) && t.party.some((p) => line.includes(p.speciesId)))
+      .filter((t) => t.role === 'rival' && !usedRivals.has(t.index) && inRange(t, range) && t.party.some((p) => line.includes(p.speciesId)))
       .sort((a, b) => maxLevel(b) - maxLevel(a))[0];
     if (pick) rivals[playerType] = pick.index;
   }
+  markRivals();
 
   return {
     chapter: c.chapter,
     place: c.place,
-    type: c.type,
+    type: c.type ?? null,
     leader: { key: leader.key, name: leader.name, trainerIndex: leader.index, aceLevel: aceOf[c.chapter] },
     areas: c.areas,
     wild,
     packLevel: Math.max(...wild.map((w) => w.maxLevel)),
     trainerLevel: range,
-    trainers: trainers.filter((t) => t.role === 'trainer' && inRange(t, range)).map((t) => t.index),
+    trainers: trainerPool(range).map((t) => t.index),
     rivals: Object.keys(rivals).length === 3 ? rivals : null,
     rewardTm,
   };
@@ -161,7 +187,7 @@ const out = config.chapters.map((c) => {
 await writeFile('src/data/chapters.json', JSON.stringify(out, null, 2) + '\n');
 
 for (const c of out) {
-  console.log(`${c.chapter}장 ${c.place} (${c.leader.name}, 에이스 Lv${c.leader.aceLevel}) 팩 Lv${c.packLevel}`);
+  console.log(`${c.chapter}장 ${c.place} (${c.leader.name}, 에이스 Lv${c.leader.aceLevel}) 팩 Lv${c.packLevel} · 기술머신 ${c.rewardTm?.name ?? '없음'}`);
   console.log(`  야생 ${c.wild.length}종: ${c.wild.map((w) => `${speciesName[w.speciesId]} ${w.weight}% Lv${w.minLevel}-${w.maxLevel}`).join(', ')}`);
   console.log(`  트레이너 ${c.trainers.length}명 (파티 최고 Lv ${c.trainerLevel.above + 1}~${c.trainerLevel.upTo}), 라이벌 ${c.rivals ? JSON.stringify(c.rivals) : '없음'}`);
 }
