@@ -70,6 +70,22 @@
 | volcano-badge.png | 크림슨배지 | 강연 | 20 |
 | earth-badge.png | 그린배지 | 그린 | 21 |
 
+## 2-2. 전투 배경 `public/assets/battle/`
+
+관장전은 `gym.png`(사천왕·챔피언은 `league.png`), 그 밖의 전투는 챕터 장소의 배경을 쓴다. 장소 이미지가 없으면 직접 그린 장소별 배경(`src/features/battle/BattleBackdrop.tsx`, 원작 4세대처럼 배경과 발판을 따로 그림)을 쓴다. 테스트 전투에서 `?test=battle&env=cave`로 확인할 수 있다. 풀 발판은 게임이 위에 그리므로 **발판이 없는 그림**이 좋고, 비율은 1280×520(약 2.5:1).
+
+| 파일 | 장소 | 쓰는 챕터 | 검색어 예시 |
+|---|---|---|---|
+| field.png | 풀밭 (기본) | 1, 2, 4, 6, 14, 18, 19 | pokemon battle background grass / 포켓몬 배틀 배경 풀숲 |
+| forest.png | 숲 | 3, 21 | pokemon battle background forest |
+| cave.png | 동굴 | 16 | pokemon battle background cave |
+| water.png | 물가·바다 | 5, 7, 15, 17, 20 | pokemon battle background water / beach |
+| snow.png | 설원·설산 | 8, 22 | pokemon battle background snow |
+| gym.png | 체육관 (관장전) | 1~8, 14~22의 관장 | pokemon battle background gym |
+| league.png | 포켓몬리그 | 9~13 전체 | pokemon battle background elite four |
+
+챕터와 장소의 연결은 `src/data/assets.json`의 `battleChapterEnv`에서 바꾼다.
+
 ## 3. 관장·사천왕·챔피언·레드 `public/assets/leaders/`
 
 | 파일 | 인물 | 장 |

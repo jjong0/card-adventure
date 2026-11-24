@@ -4,13 +4,15 @@ import { useEffect } from 'react';
 import { Sprite } from '../../components/Sprite';
 import type { BattleState, Side } from '../../core/types';
 import { dex } from '../../lib/dex';
+import { BattleBackdrop } from './BattleBackdrop';
 import { TYPE_FX } from './effects';
 import type { Cue, Shown } from './playback';
 import { STAT_COLOR, StatArrows } from './StatArrows';
 
 const LAYOUT = {
-  enemy: { platform: 'left-[760px] top-[200px] w-[360px] h-[72px]', sprite: 'left-[940px] top-[240px]', scale: 2.4, maxHeight: 220, dir: 1 },
-  player: { platform: 'left-[150px] top-[410px] w-[440px] h-[86px]', sprite: 'left-[370px] top-[456px]', scale: 2.8, maxHeight: 280, dir: -1 },
+  // 스프라이트 발 위치 = BattleBackdrop의 발판 중심 (PLATFORMS)
+  enemy: { sprite: 'left-[940px] top-[240px]', scale: 2.4, maxHeight: 220, dir: 1 },
+  player: { sprite: 'left-[370px] top-[456px]', scale: 2.8, maxHeight: 280, dir: -1 },
 } as const;
 
 /**
@@ -78,19 +80,10 @@ function BattleSprite({ side, state, shown }: { side: Side; state: BattleState; 
   );
 }
 
-export function Field({ state, shown }: { state: BattleState; shown: Shown }) {
+export function Field({ state, shown, env }: { state: BattleState; shown: Shown; env?: string }) {
   return (
-    <div
-      className="absolute inset-x-0 top-0 h-[520px] overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #16223a 0%, #22355a 52%, #1d2c45 52%, #131d2e 100%)' }}
-    >
-      {(['enemy', 'player'] as const).map((side) => (
-        <div
-          key={side}
-          className={`absolute rounded-[50%] ${LAYOUT[side].platform}`}
-          style={{ background: 'radial-gradient(ellipse at center, #3a4b68 0%, #2c3a52 55%, rgba(44,58,82,0) 72%)' }}
-        />
-      ))}
+    <div className="absolute inset-x-0 top-0 h-[520px] overflow-hidden">
+      <BattleBackdrop env={env} />
       <BattleSprite side="enemy" state={state} shown={shown} />
       <BattleSprite side="player" state={state} shown={shown} />
     </div>

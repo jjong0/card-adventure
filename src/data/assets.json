@@ -1,5 +1,5 @@
 {
-  "_note": "사용자가 수집한 이미지 경로. 파일이 없으면 UI가 기본 표시로 대체한다. 이 파일만 수동 관리(생성 스크립트 대상 아님). 지도 노드: nodes(야생·트레이너·엘리트·휴식·상점), 관장은 badges → leaders → 글자, 라이벌은 rival → nodes.elite → 글자 순. trainerClasses는 지도에 쓰지 않고 나중에 대화·전투 연출용.",
+  "_note": "사용자가 수집한 이미지 경로. 파일이 없으면 UI가 기본 표시로 대체한다. 이 파일만 수동 관리(생성 스크립트 대상 아님). 지도 노드: nodes(야생·트레이너·엘리트·휴식·상점), 관장은 badges → leaders → 글자, 라이벌은 rival → nodes.elite → 글자 순. trainerClasses는 지도에 쓰지 않고 나중에 대화·전투 연출용. 전투 배경: 관장전은 gym(사천왕·챔피언은 league), 그 밖은 battleChapterEnv의 챕터 장소. 그 장소 이미지가 없으면 직접 그린 장소별 SVG(BattleBackdrop.tsx). 발판은 항상 위에 그린다.",
   "chapterBackgrounds": {
     "1": "/assets/map/city-01.png",
     "2": "/assets/map/city-02.png",
@@ -23,6 +23,39 @@
     "20": "/assets/map/city-20.png",
     "21": "/assets/map/city-21.png",
     "22": "/assets/map/city-22.png"
+  },
+  "battleBackgrounds": {
+    "field": "/assets/battle/field.png",
+    "forest": "/assets/battle/forest.png",
+    "cave": "/assets/battle/cave.png",
+    "water": "/assets/battle/water.png",
+    "snow": "/assets/battle/snow.png",
+    "gym": "/assets/battle/gym.png",
+    "league": "/assets/battle/league.png"
+  },
+  "battleChapterEnv": {
+    "1": "field",
+    "2": "field",
+    "3": "forest",
+    "4": "field",
+    "5": "water",
+    "6": "field",
+    "7": "water",
+    "8": "snow",
+    "9": "league",
+    "10": "league",
+    "11": "league",
+    "12": "league",
+    "13": "league",
+    "14": "field",
+    "15": "water",
+    "16": "cave",
+    "17": "water",
+    "18": "field",
+    "19": "field",
+    "20": "water",
+    "21": "forest",
+    "22": "snow"
   },
   "nodes": {
     "wild": "/assets/nodes/grass.png",
