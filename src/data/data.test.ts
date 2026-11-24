@@ -53,20 +53,27 @@ describe('chapters.json', () => {
     }
   });
 
-  it('트레이너 풀: 일반 트레이너이고 파티 최고 레벨이 범위 안', () => {
+  it('트레이너 풀: 일반 트레이너이고 파티 최고 레벨이 범위 안. 범위 안이 12명보다 적으면 바로 아래 레벨로 12명까지 채운다', () => {
     for (const c of chapters) {
-      expect(c.trainers.length).toBeGreaterThan(0);
+      expect(c.trainers.length).toBeGreaterThanOrEqual(12);
+      const inRange = c.trainers.filter((i) => maxLevel(byIndex[i]) > c.trainerLevel.above);
       for (const i of c.trainers) {
-        const t = byIndex[i];
-        expect(t.role).toBe('trainer');
-        expect(maxLevel(t)).toBeGreaterThan(c.trainerLevel.above);
-        expect(maxLevel(t)).toBeLessThanOrEqual(c.trainerLevel.upTo);
+        expect(byIndex[i].role).toBe('trainer');
+        expect(maxLevel(byIndex[i])).toBeLessThanOrEqual(c.trainerLevel.upTo);
       }
+      if (inRange.length < c.trainers.length) expect(c.trainers).toHaveLength(12);
     }
   });
 
-  it('관장 에이스 레벨이 spec §2와 일치 (1장 13, 2장 17)', () => {
-    expect(chapters.map((c) => [c.leader.key, c.leader.aceLevel])).toEqual([['falkner', 13], ['bugsy', 17]]);
+  it('22장 모두 있고, 관장 에이스 레벨이 spec §2 표와 일치', () => {
+    const spec = [13, 17, 19, 25, 31, 35, 34, 41, 42, 44, 46, 47, 50, 50, 53, 54, 54, 55, 56, 59, 60, 88];
+    expect(chapters.map((c) => c.chapter)).toEqual(spec.map((_, i) => i + 1));
+    expect(chapters.map((c) => c.leader.aceLevel)).toEqual(spec);
+  });
+
+  it('한 라이벌전은 한 챕터에서만 나온다', () => {
+    const used = chapters.flatMap((c) => (c.rivals ? Object.values(c.rivals) : []));
+    expect(new Set(used).size).toBe(used.length);
   });
 
   it('라이벌은 플레이어 스타터에 상성 우위인 스타터 계열', () => {

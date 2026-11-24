@@ -292,5 +292,2620 @@
       "name": "기술머신89",
       "moveId": "369"
     }
+  },
+  {
+    "chapter": 3,
+    "place": "금빛시티",
+    "type": "normal",
+    "leader": {
+      "key": "whitney",
+      "name": "꼭두",
+      "trainerIndex": 30,
+      "aceLevel": 19
+    },
+    "areas": [
+      "ilex-forest",
+      "johto-route-34"
+    ],
+    "wild": [
+      {
+        "speciesId": "96",
+        "minLevel": 10,
+        "maxLevel": 12,
+        "weight": 25
+      },
+      {
+        "speciesId": "10",
+        "minLevel": 5,
+        "maxLevel": 6,
+        "weight": 18.3
+      },
+      {
+        "speciesId": "19",
+        "minLevel": 11,
+        "maxLevel": 13,
+        "weight": 17.5
+      },
+      {
+        "speciesId": "11",
+        "minLevel": 5,
+        "maxLevel": 6,
+        "weight": 10
+      },
+      {
+        "speciesId": "43",
+        "minLevel": 5,
+        "maxLevel": 6,
+        "weight": 10
+      },
+      {
+        "speciesId": "41",
+        "minLevel": 5,
+        "maxLevel": 6,
+        "weight": 5.8
+      },
+      {
+        "speciesId": "46",
+        "minLevel": 5,
+        "maxLevel": 6,
+        "weight": 5.8
+      },
+      {
+        "speciesId": "63",
+        "minLevel": 10,
+        "maxLevel": 10,
+        "weight": 5
+      },
+      {
+        "speciesId": "132",
+        "minLevel": 10,
+        "maxLevel": 10,
+        "weight": 2.5
+      }
+    ],
+    "packLevel": 13,
+    "trainerLevel": {
+      "above": 17,
+      "upTo": 19
+    },
+    "trainers": [
+      37,
+      39,
+      44,
+      73,
+      82,
+      85,
+      96,
+      123,
+      214,
+      218,
+      220,
+      222,
+      223,
+      224,
+      273,
+      281,
+      372,
+      375,
+      376,
+      398,
+      400,
+      404,
+      534,
+      539,
+      558,
+      664,
+      665,
+      666,
+      731
+    ],
+    "rivals": {
+      "grass": 266,
+      "fire": 269,
+      "water": 1
+    },
+    "rewardTm": {
+      "id": "tm45",
+      "name": "기술머신45",
+      "moveId": "213"
+    }
+  },
+  {
+    "chapter": 4,
+    "place": "인주시티",
+    "type": "ghost",
+    "leader": {
+      "key": "morty",
+      "name": "유빈",
+      "trainerIndex": 31,
+      "aceLevel": 25
+    },
+    "areas": [
+      "johto-route-35",
+      "johto-route-36",
+      "johto-route-37",
+      "burned-tower/1f",
+      "burned-tower/b1f"
+    ],
+    "wild": [
+      {
+        "speciesId": "19",
+        "minLevel": 13,
+        "maxLevel": 16,
+        "weight": 17.7
+      },
+      {
+        "speciesId": "109",
+        "minLevel": 14,
+        "maxLevel": 16,
+        "weight": 17
+      },
+      {
+        "speciesId": "29",
+        "minLevel": 12,
+        "maxLevel": 12,
+        "weight": 12
+      },
+      {
+        "speciesId": "32",
+        "minLevel": 12,
+        "maxLevel": 12,
+        "weight": 12
+      },
+      {
+        "speciesId": "16",
+        "minLevel": 13,
+        "maxLevel": 15,
+        "weight": 11
+      },
+      {
+        "speciesId": "234",
+        "minLevel": 13,
+        "maxLevel": 15,
+        "weight": 7
+      },
+      {
+        "speciesId": "58",
+        "minLevel": 13,
+        "maxLevel": 15,
+        "weight": 4.7
+      },
+      {
+        "speciesId": "96",
+        "minLevel": 14,
+        "maxLevel": 14,
+        "weight": 4
+      },
+      {
+        "speciesId": "163",
+        "minLevel": 13,
+        "maxLevel": 15,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "41",
+        "minLevel": 14,
+        "maxLevel": 15,
+        "weight": 3
+      },
+      {
+        "speciesId": "167",
+        "minLevel": 13,
+        "maxLevel": 15,
+        "weight": 2.7
+      },
+      {
+        "speciesId": "63",
+        "minLevel": 10,
+        "maxLevel": 10,
+        "weight": 2
+      },
+      {
+        "speciesId": "126",
+        "minLevel": 14,
+        "maxLevel": 16,
+        "weight": 1.3
+      },
+      {
+        "speciesId": "20",
+        "minLevel": 15,
+        "maxLevel": 15,
+        "weight": 1
+      },
+      {
+        "speciesId": "132",
+        "minLevel": 10,
+        "maxLevel": 10,
+        "weight": 0.8
+      },
+      {
+        "speciesId": "17",
+        "minLevel": 15,
+        "maxLevel": 15,
+        "weight": 0.3
+      },
+      {
+        "speciesId": "193",
+        "minLevel": 12,
+        "maxLevel": 12,
+        "weight": 0.2
+      }
+    ],
+    "packLevel": 16,
+    "trainerLevel": {
+      "above": 19,
+      "upTo": 25
+    },
+    "trainers": [
+      9,
+      11,
+      14,
+      16,
+      19,
+      40,
+      46,
+      86,
+      87,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      97,
+      98,
+      99,
+      109,
+      116,
+      120,
+      122,
+      127,
+      130,
+      131,
+      132,
+      144,
+      159,
+      167,
+      170,
+      171,
+      174,
+      175,
+      176,
+      177,
+      185,
+      186,
+      187,
+      189,
+      192,
+      193,
+      196,
+      199,
+      200,
+      201,
+      203,
+      204,
+      211,
+      212,
+      213,
+      215,
+      217,
+      221,
+      227,
+      228,
+      251,
+      292,
+      295,
+      338,
+      389,
+      397,
+      401,
+      402,
+      403,
+      410,
+      442,
+      443,
+      468,
+      469,
+      470,
+      473,
+      474,
+      475,
+      488,
+      493,
+      499,
+      729,
+      730,
+      732
+    ],
+    "rivals": {
+      "grass": 267,
+      "fire": 270,
+      "water": 263
+    },
+    "rewardTm": {
+      "id": "tm30",
+      "name": "기술머신30",
+      "moveId": "247"
+    }
+  },
+  {
+    "chapter": 5,
+    "place": "진청시티",
+    "type": "fighting",
+    "leader": {
+      "key": "chuck",
+      "name": "사도",
+      "trainerIndex": 34,
+      "aceLevel": 31
+    },
+    "areas": [
+      "johto-route-38",
+      "johto-route-39",
+      "whirl-islands/1f",
+      "whirl-islands/b1f"
+    ],
+    "wild": [
+      {
+        "speciesId": "98",
+        "minLevel": 22,
+        "maxLevel": 24,
+        "weight": 25
+      },
+      {
+        "speciesId": "19",
+        "minLevel": 16,
+        "maxLevel": 16,
+        "weight": 16.7
+      },
+      {
+        "speciesId": "20",
+        "minLevel": 16,
+        "maxLevel": 17,
+        "weight": 15
+      },
+      {
+        "speciesId": "41",
+        "minLevel": 23,
+        "maxLevel": 23,
+        "weight": 15
+      },
+      {
+        "speciesId": "81",
+        "minLevel": 16,
+        "maxLevel": 16,
+        "weight": 10
+      },
+      {
+        "speciesId": "86",
+        "minLevel": 22,
+        "maxLevel": 24,
+        "weight": 7.5
+      },
+      {
+        "speciesId": "83",
+        "minLevel": 16,
+        "maxLevel": 16,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "42",
+        "minLevel": 23,
+        "maxLevel": 23,
+        "weight": 2.5
+      },
+      {
+        "speciesId": "241",
+        "minLevel": 13,
+        "maxLevel": 15,
+        "weight": 2.5
+      },
+      {
+        "speciesId": "128",
+        "minLevel": 13,
+        "maxLevel": 15,
+        "weight": 2.3
+      },
+      {
+        "speciesId": "209",
+        "minLevel": 13,
+        "maxLevel": 13,
+        "weight": 0.3
+      }
+    ],
+    "packLevel": 24,
+    "trainerLevel": {
+      "above": 25,
+      "upTo": 31
+    },
+    "trainers": [
+      17,
+      42,
+      108,
+      118,
+      121,
+      124,
+      125,
+      126,
+      137,
+      143,
+      145,
+      146,
+      156,
+      157,
+      165,
+      166,
+      168,
+      169,
+      188,
+      190,
+      191,
+      195,
+      197,
+      198,
+      202,
+      205,
+      206,
+      226,
+      262,
+      274,
+      283,
+      363,
+      405,
+      406,
+      407,
+      408,
+      417,
+      430,
+      434,
+      436,
+      438,
+      461,
+      471,
+      472,
+      476,
+      477,
+      479,
+      480,
+      481,
+      482,
+      483,
+      484,
+      498,
+      536,
+      613
+    ],
+    "rivals": null,
+    "rewardTm": {
+      "id": "tm01",
+      "name": "기술머신01",
+      "moveId": "264"
+    }
+  },
+  {
+    "chapter": 6,
+    "place": "담청시티",
+    "type": "steel",
+    "leader": {
+      "key": "jasmine",
+      "name": "규리",
+      "trainerIndex": 33,
+      "aceLevel": 35
+    },
+    "areas": [
+      "whirl-islands/b2f",
+      "whirl-islands/b3f",
+      "johto-route-47/inside-cave"
+    ],
+    "wild": [
+      {
+        "speciesId": "98",
+        "minLevel": 20,
+        "maxLevel": 25,
+        "weight": 36.7
+      },
+      {
+        "speciesId": "41",
+        "minLevel": 18,
+        "maxLevel": 24,
+        "weight": 20.6
+      },
+      {
+        "speciesId": "42",
+        "minLevel": 20,
+        "maxLevel": 24,
+        "weight": 10.4
+      },
+      {
+        "speciesId": "86",
+        "minLevel": 22,
+        "maxLevel": 25,
+        "weight": 10
+      },
+      {
+        "speciesId": "74",
+        "minLevel": 19,
+        "maxLevel": 19,
+        "weight": 6.7
+      },
+      {
+        "speciesId": "66",
+        "minLevel": 19,
+        "maxLevel": 19,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "95",
+        "minLevel": 20,
+        "maxLevel": 20,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "99",
+        "minLevel": 22,
+        "maxLevel": 22,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "67",
+        "minLevel": 22,
+        "maxLevel": 22,
+        "weight": 1.3
+      },
+      {
+        "speciesId": "194",
+        "minLevel": 18,
+        "maxLevel": 18,
+        "weight": 1.1
+      },
+      {
+        "speciesId": "195",
+        "minLevel": 20,
+        "maxLevel": 20,
+        "weight": 1.1
+      },
+      {
+        "speciesId": "75",
+        "minLevel": 20,
+        "maxLevel": 20,
+        "weight": 0.9
+      },
+      {
+        "speciesId": "208",
+        "minLevel": 23,
+        "maxLevel": 23,
+        "weight": 0.7
+      },
+      {
+        "speciesId": "200",
+        "minLevel": 20,
+        "maxLevel": 20,
+        "weight": 0.6
+      }
+    ],
+    "packLevel": 25,
+    "trainerLevel": {
+      "above": 31,
+      "upTo": 35
+    },
+    "trainers": [
+      28,
+      100,
+      102,
+      103,
+      104,
+      110,
+      115,
+      142,
+      158,
+      172,
+      194,
+      250,
+      279,
+      323,
+      349,
+      358,
+      412,
+      413,
+      432,
+      447,
+      454,
+      456,
+      464,
+      466,
+      478,
+      487,
+      501,
+      502,
+      506,
+      519,
+      532,
+      542,
+      543,
+      544,
+      616,
+      619,
+      706
+    ],
+    "rivals": {
+      "grass": 289,
+      "fire": 271,
+      "water": 288
+    },
+    "rewardTm": {
+      "id": "tm23",
+      "name": "기술머신23",
+      "moveId": "231"
+    }
+  },
+  {
+    "chapter": 7,
+    "place": "황토마을",
+    "type": "ice",
+    "leader": {
+      "key": "pryce",
+      "name": "류옹",
+      "trainerIndex": 32,
+      "aceLevel": 34
+    },
+    "areas": [
+      "johto-route-42",
+      "mt-mortar/1f",
+      "mt-mortar/lower-cave",
+      "johto-route-43"
+    ],
+    "wild": [
+      {
+        "speciesId": "41",
+        "minLevel": 22,
+        "maxLevel": 25,
+        "weight": 18.8
+      },
+      {
+        "speciesId": "66",
+        "minLevel": 22,
+        "maxLevel": 24,
+        "weight": 13.8
+      },
+      {
+        "speciesId": "74",
+        "minLevel": 22,
+        "maxLevel": 24,
+        "weight": 13.8
+      },
+      {
+        "speciesId": "180",
+        "minLevel": 24,
+        "maxLevel": 26,
+        "weight": 10.8
+      },
+      {
+        "speciesId": "179",
+        "minLevel": 22,
+        "maxLevel": 25,
+        "weight": 9.6
+      },
+      {
+        "speciesId": "56",
+        "minLevel": 24,
+        "maxLevel": 24,
+        "weight": 7.5
+      },
+      {
+        "speciesId": "203",
+        "minLevel": 24,
+        "maxLevel": 24,
+        "weight": 7.5
+      },
+      {
+        "speciesId": "19",
+        "minLevel": 23,
+        "maxLevel": 25,
+        "weight": 6
+      },
+      {
+        "speciesId": "21",
+        "minLevel": 23,
+        "maxLevel": 25,
+        "weight": 5
+      },
+      {
+        "speciesId": "17",
+        "minLevel": 26,
+        "maxLevel": 26,
+        "weight": 3.8
+      },
+      {
+        "speciesId": "48",
+        "minLevel": 24,
+        "maxLevel": 26,
+        "weight": 1.7
+      },
+      {
+        "speciesId": "164",
+        "minLevel": 26,
+        "maxLevel": 26,
+        "weight": 1.7
+      },
+      {
+        "speciesId": "183",
+        "minLevel": 24,
+        "maxLevel": 24,
+        "weight": 0.3
+      }
+    ],
+    "packLevel": 26,
+    "trainerLevel": {
+      "above": 31,
+      "upTo": 34
+    },
+    "trainers": [
+      100,
+      102,
+      103,
+      115,
+      142,
+      158,
+      172,
+      194,
+      250,
+      279,
+      323,
+      349,
+      358,
+      412,
+      413,
+      432,
+      447,
+      454,
+      456,
+      464,
+      466,
+      478,
+      487,
+      519,
+      532,
+      542,
+      543,
+      544,
+      616,
+      619,
+      706
+    ],
+    "rivals": null,
+    "rewardTm": {
+      "id": "tm07",
+      "name": "기술머신07",
+      "moveId": "258"
+    }
+  },
+  {
+    "chapter": 8,
+    "place": "검은먹시티",
+    "type": "dragon",
+    "leader": {
+      "key": "clair",
+      "name": "이향",
+      "trainerIndex": 35,
+      "aceLevel": 41
+    },
+    "areas": [
+      "ice-path/1f",
+      "ice-path/b1f",
+      "ice-path/b2f",
+      "ice-path/b3f",
+      "johto-route-44",
+      "dark-cave/blackthorn-city-entrance"
+    ],
+    "wild": [
+      {
+        "speciesId": "220",
+        "minLevel": 21,
+        "maxLevel": 24,
+        "weight": 26.7
+      },
+      {
+        "speciesId": "42",
+        "minLevel": 22,
+        "maxLevel": 23,
+        "weight": 20.8
+      },
+      {
+        "speciesId": "41",
+        "minLevel": 22,
+        "maxLevel": 23,
+        "weight": 20.6
+      },
+      {
+        "speciesId": "70",
+        "minLevel": 22,
+        "maxLevel": 24,
+        "weight": 5.8
+      },
+      {
+        "speciesId": "74",
+        "minLevel": 23,
+        "maxLevel": 23,
+        "weight": 5
+      },
+      {
+        "speciesId": "114",
+        "minLevel": 23,
+        "maxLevel": 23,
+        "weight": 5
+      },
+      {
+        "speciesId": "124",
+        "minLevel": 22,
+        "maxLevel": 23,
+        "weight": 4.4
+      },
+      {
+        "speciesId": "69",
+        "minLevel": 22,
+        "maxLevel": 22,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "75",
+        "minLevel": 25,
+        "maxLevel": 25,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "108",
+        "minLevel": 24,
+        "maxLevel": 26,
+        "weight": 2.5
+      },
+      {
+        "speciesId": "202",
+        "minLevel": 20,
+        "maxLevel": 25,
+        "weight": 2.5
+      }
+    ],
+    "packLevel": 26,
+    "trainerLevel": {
+      "above": 35,
+      "upTo": 41
+    },
+    "trainers": [
+      36,
+      48,
+      59,
+      79,
+      111,
+      112,
+      113,
+      114,
+      117,
+      119,
+      128,
+      133,
+      139,
+      140,
+      155,
+      160,
+      161,
+      162,
+      163,
+      164,
+      179,
+      210,
+      225,
+      231,
+      238,
+      239,
+      241,
+      242,
+      243,
+      275,
+      276,
+      277,
+      278,
+      280,
+      284,
+      301,
+      309,
+      316,
+      322,
+      324,
+      325,
+      331,
+      335,
+      350,
+      352,
+      353,
+      354,
+      360,
+      365,
+      367,
+      370,
+      382,
+      399,
+      411,
+      414,
+      416,
+      421,
+      422,
+      423,
+      424,
+      425,
+      426,
+      428,
+      429,
+      431,
+      433,
+      435,
+      439,
+      440,
+      441,
+      444,
+      450,
+      451,
+      452,
+      457,
+      458,
+      460,
+      462,
+      465,
+      467,
+      485,
+      500,
+      504,
+      508,
+      511,
+      514,
+      516,
+      521,
+      524,
+      526,
+      529,
+      531,
+      538,
+      552,
+      560,
+      561,
+      562,
+      563,
+      565,
+      567,
+      569,
+      575,
+      588,
+      589,
+      592,
+      594,
+      595,
+      596,
+      597,
+      598,
+      614,
+      617,
+      620,
+      622,
+      655,
+      658,
+      672
+    ],
+    "rivals": {
+      "grass": 268,
+      "fire": 272,
+      "water": 264
+    },
+    "rewardTm": {
+      "id": "tm59",
+      "name": "기술머신59",
+      "moveId": "406"
+    }
+  },
+  {
+    "chapter": 9,
+    "place": "석영고원",
+    "type": "psychic",
+    "leader": {
+      "key": "will",
+      "name": "일목",
+      "trainerIndex": 245,
+      "aceLevel": 42
+    },
+    "areas": [
+      "johto-route-45",
+      "tohjo-falls",
+      "kanto-route-27"
+    ],
+    "wild": [
+      {
+        "speciesId": "20",
+        "minLevel": 22,
+        "maxLevel": 30,
+        "weight": 23.3
+      },
+      {
+        "speciesId": "75",
+        "minLevel": 23,
+        "maxLevel": 27,
+        "weight": 13.3
+      },
+      {
+        "speciesId": "84",
+        "minLevel": 28,
+        "maxLevel": 30,
+        "weight": 11.1
+      },
+      {
+        "speciesId": "41",
+        "minLevel": 22,
+        "maxLevel": 22,
+        "weight": 10
+      },
+      {
+        "speciesId": "74",
+        "minLevel": 23,
+        "maxLevel": 23,
+        "weight": 10
+      },
+      {
+        "speciesId": "42",
+        "minLevel": 22,
+        "maxLevel": 22,
+        "weight": 6.7
+      },
+      {
+        "speciesId": "207",
+        "minLevel": 24,
+        "maxLevel": 24,
+        "weight": 6.7
+      },
+      {
+        "speciesId": "195",
+        "minLevel": 28,
+        "maxLevel": 30,
+        "weight": 5.6
+      },
+      {
+        "speciesId": "79",
+        "minLevel": 21,
+        "maxLevel": 23,
+        "weight": 5
+      },
+      {
+        "speciesId": "231",
+        "minLevel": 20,
+        "maxLevel": 20,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "19",
+        "minLevel": 20,
+        "maxLevel": 20,
+        "weight": 1.7
+      },
+      {
+        "speciesId": "28",
+        "minLevel": 30,
+        "maxLevel": 30,
+        "weight": 1.7
+      },
+      {
+        "speciesId": "77",
+        "minLevel": 32,
+        "maxLevel": 32,
+        "weight": 1.7
+      }
+    ],
+    "packLevel": 32,
+    "trainerLevel": {
+      "above": 41,
+      "upTo": 42
+    },
+    "trainers": [
+      41,
+      135,
+      209,
+      234,
+      235,
+      240,
+      252,
+      293,
+      294,
+      296,
+      304,
+      305,
+      306,
+      307,
+      312,
+      320,
+      339,
+      351,
+      355,
+      374,
+      378,
+      379,
+      381,
+      420,
+      448,
+      455,
+      459,
+      556,
+      566,
+      568,
+      590,
+      600,
+      673
+    ],
+    "rivals": null,
+    "rewardTm": null
+  },
+  {
+    "chapter": 10,
+    "place": "석영고원",
+    "type": "poison",
+    "leader": {
+      "key": "koga",
+      "name": "독수",
+      "trainerIndex": 247,
+      "aceLevel": 44
+    },
+    "areas": [
+      "kanto-route-26",
+      "kanto-route-27",
+      "kanto-victory-road-1/1f"
+    ],
+    "wild": [
+      {
+        "speciesId": "84",
+        "minLevel": 28,
+        "maxLevel": 30,
+        "weight": 20
+      },
+      {
+        "speciesId": "20",
+        "minLevel": 28,
+        "maxLevel": 30,
+        "weight": 18.9
+      },
+      {
+        "speciesId": "28",
+        "minLevel": 28,
+        "maxLevel": 30,
+        "weight": 11.7
+      },
+      {
+        "speciesId": "42",
+        "minLevel": 32,
+        "maxLevel": 32,
+        "weight": 10
+      },
+      {
+        "speciesId": "75",
+        "minLevel": 32,
+        "maxLevel": 32,
+        "weight": 10
+      },
+      {
+        "speciesId": "77",
+        "minLevel": 32,
+        "maxLevel": 32,
+        "weight": 8.3
+      },
+      {
+        "speciesId": "195",
+        "minLevel": 28,
+        "maxLevel": 30,
+        "weight": 6.7
+      },
+      {
+        "speciesId": "232",
+        "minLevel": 33,
+        "maxLevel": 33,
+        "weight": 6.7
+      },
+      {
+        "speciesId": "95",
+        "minLevel": 34,
+        "maxLevel": 36,
+        "weight": 5
+      },
+      {
+        "speciesId": "111",
+        "minLevel": 35,
+        "maxLevel": 35,
+        "weight": 1.7
+      },
+      {
+        "speciesId": "85",
+        "minLevel": 30,
+        "maxLevel": 30,
+        "weight": 1.1
+      }
+    ],
+    "packLevel": 36,
+    "trainerLevel": {
+      "above": 42,
+      "upTo": 44
+    },
+    "trainers": [
+      58,
+      149,
+      150,
+      152,
+      153,
+      173,
+      236,
+      237,
+      248,
+      299,
+      300,
+      303,
+      311,
+      314,
+      315,
+      317,
+      321,
+      327,
+      328,
+      330,
+      332,
+      334,
+      348,
+      364,
+      371,
+      373,
+      377,
+      380,
+      396,
+      419,
+      427,
+      437,
+      449,
+      541,
+      546,
+      550,
+      551,
+      553,
+      555,
+      557,
+      564,
+      570,
+      571,
+      573,
+      587,
+      591,
+      593,
+      599,
+      637,
+      640,
+      661,
+      676,
+      699
+    ],
+    "rivals": null,
+    "rewardTm": null
+  },
+  {
+    "chapter": 11,
+    "place": "석영고원",
+    "type": "fighting",
+    "leader": {
+      "key": "bruno",
+      "name": "시바",
+      "trainerIndex": 418,
+      "aceLevel": 46
+    },
+    "areas": [
+      "kanto-victory-road-1/1f",
+      "kanto-victory-road-1/2f"
+    ],
+    "wild": [
+      {
+        "speciesId": "42",
+        "minLevel": 34,
+        "maxLevel": 34,
+        "weight": 30
+      },
+      {
+        "speciesId": "75",
+        "minLevel": 34,
+        "maxLevel": 34,
+        "weight": 30
+      },
+      {
+        "speciesId": "232",
+        "minLevel": 35,
+        "maxLevel": 35,
+        "weight": 20
+      },
+      {
+        "speciesId": "95",
+        "minLevel": 36,
+        "maxLevel": 38,
+        "weight": 15
+      },
+      {
+        "speciesId": "111",
+        "minLevel": 37,
+        "maxLevel": 37,
+        "weight": 5
+      }
+    ],
+    "packLevel": 38,
+    "trainerLevel": {
+      "above": 44,
+      "upTo": 46
+    },
+    "trainers": [
+      38,
+      136,
+      148,
+      183,
+      232,
+      291,
+      298,
+      310,
+      313,
+      318,
+      329,
+      333,
+      337,
+      356,
+      357,
+      359,
+      368,
+      369,
+      415,
+      446,
+      463,
+      540,
+      547,
+      554,
+      559,
+      574,
+      576,
+      578,
+      579,
+      580,
+      581,
+      582,
+      583,
+      585,
+      586,
+      625,
+      649,
+      656,
+      698,
+      700
+    ],
+    "rivals": null,
+    "rewardTm": null
+  },
+  {
+    "chapter": 12,
+    "place": "석영고원",
+    "type": "dark",
+    "leader": {
+      "key": "karen",
+      "name": "카렌",
+      "trainerIndex": 246,
+      "aceLevel": 47
+    },
+    "areas": [
+      "kanto-victory-road-1/2f",
+      "kanto-victory-road-1/3f"
+    ],
+    "wild": [
+      {
+        "speciesId": "42",
+        "minLevel": 36,
+        "maxLevel": 36,
+        "weight": 30
+      },
+      {
+        "speciesId": "75",
+        "minLevel": 36,
+        "maxLevel": 36,
+        "weight": 30
+      },
+      {
+        "speciesId": "232",
+        "minLevel": 37,
+        "maxLevel": 37,
+        "weight": 20
+      },
+      {
+        "speciesId": "95",
+        "minLevel": 38,
+        "maxLevel": 40,
+        "weight": 15
+      },
+      {
+        "speciesId": "111",
+        "minLevel": 39,
+        "maxLevel": 39,
+        "weight": 5
+      }
+    ],
+    "packLevel": 40,
+    "trainerLevel": {
+      "above": 46,
+      "upTo": 47
+    },
+    "trainers": [
+      15,
+      230,
+      326,
+      346,
+      362,
+      366,
+      445,
+      545,
+      548,
+      549,
+      572,
+      577,
+      610,
+      623,
+      634,
+      641,
+      646,
+      662
+    ],
+    "rivals": null,
+    "rewardTm": null
+  },
+  {
+    "chapter": 13,
+    "place": "석영고원",
+    "type": "dragon",
+    "leader": {
+      "key": "lance",
+      "name": "목호",
+      "trainerIndex": 244,
+      "aceLevel": 50
+    },
+    "areas": [
+      "kanto-victory-road-1/1f",
+      "kanto-victory-road-1/2f",
+      "kanto-victory-road-1/3f"
+    ],
+    "wild": [
+      {
+        "speciesId": "42",
+        "minLevel": 38,
+        "maxLevel": 38,
+        "weight": 30
+      },
+      {
+        "speciesId": "75",
+        "minLevel": 38,
+        "maxLevel": 38,
+        "weight": 30
+      },
+      {
+        "speciesId": "232",
+        "minLevel": 39,
+        "maxLevel": 39,
+        "weight": 20
+      },
+      {
+        "speciesId": "95",
+        "minLevel": 40,
+        "maxLevel": 42,
+        "weight": 15
+      },
+      {
+        "speciesId": "111",
+        "minLevel": 41,
+        "maxLevel": 41,
+        "weight": 5
+      }
+    ],
+    "packLevel": 42,
+    "trainerLevel": {
+      "above": 47,
+      "upTo": 50
+    },
+    "trainers": [
+      83,
+      84,
+      297,
+      302,
+      308,
+      336,
+      361,
+      453,
+      584,
+      628,
+      629,
+      631,
+      635,
+      638,
+      643,
+      652,
+      659,
+      677,
+      678,
+      685,
+      692,
+      693,
+      694,
+      695,
+      696
+    ],
+    "rivals": {
+      "grass": 286,
+      "fire": 287,
+      "water": 285
+    },
+    "rewardTm": null
+  },
+  {
+    "chapter": 14,
+    "place": "연분홍시티",
+    "type": "poison",
+    "leader": {
+      "key": "janine",
+      "name": "도희",
+      "trainerIndex": 257,
+      "aceLevel": 50
+    },
+    "areas": [
+      "kanto-route-15",
+      "kanto-route-16",
+      "kanto-route-18"
+    ],
+    "wild": [
+      {
+        "speciesId": "88",
+        "minLevel": 36,
+        "maxLevel": 38,
+        "weight": 40
+      },
+      {
+        "speciesId": "22",
+        "minLevel": 37,
+        "maxLevel": 39,
+        "weight": 17.8
+      },
+      {
+        "speciesId": "30",
+        "minLevel": 33,
+        "maxLevel": 33,
+        "weight": 10
+      },
+      {
+        "speciesId": "33",
+        "minLevel": 33,
+        "maxLevel": 33,
+        "weight": 10
+      },
+      {
+        "speciesId": "17",
+        "minLevel": 35,
+        "maxLevel": 35,
+        "weight": 4.4
+      },
+      {
+        "speciesId": "89",
+        "minLevel": 39,
+        "maxLevel": 40,
+        "weight": 4.4
+      },
+      {
+        "speciesId": "187",
+        "minLevel": 32,
+        "maxLevel": 34,
+        "weight": 4.2
+      },
+      {
+        "speciesId": "218",
+        "minLevel": 37,
+        "maxLevel": 37,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "164",
+        "minLevel": 35,
+        "maxLevel": 35,
+        "weight": 2.2
+      },
+      {
+        "speciesId": "195",
+        "minLevel": 32,
+        "maxLevel": 34,
+        "weight": 2.1
+      },
+      {
+        "speciesId": "198",
+        "minLevel": 39,
+        "maxLevel": 39,
+        "weight": 1.1
+      },
+      {
+        "speciesId": "113",
+        "minLevel": 35,
+        "maxLevel": 35,
+        "weight": 0.3
+      }
+    ],
+    "packLevel": 40,
+    "trainerLevel": {
+      "above": 47,
+      "upTo": 50
+    },
+    "trainers": [
+      83,
+      84,
+      297,
+      302,
+      308,
+      336,
+      361,
+      453,
+      584,
+      628,
+      629,
+      631,
+      635,
+      638,
+      643,
+      652,
+      659,
+      677,
+      678,
+      685,
+      692,
+      693,
+      694,
+      695,
+      696
+    ],
+    "rivals": null,
+    "rewardTm": {
+      "id": "tm84",
+      "name": "기술머신84",
+      "moveId": "398"
+    }
+  },
+  {
+    "chapter": 15,
+    "place": "갈색시티",
+    "type": "electric",
+    "leader": {
+      "key": "lt_surge",
+      "name": "마티스",
+      "trainerIndex": 255,
+      "aceLevel": 53
+    },
+    "areas": [
+      "kanto-route-6",
+      "kanto-route-11",
+      "digletts-cave"
+    ],
+    "wild": [
+      {
+        "speciesId": "50",
+        "minLevel": 27,
+        "maxLevel": 33,
+        "weight": 30
+      },
+      {
+        "speciesId": "96",
+        "minLevel": 28,
+        "maxLevel": 30,
+        "weight": 13.3
+      },
+      {
+        "speciesId": "16",
+        "minLevel": 27,
+        "maxLevel": 28,
+        "weight": 11.1
+      },
+      {
+        "speciesId": "19",
+        "minLevel": 29,
+        "maxLevel": 29,
+        "weight": 10
+      },
+      {
+        "speciesId": "81",
+        "minLevel": 29,
+        "maxLevel": 29,
+        "weight": 10
+      },
+      {
+        "speciesId": "69",
+        "minLevel": 27,
+        "maxLevel": 28,
+        "weight": 8.9
+      },
+      {
+        "speciesId": "43",
+        "minLevel": 27,
+        "maxLevel": 27,
+        "weight": 6.7
+      },
+      {
+        "speciesId": "51",
+        "minLevel": 33,
+        "maxLevel": 43,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "63",
+        "minLevel": 26,
+        "maxLevel": 28,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "97",
+        "minLevel": 30,
+        "maxLevel": 30,
+        "weight": 3.3
+      }
+    ],
+    "packLevel": 43,
+    "trainerLevel": {
+      "above": 50,
+      "upTo": 53
+    },
+    "trainers": [
+      503,
+      509,
+      512,
+      517,
+      527,
+      602,
+      603,
+      604,
+      605,
+      611,
+      624,
+      626,
+      644,
+      647,
+      650,
+      651,
+      653,
+      660,
+      663,
+      681,
+      682,
+      683,
+      684,
+      688,
+      689,
+      690,
+      691
+    ],
+    "rivals": null,
+    "rewardTm": {
+      "id": "tm34",
+      "name": "기술머신34",
+      "moveId": "351"
+    }
+  },
+  {
+    "chapter": 16,
+    "place": "회색시티",
+    "type": "rock",
+    "leader": {
+      "key": "brock",
+      "name": "웅",
+      "trainerIndex": 253,
+      "aceLevel": 54
+    },
+    "areas": [
+      "kanto-route-3",
+      "kanto-route-4",
+      "mt-moon/1f",
+      "mt-moon/2f"
+    ],
+    "wild": [
+      {
+        "speciesId": "21",
+        "minLevel": 37,
+        "maxLevel": 40,
+        "weight": 20.8
+      },
+      {
+        "speciesId": "41",
+        "minLevel": 37,
+        "maxLevel": 38,
+        "weight": 20
+      },
+      {
+        "speciesId": "19",
+        "minLevel": 37,
+        "maxLevel": 42,
+        "weight": 19.2
+      },
+      {
+        "speciesId": "74",
+        "minLevel": 40,
+        "maxLevel": 40,
+        "weight": 15
+      },
+      {
+        "speciesId": "27",
+        "minLevel": 40,
+        "maxLevel": 40,
+        "weight": 10
+      },
+      {
+        "speciesId": "39",
+        "minLevel": 38,
+        "maxLevel": 38,
+        "weight": 5
+      },
+      {
+        "speciesId": "46",
+        "minLevel": 44,
+        "maxLevel": 44,
+        "weight": 5
+      },
+      {
+        "speciesId": "28",
+        "minLevel": 42,
+        "maxLevel": 42,
+        "weight": 2.5
+      },
+      {
+        "speciesId": "35",
+        "minLevel": 40,
+        "maxLevel": 40,
+        "weight": 2.5
+      }
+    ],
+    "packLevel": 44,
+    "trainerLevel": {
+      "above": 53,
+      "upTo": 54
+    },
+    "trainers": [
+      505,
+      510,
+      517,
+      528,
+      602,
+      603,
+      605,
+      611,
+      615,
+      644,
+      651,
+      657
+    ],
+    "rivals": null,
+    "rewardTm": {
+      "id": "tm80",
+      "name": "기술머신80",
+      "moveId": "157"
+    }
+  },
+  {
+    "chapter": 17,
+    "place": "블루시티",
+    "type": "water",
+    "leader": {
+      "key": "misty",
+      "name": "이슬",
+      "trainerIndex": 254,
+      "aceLevel": 54
+    },
+    "areas": [
+      "kanto-route-9",
+      "kanto-route-24",
+      "kanto-route-25"
+    ],
+    "wild": [
+      {
+        "speciesId": "69",
+        "minLevel": 37,
+        "maxLevel": 43,
+        "weight": 18.3
+      },
+      {
+        "speciesId": "19",
+        "minLevel": 44,
+        "maxLevel": 44,
+        "weight": 11.1
+      },
+      {
+        "speciesId": "56",
+        "minLevel": 42,
+        "maxLevel": 42,
+        "weight": 10
+      },
+      {
+        "speciesId": "63",
+        "minLevel": 38,
+        "maxLevel": 38,
+        "weight": 10
+      },
+      {
+        "speciesId": "48",
+        "minLevel": 37,
+        "maxLevel": 37,
+        "weight": 9.4
+      },
+      {
+        "speciesId": "16",
+        "minLevel": 37,
+        "maxLevel": 37,
+        "weight": 8.9
+      },
+      {
+        "speciesId": "43",
+        "minLevel": 39,
+        "maxLevel": 39,
+        "weight": 6.7
+      },
+      {
+        "speciesId": "70",
+        "minLevel": 39,
+        "maxLevel": 43,
+        "weight": 6.1
+      },
+      {
+        "speciesId": "20",
+        "minLevel": 42,
+        "maxLevel": 44,
+        "weight": 5
+      },
+      {
+        "speciesId": "21",
+        "minLevel": 42,
+        "maxLevel": 42,
+        "weight": 4.4
+      },
+      {
+        "speciesId": "191",
+        "minLevel": 39,
+        "maxLevel": 39,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "49",
+        "minLevel": 37,
+        "maxLevel": 43,
+        "weight": 2.8
+      },
+      {
+        "speciesId": "57",
+        "minLevel": 44,
+        "maxLevel": 44,
+        "weight": 1.7
+      },
+      {
+        "speciesId": "17",
+        "minLevel": 39,
+        "maxLevel": 39,
+        "weight": 1.1
+      },
+      {
+        "speciesId": "22",
+        "minLevel": 44,
+        "maxLevel": 44,
+        "weight": 1.1
+      }
+    ],
+    "packLevel": 44,
+    "trainerLevel": {
+      "above": 53,
+      "upTo": 54
+    },
+    "trainers": [
+      505,
+      510,
+      517,
+      528,
+      602,
+      603,
+      605,
+      611,
+      615,
+      644,
+      651,
+      657
+    ],
+    "rivals": null,
+    "rewardTm": {
+      "id": "tm03",
+      "name": "기술머신03",
+      "moveId": "352"
+    }
+  },
+  {
+    "chapter": 18,
+    "place": "노랑시티",
+    "type": "psychic",
+    "leader": {
+      "key": "sabrina",
+      "name": "초련",
+      "trainerIndex": 258,
+      "aceLevel": 55
+    },
+    "areas": [
+      "kanto-route-5",
+      "kanto-route-6",
+      "kanto-route-7",
+      "kanto-route-8"
+    ],
+    "wild": [
+      {
+        "speciesId": "16",
+        "minLevel": 40,
+        "maxLevel": 42,
+        "weight": 18.3
+      },
+      {
+        "speciesId": "69",
+        "minLevel": 40,
+        "maxLevel": 41,
+        "weight": 13.3
+      },
+      {
+        "speciesId": "17",
+        "minLevel": 44,
+        "maxLevel": 46,
+        "weight": 10.8
+      },
+      {
+        "speciesId": "43",
+        "minLevel": 40,
+        "maxLevel": 40,
+        "weight": 10
+      },
+      {
+        "speciesId": "63",
+        "minLevel": 39,
+        "maxLevel": 42,
+        "weight": 10
+      },
+      {
+        "speciesId": "19",
+        "minLevel": 42,
+        "maxLevel": 46,
+        "weight": 8.8
+      },
+      {
+        "speciesId": "58",
+        "minLevel": 42,
+        "maxLevel": 45,
+        "weight": 7.5
+      },
+      {
+        "speciesId": "21",
+        "minLevel": 44,
+        "maxLevel": 44,
+        "weight": 5
+      },
+      {
+        "speciesId": "164",
+        "minLevel": 44,
+        "maxLevel": 45,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "198",
+        "minLevel": 44,
+        "maxLevel": 46,
+        "weight": 2.9
+      },
+      {
+        "speciesId": "20",
+        "minLevel": 46,
+        "maxLevel": 46,
+        "weight": 2.5
+      },
+      {
+        "speciesId": "81",
+        "minLevel": 42,
+        "maxLevel": 42,
+        "weight": 2.5
+      },
+      {
+        "speciesId": "93",
+        "minLevel": 46,
+        "maxLevel": 46,
+        "weight": 2.5
+      },
+      {
+        "speciesId": "64",
+        "minLevel": 42,
+        "maxLevel": 42,
+        "weight": 1.3
+      },
+      {
+        "speciesId": "44",
+        "minLevel": 42,
+        "maxLevel": 42,
+        "weight": 0.8
+      },
+      {
+        "speciesId": "228",
+        "minLevel": 42,
+        "maxLevel": 42,
+        "weight": 0.4
+      }
+    ],
+    "packLevel": 46,
+    "trainerLevel": {
+      "above": 54,
+      "upTo": 55
+    },
+    "trainers": [
+      505,
+      510,
+      520,
+      523,
+      528,
+      632,
+      639,
+      642,
+      645,
+      648,
+      686,
+      687
+    ],
+    "rivals": null,
+    "rewardTm": {
+      "id": "tm48",
+      "name": "기술머신48",
+      "moveId": "285"
+    }
+  },
+  {
+    "chapter": 19,
+    "place": "무지개시티",
+    "type": "grass",
+    "leader": {
+      "key": "erika",
+      "name": "민화",
+      "trainerIndex": 256,
+      "aceLevel": 56
+    },
+    "areas": [
+      "kanto-route-7",
+      "kanto-route-16",
+      "kanto-route-17"
+    ],
+    "wild": [
+      {
+        "speciesId": "88",
+        "minLevel": 40,
+        "maxLevel": 43,
+        "weight": 36.7
+      },
+      {
+        "speciesId": "22",
+        "minLevel": 41,
+        "maxLevel": 44,
+        "weight": 17.8
+      },
+      {
+        "speciesId": "19",
+        "minLevel": 29,
+        "maxLevel": 33,
+        "weight": 11.7
+      },
+      {
+        "speciesId": "58",
+        "minLevel": 29,
+        "maxLevel": 32,
+        "weight": 7.2
+      },
+      {
+        "speciesId": "21",
+        "minLevel": 31,
+        "maxLevel": 31,
+        "weight": 6.7
+      },
+      {
+        "speciesId": "218",
+        "minLevel": 41,
+        "maxLevel": 43,
+        "weight": 6.7
+      },
+      {
+        "speciesId": "198",
+        "minLevel": 31,
+        "maxLevel": 43,
+        "weight": 5
+      },
+      {
+        "speciesId": "89",
+        "minLevel": 44,
+        "maxLevel": 46,
+        "weight": 4.4
+      },
+      {
+        "speciesId": "20",
+        "minLevel": 33,
+        "maxLevel": 33,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "228",
+        "minLevel": 29,
+        "maxLevel": 29,
+        "weight": 0.6
+      }
+    ],
+    "packLevel": 46,
+    "trainerLevel": {
+      "above": 55,
+      "upTo": 56
+    },
+    "trainers": [
+      507,
+      513,
+      515,
+      520,
+      523,
+      525,
+      606,
+      607,
+      612,
+      627,
+      630,
+      654
+    ],
+    "rivals": null,
+    "rewardTm": {
+      "id": "tm19",
+      "name": "기술머신19",
+      "moveId": "202"
+    }
+  },
+  {
+    "chapter": 20,
+    "place": "쌍둥이섬",
+    "type": "fire",
+    "leader": {
+      "key": "blaine",
+      "name": "강연",
+      "trainerIndex": 259,
+      "aceLevel": 59
+    },
+    "areas": [
+      "seafoam-islands/1f",
+      "seafoam-islands/b1f",
+      "seafoam-islands/b2f",
+      "seafoam-islands/b3f",
+      "seafoam-islands/b4f"
+    ],
+    "wild": [
+      {
+        "speciesId": "42",
+        "minLevel": 39,
+        "maxLevel": 49,
+        "weight": 30
+      },
+      {
+        "speciesId": "54",
+        "minLevel": 35,
+        "maxLevel": 43,
+        "weight": 16.8
+      },
+      {
+        "speciesId": "86",
+        "minLevel": 41,
+        "maxLevel": 44,
+        "weight": 16
+      },
+      {
+        "speciesId": "55",
+        "minLevel": 41,
+        "maxLevel": 47,
+        "weight": 13.2
+      },
+      {
+        "speciesId": "41",
+        "minLevel": 35,
+        "maxLevel": 41,
+        "weight": 12
+      },
+      {
+        "speciesId": "87",
+        "minLevel": 44,
+        "maxLevel": 47,
+        "weight": 9.6
+      },
+      {
+        "speciesId": "124",
+        "minLevel": 47,
+        "maxLevel": 49,
+        "weight": 2.4
+      }
+    ],
+    "packLevel": 49,
+    "trainerLevel": {
+      "above": 56,
+      "upTo": 59
+    },
+    "trainers": [
+      507,
+      513,
+      515,
+      525,
+      530,
+      606,
+      609,
+      618,
+      621,
+      633,
+      636,
+      674
+    ],
+    "rivals": null,
+    "rewardTm": {
+      "id": "tm50",
+      "name": "기술머신50",
+      "moveId": "315"
+    }
+  },
+  {
+    "chapter": 21,
+    "place": "상록시티",
+    "type": null,
+    "leader": {
+      "key": "blue",
+      "name": "그린",
+      "trainerIndex": 261,
+      "aceLevel": 60
+    },
+    "areas": [
+      "kanto-route-1",
+      "kanto-route-2/south-towards-viridian-city",
+      "kanto-route-22",
+      "viridian-forest"
+    ],
+    "wild": [
+      {
+        "speciesId": "19",
+        "minLevel": 42,
+        "maxLevel": 47,
+        "weight": 22.5
+      },
+      {
+        "speciesId": "16",
+        "minLevel": 42,
+        "maxLevel": 48,
+        "weight": 15.4
+      },
+      {
+        "speciesId": "163",
+        "minLevel": 42,
+        "maxLevel": 45,
+        "weight": 14.6
+      },
+      {
+        "speciesId": "10",
+        "minLevel": 43,
+        "maxLevel": 44,
+        "weight": 11.8
+      },
+      {
+        "speciesId": "11",
+        "minLevel": 43,
+        "maxLevel": 45,
+        "weight": 8.3
+      },
+      {
+        "speciesId": "21",
+        "minLevel": 43,
+        "maxLevel": 45,
+        "weight": 8.3
+      },
+      {
+        "speciesId": "161",
+        "minLevel": 43,
+        "maxLevel": 43,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "167",
+        "minLevel": 43,
+        "maxLevel": 50,
+        "weight": 2.9
+      },
+      {
+        "speciesId": "164",
+        "minLevel": 47,
+        "maxLevel": 50,
+        "weight": 2.4
+      },
+      {
+        "speciesId": "17",
+        "minLevel": 47,
+        "maxLevel": 50,
+        "weight": 2.3
+      },
+      {
+        "speciesId": "12",
+        "minLevel": 47,
+        "maxLevel": 48,
+        "weight": 1.7
+      },
+      {
+        "speciesId": "84",
+        "minLevel": 44,
+        "maxLevel": 44,
+        "weight": 1.7
+      },
+      {
+        "speciesId": "25",
+        "minLevel": 44,
+        "maxLevel": 47,
+        "weight": 1.4
+      },
+      {
+        "speciesId": "77",
+        "minLevel": 46,
+        "maxLevel": 46,
+        "weight": 1.3
+      },
+      {
+        "speciesId": "22",
+        "minLevel": 47,
+        "maxLevel": 47,
+        "weight": 0.8
+      },
+      {
+        "speciesId": "162",
+        "minLevel": 46,
+        "maxLevel": 46,
+        "weight": 0.8
+      },
+      {
+        "speciesId": "168",
+        "minLevel": 47,
+        "maxLevel": 47,
+        "weight": 0.4
+      }
+    ],
+    "packLevel": 50,
+    "trainerLevel": {
+      "above": 59,
+      "upTo": 60
+    },
+    "trainers": [
+      507,
+      513,
+      515,
+      518,
+      530,
+      609,
+      618,
+      621,
+      633,
+      636,
+      674,
+      697
+    ],
+    "rivals": {
+      "grass": 490,
+      "fire": 491,
+      "water": 489
+    },
+    "rewardTm": {
+      "id": "tm92",
+      "name": "기술머신92",
+      "moveId": "433"
+    }
+  },
+  {
+    "chapter": 22,
+    "place": "은빛산",
+    "type": null,
+    "leader": {
+      "key": "red",
+      "name": "레드",
+      "trainerIndex": 260,
+      "aceLevel": 88
+    },
+    "areas": [
+      "kanto-route-28",
+      "mt-silver/outside",
+      "mt-silver/mountainside"
+    ],
+    "wild": [
+      {
+        "speciesId": "77",
+        "minLevel": 65,
+        "maxLevel": 67,
+        "weight": 20
+      },
+      {
+        "speciesId": "114",
+        "minLevel": 64,
+        "maxLevel": 66,
+        "weight": 20
+      },
+      {
+        "speciesId": "232",
+        "minLevel": 65,
+        "maxLevel": 75,
+        "weight": 16.7
+      },
+      {
+        "speciesId": "42",
+        "minLevel": 73,
+        "maxLevel": 76,
+        "weight": 13.3
+      },
+      {
+        "speciesId": "95",
+        "minLevel": 73,
+        "maxLevel": 73,
+        "weight": 10
+      },
+      {
+        "speciesId": "78",
+        "minLevel": 66,
+        "maxLevel": 69,
+        "weight": 6.7
+      },
+      {
+        "speciesId": "231",
+        "minLevel": 73,
+        "maxLevel": 73,
+        "weight": 3.3
+      },
+      {
+        "speciesId": "84",
+        "minLevel": 66,
+        "maxLevel": 66,
+        "weight": 2.2
+      },
+      {
+        "speciesId": "85",
+        "minLevel": 68,
+        "maxLevel": 68,
+        "weight": 2.2
+      },
+      {
+        "speciesId": "215",
+        "minLevel": 66,
+        "maxLevel": 68,
+        "weight": 2.2
+      },
+      {
+        "speciesId": "55",
+        "minLevel": 76,
+        "maxLevel": 76,
+        "weight": 1.7
+      },
+      {
+        "speciesId": "246",
+        "minLevel": 40,
+        "maxLevel": 45,
+        "weight": 1.7
+      }
+    ],
+    "packLevel": 76,
+    "trainerLevel": {
+      "above": 60,
+      "upTo": 88
+    },
+    "trainers": [
+      492,
+      518,
+      522,
+      530,
+      608,
+      609,
+      618,
+      621,
+      633,
+      636,
+      674,
+      697
+    ],
+    "rivals": null,
+    "rewardTm": null
   }
 ]

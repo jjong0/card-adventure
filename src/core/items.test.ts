@@ -59,11 +59,19 @@ describe('기술머신', () => {
 });
 
 describe('상점', () => {
-  it('챕터 기술머신: 관장 타입에 효과가 굉장한 공격기 3개, 위력이 낮은 순', () => {
+  it('여러 타입 관장(그린·레드) 챕터 기술머신: 위력이 가장 높은 공격기 3개', () => {
+    const blue = chapters.find((c) => c.chapter === 21)!;
+    expect(blue.type).toBeNull();
+    const list = shopTms(blue, tm, dex);
+    expect(list).toHaveLength(3);
+    expect(list.map((m) => m.move.power)).toEqual([...list.map((m) => m.move.power!)].sort((a, b) => b - a));
+  });
+
+  it('챕터 기술머신: 관장 타입에 효과가 굉장한 공격기 최대 3개, 위력이 낮은 순 (전기는 땅 기술 2개뿐)', () => {
     for (const ch of chapters) {
       const list = shopTms(ch, tm, dex);
-      expect(list).toHaveLength(3);
-      if (!ch.type) continue;
+      expect(list.length).toBe(ch.type === 'electric' ? 2 : 3);
+      if (!ch.type) continue; // 여러 타입 관장은 아래에서
       for (const m of list) expect(dex.typeChart[m.move.type][ch.type]).toBe(2);
       expect(list.map((m) => m.move.power)).toEqual([...list.map((m) => m.move.power!)].sort((a, b) => a - b));
     }

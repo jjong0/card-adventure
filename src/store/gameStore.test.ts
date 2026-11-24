@@ -119,14 +119,21 @@ describe('팩과 파티', () => {
 });
 
 describe('챕터 클리어', () => {
-  it('배지와 관장 기술머신을 받고 다음 챕터 출발점으로, 마지막 챕터 뒤에는 끝', () => {
+  it('배지와 관장 기술머신을 받고 다음 챕터 출발점으로', () => {
     const tm1 = g().chapterData().rewardTm!.moveId;
     g().moveTo(g().map().floors[0][0].id);
     g().completeChapter();
     expect(g()).toMatchObject({ chapter: 2, badges: ['falkner'], mapNodeId: null, visitedNodes: [], finished: false });
     expect(g().tms).toEqual([tm1]);
+  });
+
+  it('사천왕은 배지도 기술머신도 없고, 마지막 22장(레드) 뒤에는 끝', () => {
+    useGameStore.setState({ chapter: 9, badges: [], tms: [] });
     g().completeChapter();
-    expect(g()).toMatchObject({ chapter: 2, badges: ['falkner', 'bugsy'], finished: true });
+    expect(g()).toMatchObject({ chapter: 10, badges: [], tms: [], finished: false });
+    useGameStore.setState({ chapter: 22 });
+    g().completeChapter();
+    expect(g()).toMatchObject({ chapter: 22, finished: true });
   });
 });
 

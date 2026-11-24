@@ -1,5 +1,5 @@
 {
-  "_note": "챕터 설정(수동). scripts/build-chapters.mjs가 이 파일로 src/data/chapters.json을 만든다. areas는 PokeAPI 'location' 또는 'location/area' 식별자. 챕터 레벨대에 맞지 않는 층(예: 야돈의우물 지하 1층 Lv19~23)은 넣지 않는다. rewardTm은 관장을 이기면 받는 기술머신(원작: 비상 TM51 날개쉬기, 호일 TM89 유턴).",
+  "_note": "챕터 설정(수동). scripts/build-chapters.mjs가 이 파일로 src/data/chapters.json을 만든다. areas는 PokeAPI 'location' 또는 'location/area' 식별자로, 원작 동선에서 그 관장 직전에 지나는 곳. 챕터 레벨대에 맞지 않는 층(예: 야돈의우물 지하 1층 Lv19~23)은 넣지 않는다. rewardTm은 관장을 이기면 받는 기술머신(원작). 사천왕·챔피언·레드는 원작에서 기술머신을 주지 않아 null. type null은 여러 타입(그린·레드). levelBoost는 야생 레벨에 더하는 값: 하트골드 관동은 야생이 관장보다 30~40 낮아(웅 에이스 Lv54, 회색시티 근처 야생 Lv12) 야생 노드가 의미가 없어서, 야생 최고 레벨이 관장 에이스보다 10 정도 낮게 맞춘다.",
   "chapters": [
     {
       "chapter": 1,
@@ -13,7 +13,8 @@
         "sprout-tower/2f",
         "sprout-tower/3f"
       ],
-      "rewardTm": "tm51"
+      "rewardTm": "tm51",
+      "levelBoost": 0
     },
     {
       "chapter": 2,
@@ -27,7 +28,277 @@
         "johto-route-33",
         "slowpoke-well/1f"
       ],
-      "rewardTm": "tm89"
+      "rewardTm": "tm89",
+      "levelBoost": 0
+    },
+    {
+      "chapter": 3,
+      "leader": "whitney",
+      "place": "금빛시티",
+      "type": "normal",
+      "areas": [
+        "ilex-forest",
+        "johto-route-34"
+      ],
+      "rewardTm": "tm45",
+      "levelBoost": 0
+    },
+    {
+      "chapter": 4,
+      "leader": "morty",
+      "place": "인주시티",
+      "type": "ghost",
+      "areas": [
+        "johto-route-35",
+        "johto-route-36",
+        "johto-route-37",
+        "burned-tower/1f",
+        "burned-tower/b1f"
+      ],
+      "rewardTm": "tm30",
+      "levelBoost": 0
+    },
+    {
+      "chapter": 5,
+      "leader": "chuck",
+      "place": "진청시티",
+      "type": "fighting",
+      "areas": [
+        "johto-route-38",
+        "johto-route-39",
+        "whirl-islands/1f",
+        "whirl-islands/b1f"
+      ],
+      "rewardTm": "tm01",
+      "levelBoost": 0
+    },
+    {
+      "chapter": 6,
+      "leader": "jasmine",
+      "place": "담청시티",
+      "type": "steel",
+      "areas": [
+        "whirl-islands/b2f",
+        "whirl-islands/b3f",
+        "johto-route-47/inside-cave"
+      ],
+      "rewardTm": "tm23",
+      "levelBoost": 0
+    },
+    {
+      "chapter": 7,
+      "leader": "pryce",
+      "place": "황토마을",
+      "type": "ice",
+      "areas": [
+        "johto-route-42",
+        "mt-mortar/1f",
+        "mt-mortar/lower-cave",
+        "johto-route-43"
+      ],
+      "rewardTm": "tm07",
+      "levelBoost": 9
+    },
+    {
+      "chapter": 8,
+      "leader": "clair",
+      "place": "검은먹시티",
+      "type": "dragon",
+      "areas": [
+        "ice-path/1f",
+        "ice-path/b1f",
+        "ice-path/b2f",
+        "ice-path/b3f",
+        "johto-route-44",
+        "dark-cave/blackthorn-city-entrance"
+      ],
+      "rewardTm": "tm59",
+      "levelBoost": 0
+    },
+    {
+      "chapter": 9,
+      "leader": "will",
+      "place": "석영고원",
+      "type": "psychic",
+      "areas": [
+        "johto-route-45",
+        "tohjo-falls",
+        "kanto-route-27"
+      ],
+      "rewardTm": null,
+      "levelBoost": 0
+    },
+    {
+      "chapter": 10,
+      "leader": "koga",
+      "place": "석영고원",
+      "type": "poison",
+      "areas": [
+        "kanto-route-26",
+        "kanto-route-27",
+        "kanto-victory-road-1/1f"
+      ],
+      "rewardTm": null,
+      "levelBoost": 0
+    },
+    {
+      "chapter": 11,
+      "leader": "bruno",
+      "place": "석영고원",
+      "type": "fighting",
+      "areas": [
+        "kanto-victory-road-1/1f",
+        "kanto-victory-road-1/2f"
+      ],
+      "rewardTm": null,
+      "levelBoost": 2
+    },
+    {
+      "chapter": 12,
+      "leader": "karen",
+      "place": "석영고원",
+      "type": "dark",
+      "areas": [
+        "kanto-victory-road-1/2f",
+        "kanto-victory-road-1/3f"
+      ],
+      "rewardTm": null,
+      "levelBoost": 4
+    },
+    {
+      "chapter": 13,
+      "leader": "lance",
+      "place": "석영고원",
+      "type": "dragon",
+      "areas": [
+        "kanto-victory-road-1/1f",
+        "kanto-victory-road-1/2f",
+        "kanto-victory-road-1/3f"
+      ],
+      "rewardTm": null,
+      "levelBoost": 6
+    },
+    {
+      "chapter": 14,
+      "leader": "janine",
+      "place": "연분홍시티",
+      "type": "poison",
+      "areas": [
+        "kanto-route-15",
+        "kanto-route-16",
+        "kanto-route-18"
+      ],
+      "rewardTm": "tm84",
+      "levelBoost": 10
+    },
+    {
+      "chapter": 15,
+      "leader": "lt_surge",
+      "place": "갈색시티",
+      "type": "electric",
+      "areas": [
+        "kanto-route-6",
+        "kanto-route-11",
+        "digletts-cave"
+      ],
+      "rewardTm": "tm34",
+      "levelBoost": 14
+    },
+    {
+      "chapter": 16,
+      "leader": "brock",
+      "place": "회색시티",
+      "type": "rock",
+      "areas": [
+        "kanto-route-3",
+        "kanto-route-4",
+        "mt-moon/1f",
+        "mt-moon/2f"
+      ],
+      "rewardTm": "tm80",
+      "levelBoost": 32
+    },
+    {
+      "chapter": 17,
+      "leader": "misty",
+      "place": "블루시티",
+      "type": "water",
+      "areas": [
+        "kanto-route-9",
+        "kanto-route-24",
+        "kanto-route-25"
+      ],
+      "rewardTm": "tm03",
+      "levelBoost": 29
+    },
+    {
+      "chapter": 18,
+      "leader": "sabrina",
+      "place": "노랑시티",
+      "type": "psychic",
+      "areas": [
+        "kanto-route-5",
+        "kanto-route-6",
+        "kanto-route-7",
+        "kanto-route-8"
+      ],
+      "rewardTm": "tm48",
+      "levelBoost": 27
+    },
+    {
+      "chapter": 19,
+      "leader": "erika",
+      "place": "무지개시티",
+      "type": "grass",
+      "areas": [
+        "kanto-route-7",
+        "kanto-route-16",
+        "kanto-route-17"
+      ],
+      "rewardTm": "tm19",
+      "levelBoost": 14
+    },
+    {
+      "chapter": 20,
+      "leader": "blaine",
+      "place": "쌍둥이섬",
+      "type": "fire",
+      "areas": [
+        "seafoam-islands/1f",
+        "seafoam-islands/b1f",
+        "seafoam-islands/b2f",
+        "seafoam-islands/b3f",
+        "seafoam-islands/b4f"
+      ],
+      "rewardTm": "tm50",
+      "levelBoost": 9
+    },
+    {
+      "chapter": 21,
+      "leader": "blue",
+      "place": "상록시티",
+      "type": null,
+      "areas": [
+        "kanto-route-1",
+        "kanto-route-2/south-towards-viridian-city",
+        "kanto-route-22",
+        "viridian-forest"
+      ],
+      "rewardTm": "tm92",
+      "levelBoost": 40
+    },
+    {
+      "chapter": 22,
+      "leader": "red",
+      "place": "은빛산",
+      "type": null,
+      "areas": [
+        "kanto-route-28",
+        "mt-silver/outside",
+        "mt-silver/mountainside"
+      ],
+      "rewardTm": null,
+      "levelBoost": 25
     }
   ]
 }
