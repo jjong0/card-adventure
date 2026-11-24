@@ -72,8 +72,11 @@ export function applyEvent(shown: Shown, e: BattleEvent): Shown {
       return { ...shown, cue: { side: e.side, kind: 'attack', key }, effect: { side: e.side, moveId: e.moveId, key } };
     case 'damage':
       return { ...shown, [e.side]: updateActive(shown[e.side], (m) => ({ ...m, hp: e.to })), cue: { side: e.side, kind: 'hit', key } };
-    case 'heal':
-      return { ...shown, [e.side]: updateActive(shown[e.side], (m) => ({ ...m, hp: e.to })) };
+    case 'heal': {
+      const side = shown[e.side];
+      if (e.idx === undefined) return { ...shown, [e.side]: updateActive(side, (m) => ({ ...m, hp: e.to })) };
+      return { ...shown, [e.side]: { ...side, mons: side.mons.map((m, i) => (i === e.idx ? { ...m, hp: e.to } : m)) } };
+    }
     case 'status':
       return { ...shown, [e.side]: updateActive(shown[e.side], (m) => ({ ...m, ailment: e.ailment })) };
     case 'faint':

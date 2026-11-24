@@ -3,6 +3,7 @@
 // 데미지 공식·랭크·급소·상태이상은 5세대 이후 원작 기준 (날씨·특성·필드는 미구현)
 // 지닌 도구 효과 수치는 heldItems.ts
 import { effectiveIvs } from './card';
+import { HEAL_ITEMS, PP_ITEMS } from './bagItems';
 import { createRng } from './gacha';
 import {
   accuracyMultiplier, attackMultiplier, CHOICE_ITEMS, critBonus, CURE_BERRY, defenseMultiplier, finalMultiplier,
@@ -150,6 +151,8 @@ export interface BattleOptions {
   wild?: boolean;
   /** 상대가 기술을 무작위로 고른다 (야생, 쉬움 난이도 트레이너) */
   randomAi?: boolean;
+  /** 가방 약을 쓸 수 있는지 (기본 true, 익스트림 관장전은 false) */
+  itemsAllowed?: boolean;
 }
 
 export function createBattle(playerCards: Card[], enemyCards: Card[], dex: Dex, seed: number, opts: BattleOptions = {}): BattleState {
@@ -170,6 +173,8 @@ export function createBattle(playerCards: Card[], enemyCards: Card[], dex: Dex, 
     seed,
     wild: !!opts.wild,
     randomAi: !!(opts.randomAi || opts.wild),
+    itemsAllowed: opts.itemsAllowed ?? true,
+    itemsUsed: [],
     player: { party: player, activeIdx: lead },
     enemy: { party: enemy, activeIdx: 0 },
     log: [],
@@ -812,6 +817,51 @@ function useMove(state: BattleState, side: Side, moveId: string, dex: Dex, rng: 
 }
 
 // ════════════════════════════════════════════
+// 가방 약 (플레이어만, 기술보다 먼저)
+// ════════════════════════════════════════════
+
+/**
+ * 이 약을 이 포켓몬에게 쓸 수 있는지. 쓸 수 없으면 이유.
+ * 회복약은 쓰러지지 않고 HP가 덜 찬 포켓몬, 기력의조각은 쓰러진 포켓몬, PP 회복약은 PP가 덜 찬 기술이 있을 때.
+ */
+export function bagItemProblem(mon: BattleMon, itemId: string, moves: Record<string, Move>, moveId?: string): string | null {
+  const heal = HEAL_ITEMS.find((i) => i.id === itemId);
+  if (heal) {
+    if (heal.heal === 'revive') return mon.currentHp > 0 ? '쓰러진 포켓몬에게만 쓸 수 있다.' : null;
+    if (mon.currentHp <= 0) return '쓰러진 포켓몬에게는 쓸 수 없다.';
+    return mon.currentHp >= mon.stats.hp ? 'HP가 가득 차 있다.' : null;
+  }
+  const pp = PP_ITEMS.find((i) => i.id === itemId);
+  if (!pp) return '전투에서 쓸 수 없는 도구다.';
+  if (mon.currentHp <= 0) return '쓰러진 포켓몬에게는 쓸 수 없다.';
+  if (pp.single && (!moveId || !(moveId in mon.pp))) return 'PP를 회복할 기술을 골라야 한다.';
+  const targets = pp.single ? [moveId!] : Object.keys(mon.pp);
+  return targets.some((id) => mon.pp[id] < (moves[id]?.pp ?? 0)) ? null : 'PP가 가득 차 있다.';
+}
+
+function useBagItem(state: BattleState, action: Extract<BattleAction, { kind: 'item' }>, dex: Dex, rec: Recorder) {
+  const mon = state.player.party[action.targetIdx];
+  const idx = action.targetIdx === state.player.activeIdx ? undefined : action.targetIdx;
+  state.itemsUsed.push(action.itemId);
+  const heal = HEAL_ITEMS.find((i) => i.id === action.itemId);
+  rec.say(`${mon.name}에게 ${heal?.name ?? PP_ITEMS.find((i) => i.id === action.itemId)!.name}을(를) 사용했다!`);
+  if (heal) {
+    const from = mon.currentHp;
+    const to = heal.heal === 'revive' ? Math.max(1, Math.floor(mon.stats.hp / 2)) : Math.min(mon.stats.hp, from + heal.heal);
+    mon.currentHp = to;
+    rec.emit({ type: 'heal', side: 'player', from, to, ...(idx === undefined ? {} : { idx }) });
+    rec.say(heal.heal === 'revive' ? `${mon.name}은(는) 기운을 되찾았다!` : `${mon.name}의 체력이 회복되었다!`);
+    return;
+  }
+  const pp = PP_ITEMS.find((i) => i.id === action.itemId)!;
+  for (const id of pp.single ? [action.moveId!] : Object.keys(mon.pp)) {
+    const max = dex.moves[id]?.pp ?? 0;
+    mon.pp[id] = pp.restore === null ? max : Math.min(max, mon.pp[id] + pp.restore);
+  }
+  rec.say(`${mon.name}의 PP가 회복되었다!`);
+}
+
+// ════════════════════════════════════════════
 // 턴 진행
 // ════════════════════════════════════════════
 
@@ -883,7 +933,7 @@ function resolveFaints(state: BattleState, rec: Recorder) {
 type Resolved = { side: Side; action: BattleAction };
 
 function priorityOf(r: Resolved, dex: Dex) {
-  if (r.action.kind === 'switch') return 7; // 교체는 항상 먼저
+  if (r.action.kind !== 'move') return 7; // 교체·가방은 항상 먼저
   return dex.moves[r.action.moveId]?.priority ?? 0;
 }
 
@@ -913,6 +963,9 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
   if (action.kind === 'switch') {
     const t = state.player.party[action.toIdx];
     if (!t || t.currentHp <= 0 || action.toIdx === state.player.activeIdx) return prev;
+  } else if (action.kind === 'item') {
+    const target = state.player.party[action.targetIdx];
+    if (!state.itemsAllowed || !target || bagItemProblem(target, action.itemId, dex.moves, action.moveId)) return prev;
   } else {
     // 구애 고정·돌격조끼로 막힌 기술 (UI에서 비활성화한다)
     const me = active(state.player);
@@ -956,6 +1009,7 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
     const me = active(state[side]);
     if (me !== actors[i] || me.currentHp <= 0) continue;
     if (act.kind === 'switch') switchIn(state[side], act.toIdx, side, rec);
+    else if (act.kind === 'item') useBagItem(state, act, dex, rec);
     else useMove(state, side, act.moveId, dex, rng, rec);
     checkBerries(active(state.player), dex, rec);
     checkBerries(active(state.enemy), dex, rec);

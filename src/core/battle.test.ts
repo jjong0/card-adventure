@@ -4,7 +4,7 @@ import speciesList from '../data/species.json';
 import moves from '../data/moves.json';
 import typeChart from '../data/typeChart.json';
 import learnsets from '../data/learnsets.json';
-import { battle, calcDamage, calcStats, chooseEnemyAction, createBattle, fixJosa, typeEffectiveness } from './battle';
+import { bagItemProblem, battle, calcDamage, calcStats, chooseEnemyAction, createBattle, fixJosa, typeEffectiveness } from './battle';
 import { createRng } from './gacha';
 import { defaultEquip, learnableUpTo } from './card';
 import type { BattleState, Card, Dex, Learnsets, Move, Species, TypeChart } from './types';
@@ -392,5 +392,52 @@ describe('상대 AI (보통: 기대 데미지 최대)', () => {
     s.player.party[0].currentHp = 1;
     const a = chooseEnemyAction(s, dex);
     expect(a.kind === 'move' && ['tackle', 'earthquake'].includes(dex.moves[a.moveId].slug)).toBe(true);
+  });
+});
+
+describe('가방 약', () => {
+  const item = (s: BattleState, itemId: string, targetIdx = 0, mv?: string) => battle(s, { kind: 'item', itemId, targetIdx, moveId: mv }, dex);
+  const start = () => createBattle([card('143', 30, ['tackle', 'growl']), card('4', 30, ['ember'])], [card('16', 5, ['tackle'])], dex, 1);
+
+  it('상처약: 20 회복, 턴을 쓰고(상대는 행동), 쓴 약이 기록된다', () => {
+    const s0 = start();
+    s0.player.party[0].currentHp = 50;
+    const s = item(s0, 'potion');
+    expect(s.log).toContain('잠만보에게 상처약을 사용했다!');
+    expect(s.log.some((l) => l.includes('구구의 몸통박치기'))).toBe(true);
+    expect(s.itemsUsed).toEqual(['potion']);
+    // 회복 이벤트는 상대 공격보다 먼저
+    const healAt = s.events.findIndex((e) => e.type === 'heal');
+    const hitAt = s.events.findIndex((e) => e.type === 'damage');
+    expect(healAt).toBeGreaterThanOrEqual(0);
+    expect(healAt).toBeLessThan(hitAt);
+    expect(s.events[healAt]).toMatchObject({ from: 50, to: 70 });
+  });
+
+  it('쓸 수 없으면 무효(상태 그대로): HP 가득, 살아 있는데 기력의조각, 약 금지 전투', () => {
+    const s = start();
+    expect(item(s, 'potion')).toBe(s);
+    expect(item(s, 'revive', 1)).toBe(s);
+    const banned = createBattle([card('143', 30, ['tackle'])], [card('16', 5, ['tackle'])], dex, 1, { itemsAllowed: false });
+    banned.player.party[0].currentHp = 10;
+    expect(item(banned, 'potion')).toBe(banned);
+  });
+
+  it('기력의조각: 쓰러진 교체 대기 포켓몬을 최대 HP 절반으로', () => {
+    const s0 = start();
+    s0.player.party[1].currentHp = 0;
+    const s = item(s0, 'revive', 1);
+    expect(s.player.party[1].currentHp).toBe(Math.floor(s.player.party[1].stats.hp / 2));
+    expect(s.player.activeIdx).toBe(0);
+  });
+
+  it('PP에이드: 고른 기술 +10, 기술을 안 고르면 무효', () => {
+    const s0 = start();
+    const tackle = s0.player.party[0].card.moves[0];
+    s0.player.party[0].pp[tackle] = 0;
+    expect(bagItemProblem(s0.player.party[0], 'ether', dex.moves)).toBe('PP를 회복할 기술을 골라야 한다.');
+    expect(item(s0, 'ether')).toBe(s0);
+    const s = item(s0, 'ether', 0, tackle);
+    expect(s.player.party[0].pp[tackle]).toBe(10);
   });
 });

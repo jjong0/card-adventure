@@ -71,3 +71,14 @@ describe('연출 재생', () => {
     expect(cues(battle(s0, { kind: 'move', moveId: moveId('leer') }, dex), s0)).toContainEqual({ side: 'enemy', kind: 'statDown' });
   });
 });
+
+describe('가방 약 연출', () => {
+  it('교체 대기 중인 포켓몬에게 쓴 기력의조각도 재생 결과가 엔진과 같다', () => {
+    const s0 = createBattle([card('25', 30, ['thunder-shock']), card('4', 30, ['ember'])], [card('16', 5, ['tackle'])], dex, 1);
+    s0.player.party[1].currentHp = 0;
+    const s1 = battle(s0, { kind: 'item', itemId: 'revive', targetIdx: 1 }, dex);
+    const shown = s1.events.reduce(applyEvent, shownBefore(s0, false));
+    expect(shown.player.mons.map((m) => m.hp)).toEqual(s1.player.party.map((m) => m.currentHp));
+    expect(shown.player.mons[1].hp).toBeGreaterThan(0);
+  });
+});

@@ -166,6 +166,10 @@ export interface BattleState {
   wild: boolean;
   /** 상대가 기술을 무작위로 고른다 (야생, 쉬움 난이도) */
   randomAi: boolean;
+  /** 플레이어가 가방 약을 쓸 수 있다 (익스트림 관장전은 불가) */
+  itemsAllowed: boolean;
+  /** 이번 전투에서 쓴 약 id (누적). 전투가 끝나면 가방에서 뺀다 */
+  itemsUsed: string[];
   player: BattleSide;
   enemy: BattleSide;
   log: string[];
@@ -187,7 +191,8 @@ export type BattleEvent =
   | { type: 'switchIn'; side: Side; idx: number }
   | { type: 'move'; side: Side; moveId: string }
   | { type: 'damage'; side: Side; from: number; to: number; effectiveness: number; crit: boolean }
-  | { type: 'heal'; side: Side; from: number; to: number }
+  /** idx가 있으면 교체 대기 중인 포켓몬(가방 약), 없으면 출전 중인 포켓몬 */
+  | { type: 'heal'; side: Side; from: number; to: number; idx?: number }
   | { type: 'status'; side: Side; ailment: Ailment }
   | { type: 'stage'; side: Side; stat: BattleStat; delta: number }
   | { type: 'faint'; side: Side }
@@ -209,7 +214,9 @@ export type HeldItemTier = 'common' | 'uncommon' | 'rare';
 
 export type BattleAction =
   | { kind: 'move'; moveId: string }
-  | { kind: 'switch'; toIdx: number };
+  | { kind: 'switch'; toIdx: number }
+  /** 가방 약 사용 (플레이어만). PP 회복약 중 기술 1개용은 moveId가 필요하다 */
+  | { kind: 'item'; itemId: string; targetIdx: number; moveId?: string };
 
 // ── 트레이너 · 챕터 · 기술머신 데이터 ─────────
 /** trainers.json (scripts/build-trainers.mjs, 하트골드 원본) */
