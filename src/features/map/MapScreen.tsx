@@ -142,7 +142,7 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, onExit, notice }: Pro
                 </button>
               );
             })}
-            {mapNodeId === null && <p className="absolute bottom-1 left-1/2 -translate-x-1/2 font-pixel text-[12px] text-text-dim">출발 · 1층에서 갈 곳을 고르세요</p>}
+            {mapNodeId === null && <p className="absolute bottom-1 left-1/2 -translate-x-1/2 font-pixel text-[12px] text-text-dim">출발 · 야생 포켓몬과의 승부로 시작한다</p>}
           </div>
         </div>
 

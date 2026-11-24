@@ -6,21 +6,23 @@ const SEEDS = Array.from({ length: 300 }, (_, i) => i * 7919 + 1);
 const each = (chapter: number, f: (m: ChapterMap) => void, hasRival = false) => SEEDS.forEach((s) => f(generateMap(s, chapter, { hasRival })));
 
 describe('지도 구조', () => {
-  it('일반 챕터 10층: 1층 2~3개, 중간 2~4개, 9층 전부 휴식, 10층 관장 하나', () => {
+  it('일반 챕터 10층: 1층 야생 하나, 2층 3~4개, 중간 2~4개, 9층 전부 휴식, 10층 관장 하나', () => {
     each(1, (m) => {
       expect(m.floors).toHaveLength(10);
-      expect([2, 3]).toContain(m.floors[0].length);
+      expect(m.floors[0].map((n) => n.kind)).toEqual(['wild']);
+      expect([3, 4]).toContain(m.floors[1].length);
       for (const fl of m.floors.slice(1, 8)) expect(fl.length >= 2 && fl.length <= 4).toBe(true);
       expect(m.floors[8].every((n) => n.kind === 'rest')).toBe(true);
       expect(m.floors[9].map((n) => n.kind)).toEqual(['leader']);
     });
   });
 
-  it('각 노드는 다음 층 1~2개와 연결되고, 모든 노드에 들어오는 길이 있다', () => {
+  it('각 노드는 다음 층 1~2개와 연결되고(1층 출발 노드는 2층 전부와), 모든 노드에 들어오는 길이 있다', () => {
     each(1, (m) => {
       m.floors.slice(0, -1).forEach((fl, f) => {
         const incoming = new Set(fl.flatMap((n) => n.next));
-        for (const n of fl) expect(n.next.length >= 1 && n.next.length <= 2).toBe(true);
+        if (f === 0) expect(fl[0].next).toEqual(m.floors[1].map((n) => n.id));
+        else for (const n of fl) expect(n.next.length >= 1 && n.next.length <= 2).toBe(true);
         for (const up of m.floors[f + 1]) expect(incoming.has(up.id)).toBe(true);
       });
     });
@@ -37,7 +39,7 @@ describe('지도 구조', () => {
 });
 
 describe('노드 배치', () => {
-  it('엘리트는 4층 이상, 상점은 3층 이상 1~2개, 중간 휴식은 최대 1개, 1층은 야생·트레이너만(야생 하나 이상)', () => {
+  it('엘리트는 4층 이상, 상점은 3층 이상 1~2개, 중간 휴식은 최대 1개', () => {
     each(1, (m) => {
       const all = m.floors.flat();
       for (const n of all.filter((x) => x.kind === 'elite')) expect(n.floor).toBeGreaterThanOrEqual(4);
@@ -45,8 +47,6 @@ describe('노드 배치', () => {
       expect(shops.length >= 1 && shops.length <= 2).toBe(true);
       for (const n of shops) expect(n.floor).toBeGreaterThanOrEqual(3);
       expect(all.filter((x) => x.kind === 'rest' && x.floor < 9).length).toBeLessThanOrEqual(1);
-      for (const n of m.floors[0]) expect(['wild', 'trainer']).toContain(n.kind);
-      expect(m.floors[0].some((n) => n.kind === 'wild')).toBe(true); // 첫 전투를 이길 길 보장
     });
   });
 

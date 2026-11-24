@@ -1,8 +1,8 @@
 // src/core/map.ts
 // 챕터 지도 생성 (docs/spec.md §3.1~3.2). 같은 세이브 시드 + 챕터면 항상 같은 지도.
 //   - 일반 챕터 10층, 사천왕 구간(9~12장)은 5층에 상점 없음
-//   - 1층 2~3개, 중간층 2~4개, 관장 전 층은 전부 휴식, 마지막 층은 관장 하나
-//   - 각 노드는 다음 층 1~2개와 연결, 선은 교차하지 않음
+//   - 1층은 야생 노드 하나(출발점)에서 2층 3~4갈래로 갈라진다. 중간층 2~4개, 관장 전 층은 전부 휴식, 마지막 층은 관장 하나
+//   - 각 노드는 다음 층 1~2개와 연결(1층 출발 노드만 2층 전부와), 선은 교차하지 않음
 //   - 보상(지닌 도구 3개 중 1개) 1개 3층 이상, 사건(?) 2~3개 2층 이상 (사천왕 구간은 사건 1개)
 import { createRng, type Rng } from './gacha';
 
@@ -58,8 +58,9 @@ export function generateMap(seed: number, chapter: number, opts: { hasRival?: bo
   // ── 층별 노드 수와 위치 ──
   const counts = Array.from({ length: total }, (_, f) => {
     const floor = f + 1;
-    if (floor === total) return 1;
-    if (floor === 1 || floor === total - 1) return intBetween(rng, 2, 3);
+    if (floor === total || floor === 1) return 1;
+    if (floor === 2) return intBetween(rng, 3, 4);
+    if (floor === total - 1) return intBetween(rng, 2, 3);
     return intBetween(rng, 2, 4);
   });
   const floors: MapNode[][] = counts.map((n, f) =>
@@ -81,6 +82,10 @@ export function generateMap(seed: number, chapter: number, opts: { hasRival?: bo
       for (const n of lower) n.next = [upper[0].id];
       continue;
     }
+    if (lower.length === 1) {
+      lower[0].next = upper.map((n) => n.id); // 출발 노드는 모든 갈래로
+      continue;
+    }
     for (const [i, j] of pick(rng, nonCrossingLinks(lower.length, upper.length))) lower[i].next.push(upper[j].id);
   }
 
@@ -89,8 +94,8 @@ export function generateMap(seed: number, chapter: number, opts: { hasRival?: bo
   for (const n of floors[total - 2]) n.kind = 'rest';
   const free = floors.slice(0, total - 2).flat();
   for (const n of free) n.kind = rng() < 0.5 ? 'wild' : 'trainer';
-  // 1층에는 야생을 반드시 하나: 스타터 한 마리로도 첫 전투를 이기고 팩을 받을 길을 보장한다
-  if (!floors[0].some((n) => n.kind === 'wild')) pick(rng, floors[0]).kind = 'wild';
+  // 1층은 야생 하나: 스타터 한 마리로도 첫 전투를 이기고 팩을 받고 출발한다
+  floors[0][0].kind = 'wild';
 
   /** 조건에 맞는 아직 일반(야생·트레이너) 노드 하나를 골라 종류를 바꾼다. 이미 쓴 층은 피한다 */
   const usedFloors = new Set<number>();

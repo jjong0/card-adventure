@@ -50,7 +50,7 @@ describe('지도 이동', () => {
     expect(g().moveTo(first.id)).toBe(true);
     expect(g().mapNodeId).toBe(first.id);
     expect(g().visitedNodes).toEqual([first.id]);
-    expect(g().moveTo(map.floors[0][1].id)).toBe(false); // 같은 층으로는 못 간다
+    expect(g().moveTo(first.id)).toBe(false); // 지금 노드로 다시는 못 간다
   });
 });
 
