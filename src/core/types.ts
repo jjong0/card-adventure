@@ -247,7 +247,8 @@ export interface Trainer {
 export interface ChapterData {
   chapter: number;
   place: string;
-  type: ElementType;
+  /** 관장 주 타입. null = 여러 타입 (그린·레드) */
+  type: ElementType | null;
   leader: { key: string; name: string; trainerIndex: number; aceLevel: number };
   areas: string[];                    // PokeAPI 지역 식별자
   wild: { speciesId: string; minLevel: number; maxLevel: number; weight: number }[]; // weight: %
@@ -256,8 +257,8 @@ export interface ChapterData {
   trainers: number[];                 // 일반 트레이너 원본 번호
   /** 플레이어 스타터 타입 → 라이벌전 원본 번호. 이 챕터에 라이벌전이 없으면 null */
   rivals: Record<'grass' | 'fire' | 'water', number> | null;
-  /** 관장을 이기면 받는 기술머신 */
-  rewardTm: { id: string; name: string; moveId: string };
+  /** 관장을 이기면 받는 기술머신. 사천왕·챔피언·레드는 원작처럼 없음(null) */
+  rewardTm: { id: string; name: string; moveId: string } | null;
 }
 
 /** tmCompat.json (scripts/build-tm-compat.mjs) */

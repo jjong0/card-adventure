@@ -33,8 +33,9 @@ function fight(state: BattleState): BattleState {
 }
 
 /** 다음 관장 타입에 효과가 굉장한 속성 (팩 고르기) */
-function advantageTypes(leaderType: ElementType): ElementType[] {
-  return (Object.keys(dex.typeChart) as ElementType[]).filter((t) => dex.typeChart[t][leaderType] > 1);
+function advantageTypes(leaderType: ElementType | null): ElementType[] {
+  const all = Object.keys(dex.typeChart) as ElementType[];
+  return leaderType ? all.filter((t) => dex.typeChart[t][leaderType] > 1) : all;
 }
 
 /** 레벨 높은 6마리를 파티로, 개체값 포인트는 더 높은 공격 스탯과 스피드에 */

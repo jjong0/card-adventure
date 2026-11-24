@@ -140,10 +140,15 @@ export interface ShopItem {
  * 초반 챕터에 눈보라 같은 고위력 기술이 풀리지 않게 위력 오름차순으로 고른다.
  */
 export function shopTms(chapter: ChapterData, tm: TmData, dex: Dex) {
-  return tm.machines
+  const attacks = tm.machines
     .filter((m) => m.id.startsWith('tm'))
     .map((m) => ({ ...m, move: dex.moves[m.moveId] }))
-    .filter((m) => m.move.category !== 'status' && m.move.power !== null && typeEffectiveness(m.move.type, [chapter.type], dex) > 1)
+    .filter((m) => m.move.category !== 'status' && m.move.power !== null);
+  // 여러 타입 관장(그린·레드)은 노릴 약점이 없어서 위력이 가장 높은 기술머신
+  if (!chapter.type) return attacks.sort((a, b) => b.move.power! - a.move.power! || a.id.localeCompare(b.id)).slice(0, TMS_PER_SHOP);
+  const type = chapter.type;
+  return attacks
+    .filter((m) => typeEffectiveness(m.move.type, [type], dex) > 1)
     .sort((a, b) => a.move.power! - b.move.power! || a.id.localeCompare(b.id))
     .slice(0, TMS_PER_SHOP);
 }

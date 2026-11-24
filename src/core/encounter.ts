@@ -139,7 +139,8 @@ export function nodeOpponent(node: MapNode, ctx: EncounterContext, dex: Encounte
     case 'leader': {
       const story = byIndex(chapter.leader.trainerIndex);
       const rematch = trainers.find((t) => t.key === story.key && t.battle === 'rematch');
-      return fromTrainer(leaderTrainer(story, rematch, difficulty), 'leader', `관장 ${story.name}`);
+      const title = bossTitle(chapter.chapter);
+      return fromTrainer(leaderTrainer(story, rematch, difficulty), 'leader', title ? `${title} ${story.name}` : story.name);
     }
     default:
       return null;
@@ -161,6 +162,17 @@ export function battleGold(op: Opponent): number {
   if (op.kind === 'leader') return last * 120;
   return last * 40 * (op.kind === 'elite' ? 2 : 1);
 }
+
+/** 챕터 마지막 상대의 호칭: 9~12장 사천왕, 13장 챔피언, 22장 레드는 호칭 없이 이름만, 그 밖은 관장 (spec §2) */
+export function bossTitle(chapter: number): '관장' | '사천왕' | '챔피언' | '' {
+  if (chapter >= 9 && chapter <= 12) return '사천왕';
+  if (chapter === 13) return '챔피언';
+  if (chapter === 22) return '';
+  return '관장';
+}
+
+/** 이기면 배지를 받는 챕터 (체육관 관장 16명) */
+export const givesBadge = (chapter: number) => bossTitle(chapter) === '관장';
 
 /** 승리 보상 팩의 최소 등급: 엘리트 R 이상, 관장 SR 이상 (spec §3.2) */
 export function rewardMinRarity(kind: BattleKind): Rarity | undefined {

@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import { HpBar } from '../../components/HpBar';
 import { Sprite } from '../../components/Sprite';
-import { nodeOpponent, type Opponent } from '../../core/encounter';
+import { bossTitle, givesBadge, nodeOpponent, type Opponent } from '../../core/encounter';
 import { reachableNodes, type MapNode } from '../../core/map';
 import { useAssetImage } from '../../lib/assetImage';
 import { dex, trainers } from '../../lib/dex';
@@ -50,6 +50,12 @@ interface Props {
 export function MapScreen({ onEnter, onOpenBox, onOpenBag, onExit, notice }: Props) {
   const { map, chapterData, mapNodeId, visitedNodes, runSeed, starterType, difficulty, gold, badges, hp, partyCards, moveTo } = useGameStore();
   const chapter = chapterData();
+  // 마지막 노드 보상: 배지는 체육관 관장만, 기술머신은 주는 챕터만
+  // 마지막 상대가 있는 곳: 체육관 / 포켓몬리그(사천왕·챔피언) / 레드는 장소 이름만
+  const title = bossTitle(chapter.chapter);
+  const venue = title === '관장' ? `${chapter.place} 체육관` : title ? `${chapter.place} 포켓몬리그` : chapter.place;
+  const leaderDesc = title === '관장' ? '체육관 관장에게 도전한다.' : title ? `${title}에게 도전한다.` : '은빛산 정상에서 기다리는 트레이너에게 도전한다.';
+  const leaderReward = [givesBadge(chapter.chapter) && '배지', 'SR 이상 확정 팩', chapter.rewardTm && '기술머신'].filter(Boolean).join(' + ');
   const m = map();
   const party = partyCards();
   const reachable = reachableNodes(m, mapNodeId);
@@ -84,8 +90,8 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, onExit, notice }: Pro
     <div className="flex h-full flex-col">
       <header className="flex h-[56px] shrink-0 items-center gap-5 border-b border-line bg-surface-2 px-6 font-pixel">
         <span className="font-title text-[24px] text-accent">{chapter.chapter}장</span>
-        <span className="text-[16px]">{chapter.place} 체육관</span>
-        <span className="text-[13px] text-text-dim">관장 {chapter.leader.name} · {TYPE_LABEL[chapter.type]} 타입 · 에이스 Lv{chapter.leader.aceLevel}</span>
+        <span className="text-[16px]">{venue}</span>
+        <span className="text-[13px] text-text-dim">{bossTitle(chapter.chapter) || '최종 상대'} {chapter.leader.name} · {chapter.type ? `${TYPE_LABEL[chapter.type]} 타입` : '여러 타입'} · 에이스 Lv{chapter.leader.aceLevel}</span>
         <span className="ml-auto text-[14px] text-accent">{gold.toLocaleString()}G</span>
         <span className="text-[13px] text-text-dim">배지 {badges.length}</span>
         <button type="button" onClick={onOpenBox} className={topBtn}>보관함</button>
@@ -154,11 +160,11 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, onExit, notice }: Pro
                 <h2 className="text-[20px] font-bold" style={{ color: NODE_INFO[selected.kind].color }}>
                   {selected.rival ? '라이벌' : selectedOpp && selected.kind !== 'wild' ? selectedOpp.name : NODE_INFO[selected.kind].label}
                 </h2>
-                <p className="mt-1 text-[13px] leading-5 text-text-dim">{NODE_INFO[selected.kind].desc}</p>
+                <p className="mt-1 text-[13px] leading-5 text-text-dim">{selected.kind === 'leader' ? leaderDesc : NODE_INFO[selected.kind].desc}</p>
                 {selectedOpp && selected.kind !== 'wild' && (
                   <p className="mt-1 text-[13px]">포켓몬 {selectedOpp.cards.length}마리 · 최고 Lv{Math.max(...selectedOpp.cards.map((c) => c.level))}</p>
                 )}
-                <p className="mt-1 text-[13px]"><span className="text-text-dim">보상 </span>{NODE_INFO[selected.kind].reward}</p>
+                <p className="mt-1 text-[13px]"><span className="text-text-dim">보상 </span>{selected.kind === 'leader' ? leaderReward : NODE_INFO[selected.kind].reward}</p>
                 <button
                   type="button"
                   onClick={go}

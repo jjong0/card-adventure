@@ -63,6 +63,7 @@ describe('상점', () => {
     for (const ch of chapters) {
       const list = shopTms(ch, tm, dex);
       expect(list).toHaveLength(3);
+      if (!ch.type) continue;
       for (const m of list) expect(dex.typeChart[m.move.type][ch.type]).toBe(2);
       expect(list.map((m) => m.move.power)).toEqual([...list.map((m) => m.move.power!)].sort((a, b) => a - b));
     }

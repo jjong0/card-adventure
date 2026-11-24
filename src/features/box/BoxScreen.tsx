@@ -31,7 +31,7 @@ export function BoxScreen() {
       const sp = dex.species[c.speciesId];
       return (!q || sp.name.includes(q)) && (type === 'all' || sp.types.includes(type));
     });
-    return sortCards(filtered, sort, dex, leader.type);
+    return sortCards(filtered, sort, dex, leader.type ?? undefined);
   }, [collection, query, type, sort, leader.type]);
 
   const byUid = new Map(collection.map((c) => [c.uid, c]));
@@ -81,7 +81,7 @@ export function BoxScreen() {
         </select>
         {sort === 'matchup' && (
           <span className="font-pixel text-[12px] text-text-dim">
-            {leader.leader.name}({TYPE_LABEL[leader.type]})에게 유리한 순
+            {leader.leader.name}({leader.type ? TYPE_LABEL[leader.type] : '여러 타입'})에게 유리한 순
           </span>
         )}
         <span className="ml-auto font-pixel text-[13px] text-text-dim">{shown.length} / {collection.length}계열</span>

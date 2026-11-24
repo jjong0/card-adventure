@@ -4,7 +4,7 @@
 import { create } from 'zustand';
 import { MAX_PARTY, sellCard, setParty as checkParty } from '../core/collection';
 import { adjustGold, DIFFICULTY, goldAfterLoss, levelCap } from '../core/difficulty';
-import { battleGold, nodeSeed, rewardPackLevel, type BattleKind, type Opponent, type StarterType } from '../core/encounter';
+import { battleGold, givesBadge, nodeSeed, rewardPackLevel, type BattleKind, type Opponent, type StarterType } from '../core/encounter';
 import { choiceCost, eventForNode, resolveChoice, type MapEvent } from '../core/events';
 import { addToCollection, CARDS_PER_PACK, createRng, openPack, type AddResult } from '../core/gacha';
 import { consumedHeldItems, equipHeldItem, ownedHeldItems, rollHeldItem, returnHeldItems, treasureChoices } from '../core/heldItems';
@@ -440,8 +440,9 @@ export const useGameStore = create<GameStore>((set, get) => {
       const ch = get().chapterData();
       const hasNext = chapters.some((c) => c.chapter === ch.chapter + 1);
       set({
-        badges: get().badges.includes(ch.leader.key) ? get().badges : [...get().badges, ch.leader.key],
-        tms: get().tms.includes(ch.rewardTm.moveId) ? get().tms : [...get().tms, ch.rewardTm.moveId],
+        // 배지는 체육관 관장만, 기술머신은 주는 챕터만 (사천왕·챔피언·레드는 둘 다 없음)
+        badges: !givesBadge(ch.chapter) || get().badges.includes(ch.leader.key) ? get().badges : [...get().badges, ch.leader.key],
+        tms: !ch.rewardTm || get().tms.includes(ch.rewardTm.moveId) ? get().tms : [...get().tms, ch.rewardTm.moveId],
         chapter: hasNext ? ch.chapter + 1 : ch.chapter,
         finished: !hasNext,
         mapNodeId: null,

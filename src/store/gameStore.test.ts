@@ -120,7 +120,7 @@ describe('팩과 파티', () => {
 
 describe('챕터 클리어', () => {
   it('배지와 관장 기술머신을 받고 다음 챕터 출발점으로, 마지막 챕터 뒤에는 끝', () => {
-    const tm1 = g().chapterData().rewardTm.moveId;
+    const tm1 = g().chapterData().rewardTm!.moveId;
     g().moveTo(g().map().floors[0][0].id);
     g().completeChapter();
     expect(g()).toMatchObject({ chapter: 2, badges: ['falkner'], mapNodeId: null, visitedNodes: [], finished: false });

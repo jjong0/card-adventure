@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { fixJosa } from '../core/battle';
 import { DIFFICULTY } from '../core/difficulty';
-import { nodeOpponent, rewardMinRarity, type BattleKind, type Opponent } from '../core/encounter';
+import { bossTitle, givesBadge, nodeOpponent, rewardMinRarity, type BattleKind, type Opponent } from '../core/encounter';
 import type { MapNode } from '../core/map';
 import type { BattleState } from '../core/types';
 import { BagPanel } from '../features/bag/BagPanel';
@@ -169,10 +169,14 @@ export function Game() {
       return (
         <div className="flex h-full flex-col items-center justify-center gap-5 text-center font-pixel">
           <h2 className="font-title text-[44px] text-accent">{ch.chapter}장 클리어!</h2>
-          <p className="text-[16px]">{fixJosa(`관장 ${ch.leader.name}을(를) 이기고 배지를 손에 넣었다.`)}</p>
-          <p className="text-[15px] text-text-dim">
-            {ch.rewardTm.name} <span className="text-text">{dex.moves[ch.rewardTm.moveId].name}</span>도 받았다. 가방에서 포켓몬에게 가르칠 수 있다.
+          <p className="text-[16px]">
+            {fixJosa(`${bossTitle(ch.chapter) ? `${bossTitle(ch.chapter)} ` : ''}${ch.leader.name}을(를) 이겼다!${givesBadge(ch.chapter) ? ' 배지를 손에 넣었다.' : ''}`)}
           </p>
+          {ch.rewardTm && (
+            <p className="text-[15px] text-text-dim">
+              {ch.rewardTm.name} <span className="text-text">{dex.moves[ch.rewardTm.moveId].name}</span>도 받았다. 가방에서 포켓몬에게 가르칠 수 있다.
+            </p>
+          )}
           <button
             type="button"
             autoFocus
@@ -207,9 +211,9 @@ export function Game() {
       if (game.finished) {
         return (
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center font-pixel">
-            <h2 className="font-title text-[40px] text-accent">여기까지!</h2>
+            <h2 className="font-title text-[40px] text-accent">모험 완료!</h2>
             <p className="text-[15px] leading-7 text-text-dim">
-              지금 준비된 챕터(1~2장)를 모두 끝냈다.<br />{DIFFICULTY[game.difficulty].label} · 배지 {game.badges.length}개 · 보관함 {game.collection.length}계열 · {game.gold.toLocaleString()}G
+              은빛산의 레드까지 모든 챕터를 끝냈다.<br />{DIFFICULTY[game.difficulty].label} · 배지 {game.badges.length}개 · 보관함 {game.collection.length}계열 · {game.gold.toLocaleString()}G
             </p>
             <div className="flex gap-2">
               <button type="button" onClick={() => setPhase({ name: 'box' })} className="rounded-lg bg-surface px-5 py-2 text-[15px] ring-1 ring-line hover:ring-accent">보관함 보기</button>
