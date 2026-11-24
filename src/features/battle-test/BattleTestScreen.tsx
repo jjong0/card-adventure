@@ -18,6 +18,9 @@ function movesFromUrl(): string[] {
   return slugs.map((s) => bySlug.get(s.trim())).filter((id): id is string => !!id).slice(0, 4);
 }
 
+/** 주소에 ?env=cave 처럼 장소를 주면 그 전투 배경 (field·forest·cave·water·snow·gym·league) */
+const envFromUrl = () => new URLSearchParams(window.location.search).get('env') ?? undefined;
+
 export function BattleTestScreen() {
   const start = useBattleStore((s) => s.start);
   const { collection, party: partyUids } = useGameStore();
@@ -37,7 +40,7 @@ export function BattleTestScreen() {
 
   return (
     <div className="relative h-full w-full">
-      <BattleScreen onEnd={restart} endLabel={{ win: '다시 하기', lose: '다시 하기' }} />
+      <BattleScreen onEnd={restart} endLabel={{ win: '다시 하기', lose: '다시 하기' }} env={envFromUrl()} />
       <div className="pointer-events-none absolute left-1/2 top-3 -translate-x-1/2 text-center font-pixel text-[12px] leading-5 text-text-dim">
         <p>테스트 전투 · 관장 비상</p>
       </div>
