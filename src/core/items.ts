@@ -2,10 +2,14 @@
 // 가방 아이템과 상점 (docs/spec.md §6): 회복약, 진화의돌, 기술머신, 그리고 HP 회복 규칙
 // 지닌 도구는 heldItems.ts.
 import { calcStats, typeEffectiveness } from './battle';
+import { HEAL_ITEMS, PP_ITEMS } from './bagItems';
 import { effectiveIvs } from './card';
-import { learnMoves } from './progress';
 import type { BattleKind } from './encounter';
+import { learnMoves } from './progress';
 import type { Card, ChapterData, Dex, Evolutions, TmData } from './types';
+
+// 약 목록은 전투 엔진과 함께 쓰려고 bagItems.ts에 둔다
+export { bagItemName, HEAL_ITEMS, PP_ITEMS, type HealItem, type PpItem } from './bagItems';
 
 /** 현재 HP 기록 (Card.uid → HP). 없는 카드는 가득 찬 것으로 본다 */
 export type HpMap = Record<string, number>;
@@ -18,39 +22,6 @@ export function hpOf(card: Card, hp: HpMap, dex: Pick<Dex, 'species'>): number {
   const max = maxHp(card, dex);
   return Math.min(max, hp[card.uid] ?? max);
 }
-
-// ── 회복약 (가격은 원작, spec §6) ──────────────────
-export interface HealItem {
-  id: string;
-  name: string;
-  price: number;
-  /** 회복량. revive는 쓰러진 포켓몬을 최대 HP의 절반으로 되살린다 */
-  heal: number | 'revive';
-}
-
-export const HEAL_ITEMS: HealItem[] = [
-  { id: 'potion', name: '상처약', price: 300, heal: 20 },
-  { id: 'super-potion', name: '좋은상처약', price: 700, heal: 50 },
-  { id: 'hyper-potion', name: '고급상처약', price: 1200, heal: 200 },
-  { id: 'revive', name: '기력의조각', price: 1500, heal: 'revive' },
-];
-
-// ── PP 회복약 (이름·효과는 원작. 상점에서는 팔지 않고 승리 보상으로만 나온다) ──
-export interface PpItem {
-  id: string;
-  name: string;
-  /** 회복량 (null = 전부) */
-  restore: number | null;
-  /** 기술 1개(true) / 장착한 기술 전부(false) */
-  single: boolean;
-}
-
-export const PP_ITEMS: PpItem[] = [
-  { id: 'ether', name: 'PP에이드', restore: 10, single: true },
-  { id: 'max-ether', name: 'PP회복', restore: null, single: true },
-  { id: 'elixir', name: 'PP에이더', restore: 10, single: false },
-  { id: 'max-elixir', name: 'PP맥스', restore: null, single: false },
-];
 
 /** 전투 사이에 이어지는 PP (Card.uid → 기술 id → 남은 PP). 기록이 없는 기술은 가득 찬 것으로 본다 */
 export type PpMap = Record<string, Record<string, number>>;
@@ -109,11 +80,6 @@ export function rewardItems(kind: BattleKind, rng: () => number): string[] {
     const i = weights.findIndex((w) => (r -= w) < 0);
     return REWARD_ITEM_IDS[i === -1 ? weights.length - 1 : i];
   });
-}
-
-/** 회복약·PP 회복약 이름 */
-export function bagItemName(id: string): string {
-  return HEAL_ITEMS.find((i) => i.id === id)?.name ?? PP_ITEMS.find((i) => i.id === id)?.name ?? id;
 }
 
 export type HealError = 'unknown-item' | 'fainted' | 'full' | 'not-fainted';
