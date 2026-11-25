@@ -441,3 +441,20 @@ describe('가방 약', () => {
     expect(s.player.party[0].pp[tackle]).toBe(10);
   });
 });
+
+describe('반동 (파괴광선류)', () => {
+  it('맞히면 다음 턴 움직일 수 없고, 그다음 턴에는 다시 움직인다', () => {
+    // 명중 90이라 맞는 시드를 찾는다
+    let s = findTurn(() => createBattle([card('149', 60, ['hyper-beam', 'splash'])], [card('143', 80, ['splash'])], dex, 1), { kind: 'move', moveId: moveId('hyper-beam') }, (x) => x.player.party[0].mustRecharge);
+    const hp = s.enemy.party[0].currentHp;
+    s = battle(s, { kind: 'move', moveId: moveId('hyper-beam') }, dex);
+    expect(s.log.some((l) => l.includes('반동으로 움직일 수 없다'))).toBe(true);
+    expect(s.enemy.party[0].currentHp).toBe(hp);
+    expect(s.player.party[0].mustRecharge).toBe(false);
+  });
+
+  it('AI는 쓰러뜨릴 수 없으면 파괴광선을 연발하지 않는다 (기대 데미지 절반으로 계산)', () => {
+    const s = createBattle([card('143', 100, ['splash'])], [card('149', 50, ['hyper-beam', 'dragon-claw'])], dex, 1);
+    expect(chooseEnemyAction(s, dex)).toEqual({ kind: 'move', moveId: moveId('dragon-claw') });
+  });
+});

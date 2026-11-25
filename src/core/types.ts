@@ -150,6 +150,8 @@ export interface BattleMon {
   facedBy: number[];                          // 이 포켓몬과 마주한 상대 파티 idx (경험치 분배용)
   item: string | null;                        // 지금 지닌 도구 (열매·기합의띠는 쓰면 null)
   choiceLock: string | null;                  // 구애 도구로 고정된 기술 (교체하면 풀림)
+  /** 파괴광선류를 맞힌 다음 턴: 반동으로 움직일 수 없다 */
+  mustRecharge: boolean;
 }
 
 export type Side = 'player' | 'enemy';

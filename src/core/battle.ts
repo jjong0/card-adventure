@@ -130,6 +130,7 @@ export function createBattleMon(card: Card, dex: Dex): BattleMon {
     facedBy: [],
     item: card.heldItem,
     choiceLock: null,
+    mustRecharge: false,
   };
 }
 
@@ -274,6 +275,7 @@ const EFFECT = {
   PSYWAVE: 89,            // 사이코웨이브
   MAGNITUDE: 127,         // 매그니튜드
   TOXIC: 34,              // 맹독 (meta.ailment는 poison으로 들어옴)
+  RECHARGE: 81,           // 파괴광선·기가임팩트 등: 맞히면 다음 턴 움직일 수 없다
 } as const;
 
 /**
@@ -431,6 +433,12 @@ function changeStage(mon: BattleMon, stat: BattleStat, delta: number, rec: Recor
 
 /** 행동 전 체크: 행동 가능하면 true */
 function canAct(mon: BattleMon, move: Move, rng: Rng, rec: Recorder): boolean {
+  // 반동 턴은 다른 무엇보다 먼저 소모된다 (잠듦·혼란 판정도 하지 않음)
+  if (mon.mustRecharge) {
+    mon.mustRecharge = false;
+    rec.say(`${mon.name}은(는) 공격의 반동으로 움직일 수 없다!`);
+    return false;
+  }
   if (mon.ailment === 'sleep') {
     if (mon.sleepTurns > 0) {
       mon.sleepTurns--;
@@ -770,6 +778,8 @@ function useMove(state: BattleState, side: Side, moveId: string, dex: Dex, rng: 
     }
   }
   target.lastHit = { damage: total, category: move.category };
+  // 파괴광선류: 맞혔으면 다음 턴 반동 (빗나가거나 무효면 반동 없음, 4세대 이후)
+  if (move.effectId === EFFECT.RECHARGE && landed > 0) user.mustRecharge = true;
 
   if (!isStruggle) {
     if (effectiveness > 1) rec.say('효과가 굉장했다!');
@@ -880,6 +890,7 @@ function switchIn(side: BattleSide, idx: number, who: Side, rec: Recorder) {
   out.confusedTurns = 0;
   out.toxicCounter = 0;
   out.choiceLock = null;
+  out.mustRecharge = false;
   side.activeIdx = idx;
   rec.emit({ type: 'switchIn', side: who, idx });
   const name = side.party[idx].name;
@@ -1075,7 +1086,9 @@ export function chooseEnemyAction(state: BattleState, dex: Dex): BattleAction {
         stab: me.types.includes(mv.type), effectiveness: eff,
         crit: false, burned: physical && me.ailment === 'burn', randomRoll: 92,
       }) * ((mv.accuracy ?? 100) / 100);
-      score = eff === 0 ? -2 : expected >= foe.currentHp ? 10000 + expected : expected;
+      // 반동이 있는 기술은 두 턴에 한 번 치는 셈이라, 쓰러뜨릴 수 없으면 기대 데미지를 절반으로 본다
+      const perTurn = mv.effectId === EFFECT.RECHARGE ? expected / 2 : expected;
+      score = eff === 0 ? -2 : expected >= foe.currentHp ? 10000 + expected : perTurn;
     }
     if (score > bestScore) {
       bestScore = score;
