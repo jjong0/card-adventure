@@ -14,7 +14,7 @@ export interface DifficultyRule {
   ai: AiLevel;
   /** 관장 파티: 원작 / 원작 + 재대결 1마리 / 재대결 파티 */
   leaderParty: 'story' | 'story+1' | 'rematch';
-  /** 레벨 캡: 없음 / 다음 관장 에이스 / 관장 에이스 −2 */
+  /** 레벨 캡: 없음 / 이번 관장 에이스(난이도 레벨 보정 포함) / 관장 에이스 −2 */
   levelCap: 'none' | 'leader-ace' | 'leader-ace-2';
   goldRate: number;
   /** 휴식 회복 비율 (최대 HP 대비) */
@@ -28,10 +28,13 @@ export interface DifficultyRule {
 export const DIFFICULTY: Record<Difficulty, DifficultyRule> = {
   easy: { label: '쉬움', levelOffset: -2, ivs: [0, 15], ai: 'random', leaderParty: 'story', levelCap: 'none', goldRate: 1.5, restHeal: 1, leaderItems: true, lossGold: 0 },
   normal: { label: '보통', levelOffset: 0, ivs: 'original', ai: 'basic', leaderParty: 'story', levelCap: 'none', goldRate: 1, restHeal: 1, leaderItems: true, lossGold: 0 },
-  hard: { label: '어려움', levelOffset: 3, ivs: [20, 31], ai: 'basic', leaderParty: 'story+1', levelCap: 'leader-ace', goldRate: 0.8, restHeal: 0.5, leaderItems: true, lossGold: 0.5 },
-  // 익스트림: spec 초안은 Lv+5·캡 에이스−2였지만, 재대결 6마리 관장(개체값 31)과 겹쳐 사실상 클리어할 수 없었다
-  // (밸런스 봇 30판 0클리어). 사용자 결정으로 레벨 보정과 캡을 풀고 관장 파티·개체값으로 어렵게 한다.
-  extreme: { label: '익스트림', levelOffset: 0, ivs: [31, 31], ai: 'basic', leaderParty: 'rematch', levelCap: 'none', goldRate: 0.6, restHeal: 0.3, leaderItems: false, lossGold: 1 },
+  // 어려움·익스트림은 상대가 전략적으로 싸우는 것으로 구분한다 (ai.ts, 2026-11-25 사용자 결정).
+  // 어려움 = 예전 익스트림 값(재대결 6마리 관장, 개체값 31, 레벨 캡 없음) + 교체·변화기를 쓰는 AI.
+  //   예전 어려움(+3 레벨, 관장 에이스 캡)은 캡 때문에 레벨로 따라잡을 수 없어 익스트림보다 어려웠다.
+  // 익스트림 = 어려움 + 한 수 앞을 읽는 AI + 상대 레벨 +1. 목표는 레드까지 클리어 약 30%.
+  //   밸런스 봇 60판: 어려움 35%, 익스트림 25% (레벨 +0이면 33%로 어려움과 비슷해 +1).
+  hard: { label: '어려움', levelOffset: 0, ivs: [31, 31], ai: 'smart', leaderParty: 'rematch', levelCap: 'none', goldRate: 0.6, restHeal: 0.3, leaderItems: false, lossGold: 1 },
+  extreme: { label: '익스트림', levelOffset: 1, ivs: [31, 31], ai: 'expert', leaderParty: 'rematch', levelCap: 'none', goldRate: 0.6, restHeal: 0.3, leaderItems: false, lossGold: 1 },
 };
 
 export const DIFFICULTIES: Difficulty[] = ['easy', 'normal', 'hard', 'extreme'];
@@ -70,12 +73,12 @@ export function scaleRematch(rematch: TrainerMon[], storyAce: number): TrainerMo
 }
 
 /**
- * 난이도별 관장 파티 (레벨 보정 전). 재대결 파티가 없는 관장(레드)은 스토리 파티 그대로.
- * - 어려움: 스토리 파티 + 재대결 파티에서 가장 강한 1마리(스케일)
- * - 익스트림: 재대결 파티 전체(스케일)
+ * 관장 파티 (레벨 보정 전). 재대결 파티가 없는 관장(레드)은 스토리 파티 그대로.
+ * - story: 원작 스토리 파티 (쉬움·보통)
+ * - story+1: 스토리 파티 + 재대결 파티에서 가장 강한 1마리(스케일) (지금은 쓰는 난이도 없음)
+ * - rematch: 재대결 파티 전체(스케일) (어려움·익스트림)
  */
-export function leaderTrainer(story: Trainer, rematch: Trainer | undefined, difficulty: Difficulty): Trainer {
-  const mode = DIFFICULTY[difficulty].leaderParty;
+export function leaderTrainer(story: Trainer, rematch: Trainer | undefined, mode: DifficultyRule['leaderParty']): Trainer {
   if (mode === 'story' || !rematch) return story;
   const scaled = scaleRematch(rematch.party, maxLevel(story.party));
   if (mode === 'rematch') return { ...story, party: scaled };
@@ -86,13 +89,20 @@ export function leaderTrainer(story: Trainer, rematch: Trainer | undefined, diff
 
 /**
  * 레벨 캡 (spec §4.5, §5.3). 캡에 닿으면 경험치가 더 쌓이지 않는다. 없으면 100.
- * - 어려움: 이번 챕터 관장 에이스 Lv (그 관장을 넘어서까지 키울 수 없다)
- * - 익스트림: 관장 에이스 Lv − 2
+ * - 어려움: 이번 챕터 관장 에이스 Lv + 난이도 레벨 보정(+3). 실제로 만나는 관장 에이스까지만 키울 수 있다.
+ *   (원작 에이스 Lv로 캡을 두면 같은 +3을 받은 일반 트레이너보다 낮게 묶여, 3~4장부터 레벨로 따라잡을 수 없었다.
+ *   밸런스 봇 어려움 10판 중 4장을 넘은 판이 0)
+ * - 익스트림: 관장 에이스 Lv − 2 (지금은 쓰지 않음)
  */
 export function levelCap(chapter: ChapterData, difficulty: Difficulty): number {
-  const cap = DIFFICULTY[difficulty].levelCap;
-  if (cap === 'none') return MAX_LEVEL;
-  return cap === 'leader-ace' ? chapter.leader.aceLevel : chapter.leader.aceLevel - 2;
+  return capFor(chapter, DIFFICULTY[difficulty]);
+}
+
+/** 레벨 캡 규칙 계산 (지금은 모든 난이도가 캡 없음. 규칙 자체는 남겨 두고 직접 테스트한다) */
+export function capFor(chapter: ChapterData, rule: Pick<DifficultyRule, 'levelCap' | 'levelOffset'>): number {
+  if (rule.levelCap === 'none') return MAX_LEVEL;
+  const ace = chapter.leader.aceLevel + rule.levelOffset;
+  return clampLevel(rule.levelCap === 'leader-ace' ? ace : ace - 2);
 }
 
 export function adjustGold(gold: number, difficulty: Difficulty): number {

@@ -141,7 +141,7 @@ export function nodeOpponent(node: MapNode, ctx: EncounterContext, dex: Encounte
       const story = byIndex(chapter.leader.trainerIndex);
       const rematch = trainers.find((t) => t.key === story.key && t.battle === 'rematch');
       const title = bossTitle(chapter.chapter);
-      return fromTrainer(leaderTrainer(story, rematch, difficulty), 'leader', title ? `${title} ${story.name}` : story.name);
+      return fromTrainer(leaderTrainer(story, rematch, DIFFICULTY[difficulty].leaderParty), 'leader', title ? `${title} ${story.name}` : story.name);
     }
     default:
       return null;

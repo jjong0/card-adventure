@@ -326,7 +326,7 @@ describe('저장과 불러오기', () => {
 });
 
 describe('난이도와 챌린지', () => {
-  it('골드: 쉬움 ×1.5, 패배하면 어려움은 절반을 잃는다', () => {
+  it('골드: 쉬움 ×1.5, 패배하면 어려움은 전부 잃는다', () => {
     start('easy');
     const op = enterFirst('wild');
     const won = { ...createBattle(g().partyCards(), op.cards, dex, 1, { wild: true }), result: 'win' as const };
@@ -334,15 +334,15 @@ describe('난이도와 챌린지', () => {
     start('hard');
     useGameStore.setState({ gold: 1001 });
     g().restartChapter();
-    expect(g().gold).toBe(500);
+    expect(g().gold).toBe(0);
   });
 
-  it('휴식 회복: 어려움은 최대 HP의 50%만', () => {
+  it('휴식 회복: 어려움은 최대 HP의 30%만', () => {
     start('hard');
     const uid = g().party[0];
     useGameStore.setState({ hp: { [uid]: 0 } });
     g().restHeal();
-    expect(g().hp[uid]).toBe(Math.ceil(maxHp(g().collection[0], dex) * 0.5));
+    expect(g().hp[uid]).toBe(Math.ceil(maxHp(g().collection[0], dex) * 0.3));
   });
 
   it('너즐록: 쓰러진 파티 포켓몬은 보관함에서 사라지고, 하나도 안 남으면 게임 오버', () => {

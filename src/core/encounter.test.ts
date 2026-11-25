@@ -122,18 +122,20 @@ describe('지도 노드의 상대', () => {
     expect([rewardMinRarity('wild'), rewardMinRarity('trainer'), rewardMinRarity('elite'), rewardMinRarity('leader')]).toEqual([undefined, undefined, 'R', 'SR']);
   });
 
-  it('난이도: 트레이너 레벨 보정, 쉬움은 무작위 AI, 어려움 관장은 1마리 더, 야생은 레벨만', () => {
+  it('난이도: 트레이너 레벨 보정, AI 수준, 어려움·익스트림 관장은 재대결 6마리, 야생은 레벨만', () => {
     const lv = (d: Difficulty) => opp(node('leader', 10), 1, 'fire', d).cards.map((c) => c.level);
     expect(lv('normal')).toEqual([9, 13]);
     expect(lv('easy')).toEqual([7, 11]);
-    expect(lv('hard')).toEqual([12, 16, 16]); // 원작 2마리 + 재대결 에이스(Lv13으로 스케일) 모두 +3
-    expect(opp(node('trainer'), 1, 'fire', 'easy').ai).toBe('random');
-    expect(opp(node('trainer'), 1, 'fire', 'normal').ai).toBe('basic');
+    const hard = lv('hard'); // 재대결 6마리를 스토리 에이스 Lv13에 맞춰 스케일
+    expect(hard).toHaveLength(6);
+    expect(Math.max(...hard)).toBe(13);
+    expect(lv('extreme')).toEqual(hard.map((l) => l + 1));
+    expect(['easy', 'normal', 'hard', 'extreme'].map((d) => opp(node('trainer'), 1, 'fire', d as Difficulty).ai)).toEqual(['random', 'basic', 'smart', 'expert']);
     const wN = opp(node('wild'), 1, 'fire', 'normal').cards[0];
-    const wE = opp(node('wild'), 1, 'fire', 'hard').cards[0];
-    expect(wE.speciesId).toBe(wN.speciesId);
-    expect(wE.level).toBe(wN.level + 3);
-    expect(wE.ivBase).toEqual(wN.ivBase); // 야생 개체값은 난이도와 무관
+    const wX = opp(node('wild'), 1, 'fire', 'extreme').cards[0];
+    expect(wX.speciesId).toBe(wN.speciesId);
+    expect(wX.level).toBe(wN.level + 1);
+    expect(wX.ivBase).toEqual(wN.ivBase); // 야생 개체값은 난이도와 무관
   });
 
   it('보상 팩 카드 레벨: 상대 최고 레벨 − 2, 챕터 야생 최고 레벨 이상, 레벨 캡 이하', () => {
@@ -141,15 +143,15 @@ describe('지도 노드의 상대', () => {
     expect(rewardPackLevel(leader, ch1, 'normal')).toBe(11);
     const wild = opp(node('wild', 1));
     expect(rewardPackLevel(wild, ch1, 'normal')).toBe(ch1.packLevel); // 야생 Lv2~4 → 야생 최고 Lv6
-    const hardLeader = opp(node('leader', 10), 1, 'fire', 'hard'); // 에이스 Lv16
-    expect(rewardPackLevel(hardLeader, ch1, 'hard')).toBe(13); // 16 − 2 = 14지만 레벨 캡 13
+    const extremeLeader = opp(node('leader', 10), 1, 'fire', 'extreme'); // 에이스 Lv14
+    expect(rewardPackLevel(extremeLeader, ch1, 'extreme')).toBe(12); // 14 − 2
   });
 
   it('1층 야생은 난이도 레벨 보정을 받지 않는다 (피할 수 없는 첫 전투)', () => {
     for (let seed = 1; seed <= 50; seed++) {
-      expect(opp(node('wild', 1), seed, 'fire', 'hard').cards[0].level).toBe(opp(node('wild', 1), seed, 'fire', 'normal').cards[0].level);
+      expect(opp(node('wild', 1), seed, 'fire', 'extreme').cards[0].level).toBe(opp(node('wild', 1), seed, 'fire', 'normal').cards[0].level);
     }
     const lv = (d: Difficulty) => opp(node('wild', 2), 3, 'fire', d).cards[0].level;
-    expect(lv('hard')).toBe(lv('normal') + 3);
+    expect(lv('extreme')).toBe(lv('normal') + 1);
   });
 });

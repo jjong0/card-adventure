@@ -11,8 +11,8 @@ const COLOR: Record<Difficulty, string> = { easy: '#5CC98B', normal: '#4FA3F7', 
 const BLURB: Record<Difficulty, string> = {
   easy: '카드 모으기를 즐기고 싶을 때',
   normal: '원작 그대로의 레벨과 파티',
-  hard: '관장이 한 마리 더, 레벨 캡이 있다',
-  extreme: '관장이 재대결 파티로 나온다',
+  hard: '상대가 교체와 변화기를 쓴다',
+  extreme: '상대가 한 수 앞을 읽는다',
 };
 
 function rows(d: Difficulty): [string, string][] {
@@ -22,7 +22,6 @@ function rows(d: Difficulty): [string, string][] {
     ['상대 개체값', r.ivs === 'original' ? '원작' : r.ivs[0] === r.ivs[1] ? `${r.ivs[0]}` : `${r.ivs[0]}~${r.ivs[1]}`],
     ['트레이너 AI', AI_LABEL[r.ai]],
     ['관장 파티', r.leaderParty === 'story' ? '원작' : r.leaderParty === 'story+1' ? '원작 + 재대결 1마리' : '재대결 6마리'],
-    ['레벨 캡', r.levelCap === 'none' ? '없음' : r.levelCap === 'leader-ace' ? '관장 에이스 Lv' : '관장 에이스 Lv −2'],
     ['골드 보상', `×${r.goldRate}`],
     ['휴식 회복', r.restHeal === 1 ? '전부' : `HP ${r.restHeal * 100}%`],
     ['패배하면', r.lossGold === 0 ? '챕터 재시작' : r.lossGold === 1 ? '+ 골드 전부 잃음' : '+ 골드 절반 잃음'],
