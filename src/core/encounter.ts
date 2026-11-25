@@ -5,7 +5,7 @@ import { defaultEquip, learnableUpTo } from './card';
 import { adjustOpponent, DIFFICULTY, leaderTrainer, levelCap } from './difficulty';
 import { createCard, createRng, lineRootOf, type Rng } from './gacha';
 import type { MapNode } from './map';
-import type { Card, ChapterData, Difficulty, Learnsets, Move, Rarity, Species, Stats, Trainer } from './types';
+import type { AiLevel, Card, ChapterData, Difficulty, Learnsets, Move, Rarity, Species, Stats, Trainer } from './types';
 
 export interface EncounterDex {
   species: Record<string, Species>;
@@ -59,7 +59,7 @@ export interface Opponent {
   trainerClass?: string;
   rival?: boolean;
   /** 상대가 기술을 무작위로 고른다 (야생, 쉬움) */
-  randomAi: boolean;
+  ai: AiLevel;
   cards: Card[];
 }
 
@@ -110,9 +110,9 @@ export function nodeOpponent(node: MapNode, ctx: EncounterContext, dex: Encounte
   const { totalFloors, chapter, trainers, starterType, difficulty, seed } = ctx;
   const rng = createRng(nodeSeed(seed, chapter.chapter, node));
   const byIndex = (i: number) => trainers.find((t) => t.index === i)!;
-  const randomAi = DIFFICULTY[difficulty].randomAi;
+  const ai = DIFFICULTY[difficulty].ai;
   const fromTrainer = (t: Trainer, kind: BattleKind, name = t.name): Opponent => ({
-    kind, name, trainerClass: t.class, randomAi, cards: adjustOpponent(trainerCards(t, dex), difficulty, rng),
+    kind, name, trainerClass: t.class, ai, cards: adjustOpponent(trainerCards(t, dex), difficulty, rng),
   });
 
   switch (node.kind) {
@@ -122,7 +122,7 @@ export function nodeOpponent(node: MapNode, ctx: EncounterContext, dex: Encounte
       const base = wildCard(chapter, dex, rng, { noGhost: node.floor === 1 });
       // 1층 야생은 피할 수 없는 첫 전투라 난이도 레벨 보정을 하지 않는다 (어려움 +3이면 Lv6 스타터가 Lv7~8에게 계속 졌다)
       const [card] = node.floor === 1 ? [base] : adjustOpponent([base], difficulty, rng).map((c) => ({ ...c, ivBase: base.ivBase }));
-      return { kind: 'wild', name: `야생 ${dex.species[card.speciesId].name}`, randomAi: true, cards: [card] };
+      return { kind: 'wild', name: `야생 ${dex.species[card.speciesId].name}`, ai: 'random', cards: [card] };
     }
     case 'trainer': {
       const pool = chapter.trainers.map(byIndex).sort((a, b) => maxLevel(a) - maxLevel(b) || a.index - b.index);

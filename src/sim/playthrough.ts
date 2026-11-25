@@ -242,7 +242,7 @@ export function playthrough(difficulty: Difficulty, seed: number, maxRestarts = 
         stat.topLevel = Math.max(...g().partyCards().map((c) => c.level));
         stat.partySize = g().party.length;
       }
-      const start = createBattle(g().partyCards(), op.cards, dex, g().nextSeed(), { playerHp: g().hp, playerPp: g().pp, wild: op.kind === 'wild', randomAi: op.randomAi });
+      const start = createBattle(g().partyCards(), op.cards, dex, g().nextSeed(), { playerHp: g().hp, playerPp: g().pp, wild: op.kind === 'wild', ai: op.ai });
       const end = fight(start);
       stat.battles++;
       const settled = g().settleBattle(end, op);

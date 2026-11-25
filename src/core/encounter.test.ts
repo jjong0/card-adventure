@@ -127,8 +127,8 @@ describe('지도 노드의 상대', () => {
     expect(lv('normal')).toEqual([9, 13]);
     expect(lv('easy')).toEqual([7, 11]);
     expect(lv('hard')).toEqual([12, 16, 16]); // 원작 2마리 + 재대결 에이스(Lv13으로 스케일) 모두 +3
-    expect(opp(node('trainer'), 1, 'fire', 'easy').randomAi).toBe(true);
-    expect(opp(node('trainer'), 1, 'fire', 'normal').randomAi).toBe(false);
+    expect(opp(node('trainer'), 1, 'fire', 'easy').ai).toBe('random');
+    expect(opp(node('trainer'), 1, 'fire', 'normal').ai).toBe('basic');
     const wN = opp(node('wild'), 1, 'fire', 'normal').cards[0];
     const wE = opp(node('wild'), 1, 'fire', 'hard').cards[0];
     expect(wE.speciesId).toBe(wN.speciesId);

@@ -84,7 +84,7 @@ export function Game() {
     // 익스트림은 관장전에서 가방을 쓸 수 없다 (spec §5.3)
     const itemsAllowed = opponent.kind !== 'leader' || DIFFICULTY[game.difficulty].leaderItems;
     startBattle(game.partyCards(), opponent.cards, game.nextSeed(), {
-      playerHp: game.hp, playerPp: game.pp, wild: opponent.kind === 'wild', randomAi: opponent.randomAi, itemsAllowed,
+      playerHp: game.hp, playerPp: game.pp, wild: opponent.kind === 'wild', ai: opponent.ai, itemsAllowed,
     });
     setPhase({ name: 'battle', opponent });
   };

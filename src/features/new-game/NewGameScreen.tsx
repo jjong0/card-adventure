@@ -5,6 +5,8 @@ import { DIFFICULTIES, DIFFICULTY } from '../../core/difficulty';
 import type { Difficulty } from '../../core/types';
 import type { Challenges } from '../../store/gameStore';
 
+const AI_LABEL = { random: '무작위 기술', basic: '가장 센 기술', smart: '교체·변화기를 씀', expert: '한 수 앞을 읽음' } as const;
+
 const COLOR: Record<Difficulty, string> = { easy: '#5CC98B', normal: '#4FA3F7', hard: '#F2795A', extreme: '#B27CF2' };
 const BLURB: Record<Difficulty, string> = {
   easy: '카드 모으기를 즐기고 싶을 때',
@@ -18,7 +20,7 @@ function rows(d: Difficulty): [string, string][] {
   return [
     ['상대 레벨', r.levelOffset === 0 ? '원작' : `원작 ${r.levelOffset > 0 ? '+' : '−'}${Math.abs(r.levelOffset)}`],
     ['상대 개체값', r.ivs === 'original' ? '원작' : r.ivs[0] === r.ivs[1] ? `${r.ivs[0]}` : `${r.ivs[0]}~${r.ivs[1]}`],
-    ['트레이너 AI', r.randomAi ? '무작위 기술' : '가장 센 기술'],
+    ['트레이너 AI', AI_LABEL[r.ai]],
     ['관장 파티', r.leaderParty === 'story' ? '원작' : r.leaderParty === 'story+1' ? '원작 + 재대결 1마리' : '재대결 6마리'],
     ['레벨 캡', r.levelCap === 'none' ? '없음' : r.levelCap === 'leader-ace' ? '관장 에이스 Lv' : '관장 에이스 Lv −2'],
     ['골드 보상', `×${r.goldRate}`],

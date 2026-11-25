@@ -3,6 +3,7 @@
 // 데미지 공식·랭크·급소·상태이상은 5세대 이후 원작 기준 (날씨·특성·필드는 미구현)
 // 지닌 도구 효과 수치는 heldItems.ts
 import { effectiveIvs } from './card';
+import { smartEnemyAction } from './ai';
 import { HEAL_ITEMS, PP_ITEMS } from './bagItems';
 import { createRng } from './gacha';
 import {
@@ -10,7 +11,7 @@ import {
   hpBerryAmount, powerMultiplier, resistBerryTriggers, speedMultiplier, usableMoves,
 } from './heldItems';
 import type {
-  BattleAction, BattleEvent, BattleMon, BattleSide, BattleStat, BattleState, Card, Dex,
+  AiLevel, BattleAction, BattleEvent, BattleMon, BattleSide, BattleStat, BattleState, Card, Dex,
   ElementType, Move, MoveCategory, Side, Stats,
 } from './types';
 
@@ -150,8 +151,8 @@ export interface BattleOptions {
   playerPp?: Record<string, Record<string, number>>;
   /** 야생전: 등장 문구가 다르다. 야생 포켓몬은 늘 기술을 무작위로 고른다 (spec §5.3) */
   wild?: boolean;
-  /** 상대가 기술을 무작위로 고른다 (야생, 쉬움 난이도 트레이너) */
-  randomAi?: boolean;
+  /** 상대 AI 수준 (기본 basic). 야생은 늘 random */
+  ai?: AiLevel;
   /** 가방 약을 쓸 수 있는지 (기본 true, 익스트림 관장전은 false) */
   itemsAllowed?: boolean;
 }
@@ -173,7 +174,8 @@ export function createBattle(playerCards: Card[], enemyCards: Card[], dex: Dex, 
     turn: 1,
     seed,
     wild: !!opts.wild,
-    randomAi: !!(opts.randomAi || opts.wild),
+    ai: opts.wild ? 'random' : opts.ai ?? 'basic',
+    enemySwitchTurn: 0,
     itemsAllowed: opts.itemsAllowed ?? true,
     itemsUsed: [],
     player: { party: player, activeIdx: lead },
@@ -991,7 +993,7 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
 
   const order: Resolved[] = [
     { side: 'player', action },
-    { side: 'enemy', action: state.randomAi ? randomEnemyAction(state, dex, rng) : chooseEnemyAction(state, dex) },
+    { side: 'enemy', action: enemyAction(state, dex, rng) },
   ];
   // 선제공격손톱: 20%로 같은 우선도 안에서 먼저 움직인다 (지닌 경우에만 난수를 쓴다)
   const quick = new Set<Side>();
@@ -1019,8 +1021,10 @@ export function battle(prev: BattleState, action: BattleAction, dex: Dex): Battl
     if (state.result !== 'ongoing') break;
     const me = active(state[side]);
     if (me !== actors[i] || me.currentHp <= 0) continue;
-    if (act.kind === 'switch') switchIn(state[side], act.toIdx, side, rec);
-    else if (act.kind === 'item') useBagItem(state, act, dex, rec);
+    if (act.kind === 'switch') {
+      switchIn(state[side], act.toIdx, side, rec);
+      if (side === 'enemy') state.enemySwitchTurn = state.turn;
+    } else if (act.kind === 'item') useBagItem(state, act, dex, rec);
     else useMove(state, side, act.moveId, dex, rng, rec);
     checkBerries(active(state.player), dex, rec);
     checkBerries(active(state.enemy), dex, rec);
@@ -1058,6 +1062,31 @@ function randomEnemyAction(state: BattleState, dex: Dex, rng: Rng): BattleAction
   return { kind: 'move', moveId: usable[Math.floor(rng() * usable.length)] };
 }
 
+/**
+ * 기대 데미지 (AI용 어림): 난수 92, 급소 없음, 명중률을 곱한다. 위력 가변 기술은 60으로 본다.
+ * 무효면 0. 반동 기술의 절반 계산 등은 고르는 쪽에서.
+ */
+export function expectedDamage(user: BattleMon, target: BattleMon, mv: Move, dex: Dex): number {
+  if (mv.category === 'status') return 0;
+  const eff = typeEffectiveness(mv.type, target.types, dex);
+  if (eff === 0) return 0;
+  const physical = mv.category === 'physical';
+  return calcDamage({
+    level: user.card.level, power: mv.power ?? 60,
+    attack: user.stats[physical ? 'atk' : 'spAtk'],
+    defense: target.stats[physical ? 'def' : 'spDef'],
+    stab: user.types.includes(mv.type), effectiveness: eff,
+    crit: false, burned: physical && user.ailment === 'burn', randomRoll: 92,
+  }) * ((mv.accuracy ?? 100) / 100);
+}
+
+/** 상대 행동: AI 수준에 따라 (smart·expert는 ai.ts) */
+function enemyAction(state: BattleState, dex: Dex, rng: Rng): BattleAction {
+  if (state.ai === 'random') return randomEnemyAction(state, dex, rng);
+  if (state.ai === 'basic') return chooseEnemyAction(state, dex);
+  return smartEnemyAction(state, dex, state.ai);
+}
+
 export function chooseEnemyAction(state: BattleState, dex: Dex): BattleAction {
   const me = active(state.enemy);
   const foe = active(state.player);
@@ -1076,16 +1105,8 @@ export function chooseEnemyAction(state: BattleState, dex: Dex): BattleAction {
       const wasted = mv.meta?.ailment !== 'none' && foe.ailment !== 'none';
       score = wasted ? -3 : -1;
     } else {
-      const power = mv.power ?? 60;
-      const physical = mv.category === 'physical';
       const eff = typeEffectiveness(mv.type, foe.types, dex);
-      const expected = calcDamage({
-        level: me.card.level, power,
-        attack: me.stats[physical ? 'atk' : 'spAtk'],
-        defense: foe.stats[physical ? 'def' : 'spDef'],
-        stab: me.types.includes(mv.type), effectiveness: eff,
-        crit: false, burned: physical && me.ailment === 'burn', randomRoll: 92,
-      }) * ((mv.accuracy ?? 100) / 100);
+      const expected = expectedDamage(me, foe, mv, dex);
       // 반동이 있는 기술은 두 턴에 한 번 치는 셈이라, 쓰러뜨릴 수 없으면 기대 데미지를 절반으로 본다
       const perTurn = mv.effectId === EFFECT.RECHARGE ? expected / 2 : expected;
       score = eff === 0 ? -2 : expected >= foe.currentHp ? 10000 + expected : perTurn;

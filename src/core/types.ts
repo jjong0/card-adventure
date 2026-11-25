@@ -156,6 +156,15 @@ export interface BattleMon {
 
 export type Side = 'player' | 'enemy';
 
+/**
+ * 상대 AI 수준 (spec §5.3, ai.ts)
+ * - random: PP가 남은 기술 중 무작위 (야생, 쉬움)
+ * - basic: 기대 데미지가 가장 큰 기술 (보통)
+ * - smart: 불리하면 교체, 쓸모 있을 때 변화기, 선공기로 마무리 (어려움)
+ * - expert: smart + 스피드와 "먼저 쓰러뜨릴 수 있는지"를 읽고 가장 안전한 수 (익스트림)
+ */
+export type AiLevel = 'random' | 'basic' | 'smart' | 'expert';
+
 export interface BattleSide {
   party: BattleMon[];
   activeIdx: number;
@@ -166,8 +175,10 @@ export interface BattleState {
   seed: number;
   /** 야생전: 등장 문구가 다르고, 경험치 배율이 1 */
   wild: boolean;
-  /** 상대가 기술을 무작위로 고른다 (야생, 쉬움 난이도) */
-  randomAi: boolean;
+  /** 상대 AI 수준 (야생은 늘 random) */
+  ai: AiLevel;
+  /** 상대가 마지막으로 교체한 턴 (AI가 교체를 연달아 하지 않게) */
+  enemySwitchTurn: number;
   /** 플레이어가 가방 약을 쓸 수 있다 (익스트림 관장전은 불가) */
   itemsAllowed: boolean;
   /** 이번 전투에서 쓴 약 id (누적). 전투가 끝나면 가방에서 뺀다 */
