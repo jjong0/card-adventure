@@ -144,4 +144,12 @@ describe('지도 노드의 상대', () => {
     const hardLeader = opp(node('leader', 10), 1, 'fire', 'hard'); // 에이스 Lv16
     expect(rewardPackLevel(hardLeader, ch1, 'hard')).toBe(13); // 16 − 2 = 14지만 레벨 캡 13
   });
+
+  it('1층 야생은 난이도 레벨 보정을 받지 않는다 (피할 수 없는 첫 전투)', () => {
+    for (let seed = 1; seed <= 50; seed++) {
+      expect(opp(node('wild', 1), seed, 'fire', 'hard').cards[0].level).toBe(opp(node('wild', 1), seed, 'fire', 'normal').cards[0].level);
+    }
+    const lv = (d: Difficulty) => opp(node('wild', 2), 3, 'fire', d).cards[0].level;
+    expect(lv('hard')).toBe(lv('normal') + 3);
+  });
 });

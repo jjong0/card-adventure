@@ -120,7 +120,8 @@ export function nodeOpponent(node: MapNode, ctx: EncounterContext, dex: Encounte
       // 야생은 레벨만 난이도를 따른다 (개체값은 원래 무작위, 기술 선택도 늘 무작위)
       // 1층(출발 노드)은 피할 수 없는 첫 전투라 고스트 타입을 뺀다: 노말 기술만 가진 스타터는 고오스에게 데미지를 줄 수 없다
       const base = wildCard(chapter, dex, rng, { noGhost: node.floor === 1 });
-      const [card] = adjustOpponent([base], difficulty, rng).map((c) => ({ ...c, ivBase: base.ivBase }));
+      // 1층 야생은 피할 수 없는 첫 전투라 난이도 레벨 보정을 하지 않는다 (어려움 +3이면 Lv6 스타터가 Lv7~8에게 계속 졌다)
+      const [card] = node.floor === 1 ? [base] : adjustOpponent([base], difficulty, rng).map((c) => ({ ...c, ivBase: base.ivBase }));
       return { kind: 'wild', name: `야생 ${dex.species[card.speciesId].name}`, randomAi: true, cards: [card] };
     }
     case 'trainer': {
