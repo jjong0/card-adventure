@@ -1,8 +1,9 @@
 // src/sim/playthrough.ts
 // 밸런스 측정용 자동 플레이 봇 (로드맵 8단계). 실제 게임과 같은 스토어·엔진으로 1~2장을 끝까지 진행한다.
 // 화면 없이 돌아가므로 같은 시드면 같은 결과. 실행: npm run sim
-import { battle, chooseEnemyAction, createBattle } from '../core/battle';
-import { allocateIv, STAT_KEYS } from '../core/card';
+import { bagItemProblem, battle, chooseEnemyAction, createBattle } from '../core/battle';
+import { allocateIv, equipMoves, STAT_KEYS } from '../core/card';
+import { DIFFICULTY } from '../core/difficulty';
 import { nodeOpponent, type Opponent } from '../core/encounter';
 import { HEAL_ITEMS, hpOf, maxHp, PP_ITEMS, ppOf } from '../core/items';
 import { reachableNodes, type MapNode } from '../core/map';
@@ -18,9 +19,34 @@ function playerAction(state: BattleState): BattleAction {
   return chooseEnemyAction({ ...state, player: state.enemy, enemy: state.player }, dex);
 }
 
+/**
+ * 전투 중 약 (사람처럼): 출전 포켓몬 HP가 30% 아래면 모자란 만큼에 맞는 회복약을 쓴다.
+ * 큰 약부터 아끼지 않고, 모자란 HP를 넘지 않는 가장 작은 약 → 없으면 있는 약 중 가장 큰 것.
+ */
+function battleItem(state: BattleState): BattleAction | null {
+  if (!state.itemsAllowed) return null;
+  const idx = state.player.activeIdx;
+  const me = state.player.party[idx];
+  if (me.currentHp >= me.stats.hp * 0.3) return null;
+  const left = (id: string) => (g().bag[id] ?? 0) - state.itemsUsed.filter((x) => x === id).length;
+  const missing = me.stats.hp - me.currentHp;
+  const heals = HEAL_ITEMS.filter((h) => h.heal !== 'revive' && left(h.id) > 0 && !bagItemProblem(me, h.id, dex.moves));
+  if (!heals.length) return null;
+  const fit = heals.filter((h) => (h.heal as number) <= missing).at(-1) ?? heals[0];
+  return { kind: 'item', itemId: fit.id, targetIdx: idx };
+}
+
 /** 승부가 날 때까지. 쓰러지면 남은 포켓몬 중 레벨이 가장 높은 쪽을 내보낸다 */
 function fight(state: BattleState): BattleState {
   for (let i = 0; i < 500 && state.result === 'ongoing'; i++) {
+    const item = state.pendingSwitch ? null : battleItem(state);
+    if (item) {
+      const next = battle(state, item, dex);
+      if (next !== state) {
+        state = next;
+        continue;
+      }
+    }
     if (state.pendingSwitch) {
       const alive = state.player.party.map((m, idx) => ({ m, idx })).filter((x) => x.m.currentHp > 0);
       alive.sort((a, b) => b.m.card.level - a.m.card.level);
@@ -38,10 +64,35 @@ function advantageTypes(leaderType: ElementType | null): ElementType[] {
   return leaderType ? all.filter((t) => dex.typeChart[t][leaderType] > 1) : all;
 }
 
-/** 레벨 높은 6마리를 파티로, 개체값 포인트는 더 높은 공격 스탯과 스피드에 */
+/**
+ * 기술 고르기 (사람이 카드 상세에서 하듯): 배운 공격기 중 위력 × 자속 × 명중이 높은 순으로,
+ * 같은 타입은 하나만 골라 상성 범위를 넓힌다. 남는 칸은 다음으로 센 기술.
+ * 반동 기술(파괴광선류)과 위력 가변 기술은 점수를 낮춘다.
+ */
+function bestMoves(card: Card): string[] {
+  const sp = dex.species[card.speciesId];
+  const atk = sp.baseStats.atk >= sp.baseStats.spAtk ? 'physical' : 'special';
+  const score = (id: string) => {
+    const m = dex.moves[id];
+    if (!m || m.category === 'status' || m.power === null) return 0;
+    const stab = sp.types.includes(m.type) ? 1.5 : 1;
+    const side = m.category === atk ? 1 : 0.7; // 강한 쪽 공격 스탯을 쓰는 기술
+    const recharge = m.effectId === 81 ? 0.5 : 1;
+    return m.power * stab * side * recharge * ((m.accuracy ?? 100) / 100);
+  };
+  const ranked = [...card.learnedMoves].filter((id) => score(id) > 0).sort((a, b) => score(b) - score(a));
+  const picked: string[] = [];
+  for (const id of ranked) if (picked.length < 4 && !picked.some((p) => dex.moves[p].type === dex.moves[id].type)) picked.push(id);
+  for (const id of ranked) if (picked.length < 4 && !picked.includes(id)) picked.push(id);
+  return picked.length ? picked : card.moves;
+}
+
+/** 레벨 높은 6마리를 파티로, 개체값 포인트는 더 높은 공격 스탯과 스피드에, 기술은 센 것으로 */
 function manageCards() {
   for (const c of g().collection) {
     let card = c;
+    const equipped = equipMoves(card, bestMoves(card));
+    if (equipped !== 'invalid') card = equipped;
     const sp = dex.species[card.speciesId].baseStats;
     const order: (typeof STAT_KEYS)[number][] = [sp.atk >= sp.spAtk ? 'atk' : 'spAtk', 'spd', 'hp'];
     for (const stat of order) {
@@ -222,7 +273,13 @@ export function playthrough(difficulty: Difficulty, seed: number, maxRestarts = 
 
       if (node.kind === 'rest') {
         if (hpRatio() < 0.95 || ppRatio() < 0.7) g().restHeal();
-        else g().restTrain([...g().partyCards()].sort((a, b) => b.level - a.level)[0].uid);
+        // 강화는 가장 뒤처진 포켓몬에게 (한 마리만 키우면 나머지가 관장전에서 버티지 못한다)
+        else {
+          const cap = g().levelCap();
+          const target = [...g().partyCards()].filter((c) => c.level < cap).sort((a, b) => a.level - b.level)[0];
+          if (target) g().restTrain(target.uid);
+          else g().finishNode();
+        }
         evolveAll();
         continue;
       }
@@ -242,7 +299,10 @@ export function playthrough(difficulty: Difficulty, seed: number, maxRestarts = 
         stat.topLevel = Math.max(...g().partyCards().map((c) => c.level));
         stat.partySize = g().party.length;
       }
-      const start = createBattle(g().partyCards(), op.cards, dex, g().nextSeed(), { playerHp: g().hp, playerPp: g().pp, wild: op.kind === 'wild', ai: op.ai });
+      const start = createBattle(g().partyCards(), op.cards, dex, g().nextSeed(), {
+        playerHp: g().hp, playerPp: g().pp, wild: op.kind === 'wild', ai: op.ai,
+        itemsAllowed: op.kind !== 'leader' || DIFFICULTY[difficulty].leaderItems,
+      });
       const end = fight(start);
       stat.battles++;
       const settled = g().settleBattle(end, op);
