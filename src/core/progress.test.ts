@@ -39,15 +39,17 @@ describe('경험치 공식 (4세대)', () => {
     expect(levelForExp(expTable, 'medium', 10 ** 9)).toBe(MAX_LEVEL);
   });
 
-  it('전투 결과: 쓰러뜨린 상대의 경험치를 참여자끼리 나눔', () => {
+  it('전투 결과: 싸운 포켓몬은 나누지 않고 그대로, 파티의 나머지는 절반, 쓰러진 포켓몬은 0', () => {
     const a = fresh('143', 50);
     const b = fresh('445', 100);
+    const c = fresh('25', 30); // 싸우지 않은 포켓몬
+    const d = fresh('1', 30);  // 쓰러진 채로 있는 포켓몬
     b.moves = [moveId('earthquake')];
-    let s = createBattle([a, b], [fresh('4', 5)], battleDex, 1);
+    let s = createBattle([a, b, c, d], [fresh('4', 5)], battleDex, 1, { playerHp: { [d.uid]: 0 } });
     s = battle(s, { kind: 'switch', toIdx: 1 }, battleDex);
     s = battle(s, { kind: 'move', moveId: moveId('earthquake') }, battleDex);
-    const each = expYield(species['4'].baseExp, 5, 2, true);
-    expect(distributeExp(s, true, species)).toEqual({ [a.uid]: each, [b.uid]: each });
+    const full = expYield(species['4'].baseExp, 5, 1, true);
+    expect(distributeExp(s, true, species)).toEqual({ [a.uid]: full, [b.uid]: full, [c.uid]: Math.floor(full / 2) });
   });
 });
 

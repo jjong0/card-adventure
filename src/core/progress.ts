@@ -42,16 +42,26 @@ export function expYield(baseExp: number, level: number, participants: number, t
   return Math.floor((a * baseExp * level) / 7 / participants);
 }
 
-/** 전투 결과의 knockouts로 아군 카드별 획득 경험치 합계 (Card.uid → exp) */
+/**
+ * 전투 결과의 knockouts로 아군 카드별 획득 경험치 합계 (Card.uid → exp). 파티 전체 경험치 (6세대 이후 방식, 2026-11-25 결정):
+ * - 그 상대와 싸운 포켓몬은 1마리분 경험치를 나누지 않고 그대로 받는다
+ * - 파티의 나머지 포켓몬은 절반을 받는다 (전투가 끝났을 때 쓰러져 있으면 받지 않음)
+ * 원작 4세대처럼 싸운 포켓몬만 받으면 선두 한 마리만 크고 나머지가 팩 카드 레벨에 머물러, 후반 관장전을 넘지 못했다
+ * (밸런스 봇 보통 10판 중 13장 클리어 0).
+ */
 export function distributeExp(state: BattleState, trainer: boolean, species: Record<string, Species>): Record<string, number> {
   const out: Record<string, number> = {};
+  const add = (idx: number, exp: number) => {
+    const uid = state.player.party[idx].card.uid;
+    out[uid] = (out[uid] ?? 0) + exp;
+  };
   for (const ko of state.knockouts) {
     const foe = state.enemy.party[ko.enemyIdx];
-    const amount = expYield(species[foe.card.speciesId].baseExp, foe.card.level, ko.participants.length, trainer);
-    for (const idx of ko.participants) {
-      const uid = state.player.party[idx].card.uid;
-      out[uid] = (out[uid] ?? 0) + amount;
-    }
+    const full = expYield(species[foe.card.speciesId].baseExp, foe.card.level, 1, trainer);
+    state.player.party.forEach((m, idx) => {
+      if (ko.participants.includes(idx)) add(idx, full);
+      else if (m.currentHp > 0) add(idx, Math.floor(full / 2));
+    });
   }
   return out;
 }
