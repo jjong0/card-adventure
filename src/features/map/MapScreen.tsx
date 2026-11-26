@@ -1,5 +1,5 @@
-// 챕터 지도 (spec §8 화면 3): 왼쪽 갈림길 지도(아래 → 위), 오른쪽 선택한 노드 정보·파티·범례
-import { useMemo, useState } from 'react';
+// 챕터 지도 (spec §8 화면 3): 갈림길 지도(아래 → 위)와 오른쪽 가장자리에 뜨는 작은 노드 정보, 오른쪽 칸에 타운맵·파티·범례
+import { useEffect, useMemo, useState } from 'react';
 import { HpBar } from '../../components/HpBar';
 import { Sprite } from '../../components/Sprite';
 import { bossTitle, givesBadge, nodeOpponent, type Opponent } from '../../core/encounter';
@@ -12,6 +12,11 @@ import { NODE_INFO, nodeImages } from './nodeInfo';
 import { RegionMap } from './RegionMap';
 
 const W = 800;
+/**
+ * 노드 설명 칸 폭. 노드는 지도 폭의 약 83% 왼쪽에만 놓이므로(map.ts) 가운데 정렬한 지도의 오른쪽 가장자리에
+ * 약 150px이 비는데, 그 안에 들어가게 좁게 만들어 오른쪽 위에 둔다 (노드를 가리지 않는다).
+ */
+const PANEL_W = 136;
 const H = 648;
 const PAD_Y = 56;
 
@@ -55,12 +60,14 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, onExit, notice }: Pro
   // 마지막 상대가 있는 곳: 체육관 / 포켓몬리그(사천왕·챔피언) / 레드는 장소 이름만
   const title = bossTitle(chapter.chapter);
   const venue = title === '관장' ? `${chapter.place} 체육관` : title ? `${chapter.place} 포켓몬리그` : chapter.place;
-  const leaderDesc = title === '관장' ? '체육관 관장에게 도전한다.' : title ? `${title}에게 도전한다.` : '은빛산 정상에서 기다리는 트레이너에게 도전한다.';
   const leaderReward = [givesBadge(chapter.chapter) && '배지', 'SR 이상 확정 팩', chapter.rewardTm && '기술머신'].filter(Boolean).join(' + ');
   const m = map();
   const party = partyCards();
   const reachable = reachableNodes(m, mapNodeId);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // 알림(패배·도망 안내)은 닫거나 노드를 고르면 숨긴다. 새 알림이 오면 다시 보인다
+  const [noticeHidden, setNoticeHidden] = useState(false);
+  useEffect(() => setNoticeHidden(false), [notice]);
   const nodes = m.floors.flat();
   const selected = nodes.find((n) => n.id === selectedId) ?? null;
 
@@ -70,6 +77,7 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, onExit, notice }: Pro
     [m, chapter, starterType, difficulty, runSeed],
   );
 
+  const showNotice = !!notice && !noticeHidden;
   const step = (H - PAD_Y * 2) / (m.floors.length - 1);
   const pos = (n: MapNode) => ({ x: n.x * W, y: H - PAD_Y - (n.floor - 1) * step });
   const visited = new Set(visitedNodes);
@@ -142,7 +150,10 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, onExit, notice }: Pro
                 <button
                   key={n.id}
                   type="button"
-                  onClick={() => setSelectedId(n.id)}
+                  onClick={() => {
+                    setSelectedId(n.id);
+                    setNoticeHidden(true);
+                  }}
                   aria-label={`${n.floor}층 ${n.rival ? '라이벌' : info.label}${isReach ? ' (갈 수 있음)' : ''}`}
                   className={`absolute flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${isReach ? 'hover:scale-110' : ''} ${done ? 'opacity-45' : ''} ${!isReach && !isHere && !done ? 'opacity-75' : ''}`}
                   style={{
@@ -159,6 +170,41 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, onExit, notice }: Pro
             })}
             {mapNodeId === null && <p className="absolute bottom-1 left-1/2 -translate-x-1/2 font-pixel text-[12px] text-text-dim">출발 · 야생 포켓몬과의 승부로 시작한다</p>}
           </div>
+          {/* 노드 설명: 지도 칸 오른쪽 가장자리의 빈자리 (노드를 가리지 않는다) */}
+          <div className="absolute right-2.5 top-3 z-10" style={{ width: PANEL_W }}>
+          {selected || showNotice ? (
+            <section aria-label="노드 정보" className="break-keep rounded-lg border border-line bg-surface-2/95 p-2 font-pixel shadow-[0_6px_18px_rgba(0,0,0,0.45)]">
+              {selected ? (
+                <>
+                  <div className="flex items-start justify-between">
+                    <p className="text-[10px] text-text-dim">{selected.floor}층</p>
+                    <button type="button" onClick={() => setSelectedId(null)} aria-label="노드 정보 닫기" className="-mr-1 -mt-1 rounded px-1 text-[11px] text-text-dim hover:text-text">✕</button>
+                  </div>
+                  <h2 className="text-[14px] font-bold leading-tight" style={{ color: NODE_INFO[selected.kind].color }}>
+                    {selected.rival ? '라이벌' : selectedOpp && selected.kind !== 'wild' ? selectedOpp.name : NODE_INFO[selected.kind].label}
+                  </h2>
+                  {selectedOpp && selected.kind !== 'wild' && (
+                    <p className="mt-1 text-[10px] leading-[14px]">포켓몬 {selectedOpp.cards.length}마리<br />최고 Lv{Math.max(...selectedOpp.cards.map((c) => c.level))}</p>
+                  )}
+                  <p className="mt-1 text-[10px] leading-[14px]"><span className="text-text-dim">보상 </span>{selected.kind === 'leader' ? leaderReward : NODE_INFO[selected.kind].reward}</p>
+                  <button
+                    type="button"
+                    onClick={go}
+                    disabled={!reachable.includes(selected.id) || (needsFight && !canFight)}
+                    className="mt-2 w-full rounded-md bg-accent py-1 text-[11px] font-bold text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-40"
+                  >
+                    {!reachable.includes(selected.id) ? '지금은 갈 수 없다' : needsFight && !canFight ? '싸울 수 있는 포켓몬이 없다' : '여기로 간다'}
+                  </button>
+                </>
+              ) : (
+                <div className="flex items-start gap-2">
+                  <p className="flex-1 text-[11px] leading-4 text-accent" role="status">{notice}</p>
+                  <button type="button" onClick={() => setNoticeHidden(true)} aria-label="알림 닫기" className="-mr-1 -mt-1 rounded px-1 text-[11px] text-text-dim hover:text-text">✕</button>
+                </div>
+              )}
+            </section>
+          ) : null}
+          </div>
         </div>
 
         <aside className="flex min-h-0 flex-col gap-3 border-l border-line bg-surface p-4 font-pixel">
@@ -168,35 +214,6 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, onExit, notice }: Pro
               <RegionMap chapter={chapter.chapter} />
             </div>
           </section>
-          <section className="min-h-[196px] rounded-xl bg-surface-2 p-3.5">
-            {selected ? (
-              <>
-                <p className="text-[12px] text-text-dim">{selected.floor}층</p>
-                <h2 className="text-[20px] font-bold" style={{ color: NODE_INFO[selected.kind].color }}>
-                  {selected.rival ? '라이벌' : selectedOpp && selected.kind !== 'wild' ? selectedOpp.name : NODE_INFO[selected.kind].label}
-                </h2>
-                <p className="mt-1 text-[13px] leading-5 text-text-dim">{selected.kind === 'leader' ? leaderDesc : NODE_INFO[selected.kind].desc}</p>
-                {selectedOpp && selected.kind !== 'wild' && (
-                  <p className="mt-1 text-[13px]">포켓몬 {selectedOpp.cards.length}마리 · 최고 Lv{Math.max(...selectedOpp.cards.map((c) => c.level))}</p>
-                )}
-                <p className="mt-1 text-[13px]"><span className="text-text-dim">보상 </span>{selected.kind === 'leader' ? leaderReward : NODE_INFO[selected.kind].reward}</p>
-                <button
-                  type="button"
-                  onClick={go}
-                  disabled={!reachable.includes(selected.id) || (needsFight && !canFight)}
-                  className="mt-3 w-full rounded-lg bg-accent py-2 text-[16px] font-bold text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-40"
-                >
-                  {!reachable.includes(selected.id) ? '지금은 갈 수 없다' : needsFight && !canFight ? '싸울 수 있는 포켓몬이 없다' : '여기로 간다'}
-                </button>
-              </>
-            ) : (
-              <div className="pt-10 text-center text-[14px] leading-6">
-                {notice && <p className="mb-3 text-accent" role="status">{notice}</p>}
-                <p className="text-text-dim">지도에서 노드를 고르세요.<br />빛나는 노드로 갈 수 있다.</p>
-              </div>
-            )}
-          </section>
-
           <section aria-label="파티" className="min-h-0 flex-1 overflow-y-auto">
             <p className="mb-1.5 text-[12px] text-text-dim">파티</p>
             <ul className="space-y-1.5">
