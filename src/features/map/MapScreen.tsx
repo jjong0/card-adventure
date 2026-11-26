@@ -100,7 +100,15 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, onExit, notice }: Pro
       </header>
 
       <div className="grid min-h-0 flex-1 grid-cols-[1fr_400px]">
-        <div className="relative flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(180deg, #131d2e, #0f1724)' }}>
+        {/* 포켓기어 화면 같은 촘촘한 격자 (노드를 가리지 않는 바탕 무늬) */}
+        <div
+          className="relative flex items-center justify-center overflow-hidden"
+          style={{
+            backgroundColor: '#101A2A',
+            backgroundImage: 'radial-gradient(ellipse at center, transparent 55%, rgba(15,23,36,0.85) 100%), linear-gradient(#1A2638 1px, transparent 1px), linear-gradient(90deg, #1A2638 1px, transparent 1px)',
+            backgroundSize: '100% 100%, 20px 20px, 20px 20px',
+          }}
+        >
           <div className="relative" style={{ width: W, height: H }}>
             <svg width={W} height={H} className="absolute inset-0" aria-hidden>
               {nodes.flatMap((n) =>
