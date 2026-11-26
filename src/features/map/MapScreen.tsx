@@ -9,6 +9,7 @@ import { dex, trainers } from '../../lib/dex';
 import { TYPE_LABEL } from '../../lib/labels';
 import { currentHp, useGameStore } from '../../store/gameStore';
 import { NODE_INFO, nodeImages } from './nodeInfo';
+import { RegionMap } from './RegionMap';
 
 const W = 800;
 const H = 648;
@@ -161,6 +162,12 @@ export function MapScreen({ onEnter, onOpenBox, onOpenBag, onExit, notice }: Pro
         </div>
 
         <aside className="flex min-h-0 flex-col gap-3 border-l border-line bg-surface p-4 font-pixel">
+          <section aria-label="타운맵" className="relative h-[230px] shrink-0 overflow-hidden rounded-xl border border-line bg-[#101A2A]">
+            <p className="absolute left-2.5 top-1.5 z-10 text-[11px] text-text-dim">타운맵 · {chapter.chapter <= 13 ? '성도' : '관동'} · <span className="text-accent">{chapter.place}</span></p>
+            <div className="absolute inset-x-2 bottom-1 top-5">
+              <RegionMap chapter={chapter.chapter} />
+            </div>
+          </section>
           <section className="min-h-[196px] rounded-xl bg-surface-2 p-3.5">
             {selected ? (
               <>
